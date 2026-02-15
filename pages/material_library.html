@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Library | PBL 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+
+        body {
+            background-color: #020617;
+            color: #f8fafc;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #60a5fa, #a855f7);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+
+<body class="pb-20">
+
+    <nav class="fixed w-full z-50 glass border-b border-slate-800/50 px-8 py-4 flex justify-between items-center">
+        <a href="dataset.html" class="flex items-center gap-2 group">
+            <i class="fas fa-arrow-left text-slate-400 group-hover:text-white transition"></i>
+            <span
+                class="text-sm font-bold text-slate-400 group-hover:text-white transition uppercase tracking-widest">Back
+                to Dataset</span>
+        </a>
+        <span class="text-xl font-black text-white leading-none uppercase tracking-tighter">Material <span
+                class="text-purple-500 italic">Library</span></span>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 pt-32 space-y-16">
+
+        <section class="text-center space-y-6">
+            <h1 class="text-4xl md:text-5xl font-extrabold uppercase leading-tight">Material <span
+                    class="gradient-text">Library</span></h1>
+            <p class="text-slate-400 max-w-2xl mx-auto text-lg leading-relaxed">
+                Defining the physical properties and economic constraints for generative optimization.
+            </p>
+        </section>
+
+        <!-- 1. High-Performance Plastics -->
+        <section class="glass p-8 rounded-[2.5rem] border-l-4 border-blue-500">
+            <div class="flex items-center gap-4 mb-8">
+                <i class="fas fa-cubes text-blue-500 text-2xl"></i>
+                <h2 class="text-2xl font-black uppercase tracking-tight">High-Performance Plastics (Desktop 3D Printing)
+                </h2>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Nylon 12 / PA11 -->
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10 flex flex-col">
+                    <span class="text-blue-400 font-bold text-xs uppercase tracking-widest block mb-2">Industrial
+                        Standard (SLS)</span>
+                    <h3 class="text-xl font-bold text-white mb-4">Nylon 12 / PA11</h3>
+
+                    <div class="mb-4">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Properties</span>
+                        <ul class="space-y-2 text-sm mt-2">
+                            <li class="flex justify-between border-b border-white/5 pb-1"><span
+                                    class="text-slate-400">Density</span> <span class="font-mono text-white">~1.01
+                                    g/cm³</span></li>
+                            <li class="flex justify-between border-b border-white/5 pb-1"><span
+                                    class="text-slate-400">Yield</span> <span class="font-mono text-white">48-52
+                                    MPa</span></li>
+                            <li class="flex justify-between border-b border-white/5 pb-1"><span
+                                    class="text-slate-400">Modulus</span> <span class="font-mono text-white">1.8-2.0
+                                    GPa</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-auto pt-4 border-t border-white/10">
+                        <span class="text-xs font-bold text-emerald-500 uppercase">Economics & Usage</span>
+                        <ul class="space-y-2 text-xs mt-2 text-slate-300">
+                            <li class="flex justify-between"><span class="text-slate-500">Raw Cost</span> <span>$50-$70
+                                    / kg</span></li>
+                            <li class="flex justify-between"><span class="text-slate-500">Service</span>
+                                <span>$0.35-$0.80 / g</span></li>
+                            <li class="block mt-2 italic text-emerald-400">Best for: Professional-grade joints.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- PETG / ABS -->
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10 flex flex-col">
+                    <span class="text-blue-400 font-bold text-xs uppercase tracking-widest block mb-2">Hobbyist Choice
+                        (FDM)</span>
+                    <h3 class="text-xl font-bold text-white mb-4">PETG / ABS</h3>
+
+                    <div class="mb-4">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Properties</span>
+                        <ul class="space-y-2 text-sm mt-2">
+                            <li class="flex justify-between border-b border-white/5 pb-1"><span
+                                    class="text-slate-400">Density</span> <span class="font-mono text-white">~1.27
+                                    g/cm³</span></li>
+                            <li class="flex justify-between border-b border-white/5 pb-1"><span
+                                    class="text-slate-400">Yield</span> <span class="font-mono text-white">30-50
+                                    MPa</span></li>
+                            <li class="flex justify-between border-b border-white/5 pb-1"><span
+                                    class="text-slate-400">Modulus</span> <span class="font-mono text-white">2.0-2.1
+                                    GPa</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-auto pt-4 border-t border-white/10">
+                        <span class="text-xs font-bold text-emerald-500 uppercase">Economics & Usage</span>
+                        <ul class="space-y-2 text-xs mt-2 text-slate-300">
+                            <li class="flex justify-between"><span class="text-slate-500">Raw Cost</span> <span>$16-$28
+                                    / kg</span></li>
+                            <li class="flex justify-between"><span class="text-slate-500">Service</span> <span>N/A
+                                    (Desktop)</span></li>
+                            <li class="block mt-2 italic text-emerald-400">Best for: Low-cost prototyping.</li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-4 p-2 bg-red-500/10 border border-red-500/20 rounded text-[10px] text-red-300">
+                        <i class="fas fa-exclamation-triangle mr-1"></i> Avoid PLA (Creep Risk)
+                    </div>
+                </div>
+
+                <!-- PA-CF -->
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10 flex flex-col">
+                    <span class="text-blue-400 font-bold text-xs uppercase tracking-widest block mb-2">High
+                        Stiffness</span>
+                    <h3 class="text-xl font-bold text-white mb-4">PA-CF (Carbon Fiber)</h3>
+
+                    <div class="mb-4">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Properties</span>
+                        <ul class="space-y-2 text-sm mt-2">
+                            <li class="flex justify-between border-b border-white/5 pb-1"><span
+                                    class="text-slate-400">Density</span> <span class="font-mono text-white">~1.08
+                                    g/cm³</span></li>
+                            <li class="flex justify-between border-b border-white/5 pb-1"><span
+                                    class="text-slate-400">Yield</span> <span class="font-mono text-white">70-110
+                                    MPa</span></li>
+                            <li class="flex justify-between border-b border-white/5 pb-1"><span
+                                    class="text-slate-400">Modulus</span> <span class="font-mono text-white">4.0-6.0
+                                    GPa</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-auto pt-4 border-t border-white/10">
+                        <span class="text-xs font-bold text-emerald-500 uppercase">Economics & Usage</span>
+                        <ul class="space-y-2 text-xs mt-2 text-slate-300">
+                            <li class="flex justify-between"><span class="text-slate-500">Raw Cost</span> <span>$55-$90
+                                    / kg</span></li>
+                            <li class="flex justify-between"><span class="text-slate-500">Service</span> <span>$1.00+ /
+                                    g</span></li>
+                            <li class="block mt-2 italic text-emerald-400">Best for: Stiffest/Lightest forearm parts.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Metals -->
+        <section class="glass p-8 rounded-[2.5rem] border-l-4 border-slate-300">
+            <div class="flex items-center gap-4 mb-8">
+                <i class="fas fa-cogs text-slate-300 text-2xl"></i>
+                <h2 class="text-2xl font-black uppercase tracking-tight">Metals (CNC or DMLS)</h2>
+            </div>
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- 6061-T6 -->
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10 flex flex-col">
+                    <span class="text-slate-400 font-bold text-xs uppercase tracking-widest block mb-2">The Gold
+                        Standard (CNC)</span>
+                    <h3 class="text-xl font-bold text-white mb-4">Aluminum 6061-T6</h3>
+
+                    <div class="mb-4">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Properties</span>
+                        <ul class="space-y-2 text-sm mt-2">
+                            <li class="flex justify-between border-b border-white/5 pb-1"><span
+                                    class="text-slate-400">Density</span> <span class="font-mono text-white">2.70
+                                    g/cm³</span></li>
+                            <li class="flex justify-between border-b border-white/5 pb-1"><span
+                                    class="text-slate-400">Yield</span> <span class="font-mono text-white">240-275
+                                    MPa</span></li>
+                            <li class="flex justify-between border-b border-white/5 pb-1"><span
+                                    class="text-slate-400">Modulus</span> <span class="font-mono text-white">68.9
+                                    GPa</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-auto pt-4 border-t border-white/10">
+                        <span class="text-xs font-bold text-emerald-500 uppercase">Economics</span>
+                        <ul class="space-y-2 text-xs mt-2 text-slate-300">
+                            <li class="flex justify-between"><span class="text-slate-500">Raw Cost</span>
+                                <span>$4.50-$5.50 / kg</span></li>
+                            <li class="flex justify-between"><span class="text-slate-500">Part Cost</span>
+                                <span>$50-$200 / part</span></li>
+                            <li class="block mt-2 italic text-emerald-400">Best for: Base & Shoulder (High Stress).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- AlSi10Mg -->
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10 flex flex-col">
+                    <span class="text-slate-400 font-bold text-xs uppercase tracking-widest block mb-2">Additive Alloy
+                        (DMLS)</span>
+                    <h3 class="text-xl font-bold text-white mb-4">Aluminum AlSi10Mg</h3>
+
+                    <div class="mb-4">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Properties</span>
+                        <ul class="space-y-2 text-sm mt-2">
+                            <li class="flex justify-between border-b border-white/5 pb-1"><span
+                                    class="text-slate-400">Density</span> <span class="font-mono text-white">2.68
+                                    g/cm³</span></li>
+                            <li class="flex justify-between border-b border-white/5 pb-1"><span
+                                    class="text-slate-400">Yield</span> <span class="font-mono text-white">220-240
+                                    MPa</span></li>
+                            <li class="flex justify-between border-b border-white/5 pb-1"><span
+                                    class="text-slate-400">Modulus</span> <span class="font-mono text-white">~70
+                                    GPa</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-auto pt-4 border-t border-white/10">
+                        <span class="text-xs font-bold text-emerald-500 uppercase">Economics</span>
+                        <ul class="space-y-2 text-xs mt-2 text-slate-300">
+                            <li class="flex justify-between"><span class="text-slate-500">Raw Cost</span> <span>$25-$45
+                                    / kg (Powder)</span></li>
+                            <li class="flex justify-between"><span class="text-slate-500">Part Cost</span>
+                                <span>$150-$500 / part</span></li>
+                            <li class="block mt-2 italic text-emerald-400">Best for: Complex generative shapes.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="mt-32 py-12 text-center bg-black/40 border-t border-slate-900">
+        <p class="text-slate-600 text-[10px] font-bold tracking-[0.3em] uppercase mb-2">Manipal University Jaipur</p>
+    </footer>
+
+</body>
+
+</html>

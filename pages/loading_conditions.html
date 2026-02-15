@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading Conditions | PBL 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+
+        body {
+            background-color: #020617;
+            color: #f8fafc;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #60a5fa, #a855f7);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+
+<body class="pb-20">
+
+    <nav class="fixed w-full z-50 glass border-b border-slate-800/50 px-8 py-4 flex justify-between items-center">
+        <a href="dataset.html" class="flex items-center gap-2 group">
+            <i class="fas fa-arrow-left text-slate-400 group-hover:text-white transition"></i>
+            <span
+                class="text-sm font-bold text-slate-400 group-hover:text-white transition uppercase tracking-widest">Back
+                to Dataset</span>
+        </a>
+        <span class="text-xl font-black text-white leading-none uppercase tracking-tighter">Loading <span
+                class="text-rose-500 italic">Conditions</span></span>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-6 pt-32 space-y-16">
+
+        <section class="text-center space-y-6">
+            <h1 class="text-4xl md:text-5xl font-extrabold uppercase leading-tight">Loading <span
+                    class="gradient-text">Conditions</span></h1>
+            <p class="text-slate-400 max-w-2xl mx-auto text-lg leading-relaxed">
+                Defining the forces, moments, and constraints to simulate real-world stresses on the generative arm.
+            </p>
+        </section>
+
+        <!-- 1. Baseline: Static & Holding -->
+        <section class="glass p-8 rounded-[2.5rem] border-l-4 border-emerald-500">
+            <div class="flex items-center gap-4 mb-8">
+                <i class="fas fa-balance-scale text-emerald-500 text-2xl"></i>
+                <h2 class="text-2xl font-black uppercase tracking-tight">The Baseline: Static & Holding Loads</h2>
+            </div>
+            <p class="text-slate-400 mb-6 italic">Simulating the arm at full horizontal extension (400mm)—maximum
+                leverage.</p>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <span
+                        class="text-emerald-400 font-bold text-xs uppercase tracking-widest block mb-2">Self-Weight</span>
+                    <h3 class="text-xl font-bold text-white mb-2">Global Gravity</h3>
+                    <p class="font-mono text-lg text-white">9.81 m/s²</p>
+                    <p class="text-xs text-slate-500 mt-2">Primary load on NEMA 23 base due to arm weight.</p>
+                </div>
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <span class="text-emerald-400 font-bold text-xs uppercase tracking-widest block mb-2">Wrist
+                        Target</span>
+                    <h3 class="text-xl font-bold text-white mb-2">Payload Force</h3>
+                    <p class="font-mono text-lg text-white">10N (1.0 kg)</p>
+                    <p class="text-xs text-slate-500 mt-2">Maximum realistic limit for DIY NEMA 17/14 elbows.</p>
+                </div>
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <span
+                        class="text-emerald-400 font-bold text-xs uppercase tracking-widest block mb-2">Reliability</span>
+                    <h3 class="text-xl font-bold text-white mb-2">Safety Factor (f)</h3>
+                    <p class="font-mono text-lg text-white">2.5</p>
+                    <p class="text-xs text-slate-500 mt-2">Accounts for "bouncing"/oscillation in printed 400mm arms.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Power: Motor Torque -->
+        <section class="glass p-8 rounded-[2.5rem] border-l-4 border-amber-500">
+            <div class="flex items-center gap-4 mb-8">
+                <i class="fas fa-bolt text-amber-500 text-2xl"></i>
+                <h2 class="text-2xl font-black uppercase tracking-tight">The Power: Motor Torque (Moment) Loads</h2>
+            </div>
+            <p class="text-slate-400 mb-6 italic">Recommended loads applied to Motor Mount Preserves.</p>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-white/10">
+                            <th class="pb-3 pl-2">Joint (Motor)</th>
+                            <th class="pb-3 text-right">Holding Range</th>
+                            <th class="pb-3 text-right">Rec. Load</th>
+                            <th class="pb-3 pl-8">Rationale</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm divide-y divide-white/5">
+                        <tr>
+                            <td class="py-4 pl-2 font-bold text-white">Axis 1 & 2 (NEMA 23)</td>
+                            <td class="py-4 text-right text-slate-400">1.1 – 3.0 Nm</td>
+                            <td class="py-4 text-right font-mono text-amber-400 font-bold">2.5 Nm</td>
+                            <td class="py-4 pl-8 text-slate-300">Lifting entire 400mm arm mass.</td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 pl-2 font-bold text-white">Axis 3 (NEMA 17)</td>
+                            <td class="py-4 text-right text-slate-400">0.4 – 0.7 Nm</td>
+                            <td class="py-4 text-right font-mono text-amber-400 font-bold">0.55 Nm</td>
+                            <td class="py-4 pl-8 text-slate-300">Elbow lifting 200mm forearm + payload.</td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 pl-2 font-bold text-white">Axis 4 (NEMA 14)</td>
+                            <td class="py-4 text-right text-slate-400">0.10 – 0.18 Nm</td>
+                            <td class="py-4 text-right font-mono text-amber-400 font-bold">0.15 Nm</td>
+                            <td class="py-4 pl-8 text-slate-300">Torsional force on forearm link.</td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 pl-2 font-bold text-white">Axis 5 & 6 (Servos)</td>
+                            <td class="py-4 text-right text-slate-400">0.05 – 0.15 Nm</td>
+                            <td class="py-4 text-right font-mono text-amber-400 font-bold">0.10 Nm</td>
+                            <td class="py-4 pl-8 text-slate-300">Wrist orientation precision loads.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 3. Dynamic & Kinetic -->
+        <section class="glass p-8 rounded-[2.5rem] border-l-4 border-rose-500">
+            <div class="flex items-center gap-4 mb-8">
+                <i class="fas fa-meteor text-rose-500 text-2xl"></i>
+                <h2 class="text-2xl font-black uppercase tracking-tight">Kinetic & Impact Loads</h2>
+            </div>
+            <p class="text-slate-400 mb-6 italic">At 400mm, inertia is the biggest enemy. Simulating sudden stops and
+                high-speed rotation.</p>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <h3 class="font-bold text-rose-400 mb-2">Centrifugal Force</h3>
+                    <p class="text-white text-lg font-mono mb-2">3.0 N (Lateral)</p>
+                    <p class="text-sm text-slate-400">applied to Forearm & Wrist. Ensures 400mm "lever" doesn't snap
+                        during high-speed Base rotation.</p>
+                </div>
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <h3 class="font-bold text-rose-400 mb-2">E-Stop Impact</h3>
+                    <p class="text-white text-lg font-mono mb-2">40 N (Instant)</p>
+                    <p class="text-sm text-slate-400">"Worst-case" collision load at tool flange to ensure frame
+                        survival.</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- 4. Constraints -->
+            <section class="glass p-8 rounded-[2.5rem] border-t-4 border-blue-500">
+                <div class="flex items-center gap-4 mb-6">
+                    <i class="fas fa-anchor text-blue-500 text-xl"></i>
+                    <h2 class="text-xl font-black uppercase tracking-tight">Constraint Setup</h2>
+                </div>
+                <ul class="space-y-4">
+                    <li class="bg-white/5 p-4 rounded-xl border border-white/10">
+                        <span class="block text-xs font-bold text-blue-400 uppercase tracking-wider mb-1">The
+                            Foundation</span>
+                        <p class="text-sm text-slate-300"><strong>Fixed Constraint</strong> applied to bolt holes on
+                            BaseBot.step.</p>
+                    </li>
+                    <li class="bg-white/5 p-4 rounded-xl border border-white/10">
+                        <span class="block text-xs font-bold text-blue-400 uppercase tracking-wider mb-1">Pivot
+                            Bearings</span>
+                        <p class="text-sm text-slate-300"><strong>Pinned / Frictionless Support</strong> on internal
+                            bearing faces to allow rotation.</p>
+                    </li>
+                </ul>
+            </section>
+
+            <!-- 5. Generative Design Summary -->
+            <section class="glass p-8 rounded-[2.5rem] border-t-4 border-white">
+                <div class="flex items-center gap-4 mb-6">
+                    <i class="fas fa-clipboard-check text-white text-xl"></i>
+                    <h2 class="text-xl font-black uppercase tracking-tight">Generative Design Constraints</h2>
+                </div>
+                <ul class="space-y-3">
+                    <li class="flex justify-between items-center border-b border-white/10 pb-2">
+                        <span class="text-sm text-slate-400">Safety Factor</span>
+                        <div class="text-right">
+                            <span class="block font-mono font-bold text-white">2.5</span>
+                            <span class="block text-[10px] text-slate-500">Compensate for fatigue</span>
+                        </div>
+                    </li>
+                    <li class="flex justify-between items-center border-b border-white/10 pb-2">
+                        <span class="text-sm text-slate-400">Mass Target</span>
+                        <div class="text-right">
+                            <span class="block font-mono font-bold text-white">350g – 550g</span>
+                            <span class="block text-[10px] text-slate-500">Upper arm segment</span>
+                        </div>
+                    </li>
+                    <li class="flex justify-between items-center border-b border-white/10 pb-2">
+                        <span class="text-sm text-slate-400">Min. Wall Thickness</span>
+                        <div class="text-right">
+                            <span class="block font-mono font-bold text-white">3.5 mm</span>
+                            <span class="block text-[10px] text-slate-500">Rigidity over 200mm span</span>
+                        </div>
+                    </li>
+                    <li class="flex justify-between items-center border-b border-white/10 pb-2">
+                        <span class="text-sm text-slate-400">Max Displacement</span>
+                        <div class="text-right">
+                            <span class="block font-mono font-bold text-white">&lt; 0.75 mm</span>
+                            <span class="block text-[10px] text-slate-500">Accuracy at 400mm tip</span>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+        </div>
+
+    </main>
+
+    <footer class="mt-32 py-12 text-center bg-black/40 border-t border-slate-900">
+        <p class="text-slate-600 text-[10px] font-bold tracking-[0.3em] uppercase mb-2">Manipal University Jaipur</p>
+    </footer>
+
+</body>
+
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mechanical Configuration | PBL 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+
+        body {
+            background-color: #020617;
+            color: #f8fafc;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #60a5fa, #a855f7);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+
+<body class="pb-20">
+
+    <nav class="fixed w-full z-50 glass border-b border-slate-800/50 px-8 py-4 flex justify-between items-center">
+        <a href="model_architecture.html" class="flex items-center gap-2 group">
+            <i class="fas fa-arrow-left text-slate-400 group-hover:text-white transition"></i>
+            <span
+                class="text-sm font-bold text-slate-400 group-hover:text-white transition uppercase tracking-widest">Back
+                to Architecture</span>
+        </a>
+        <span class="text-xl font-black text-white leading-none uppercase tracking-tighter">Mechanical <span
+                class="text-blue-500 italic">Config</span></span>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-6 pt-32 space-y-16">
+
+        <section class="text-center space-y-6">
+            <h1 class="text-4xl md:text-5xl font-extrabold uppercase leading-tight">6-DOF <span
+                    class="gradient-text">Joint Layout</span></h1>
+            <p class="text-slate-400 max-w-2xl mx-auto text-lg leading-relaxed">
+                The articulated joint arrangement split into two functional sub-assemblies: Positioning and Orientation.
+            </p>
+        </section>
+
+        <!-- 1. Positioning Sub-Assembly -->
+        <section class="glass p-8 rounded-[2.5rem] border-l-4 border-blue-500">
+            <div class="flex items-center gap-4 mb-8">
+                <i class="fas fa-arrows-alt text-blue-500 text-2xl"></i>
+                <h2 class="text-2xl font-black uppercase tracking-tight">Positioning Sub-Assembly (Axes 1–3)</h2>
+            </div>
+            <p class="text-slate-400 mb-8 italic">Responsible for placing the wrist at any point in 3D space.</p>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div
+                    class="bg-white/5 p-6 rounded-2xl border border-white/10 hover:bg-blue-500/5 hover:border-blue-500/20 transition">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span
+                            class="w-8 h-8 bg-blue-500/20 text-blue-400 rounded-lg flex items-center justify-center font-black text-sm">1</span>
+                        <h3 class="font-bold text-white">Base / Waist</h3>
+                    </div>
+                    <span class="block text-xs font-bold text-blue-400 uppercase tracking-widest mb-2">Yaw
+                        Rotation</span>
+                    <p class="text-sm text-slate-400">Horizontal swing. Supports the entire weight of the robot above
+                        it.</p>
+                </div>
+                <div
+                    class="bg-white/5 p-6 rounded-2xl border border-white/10 hover:bg-blue-500/5 hover:border-blue-500/20 transition">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span
+                            class="w-8 h-8 bg-blue-500/20 text-blue-400 rounded-lg flex items-center justify-center font-black text-sm">2</span>
+                        <h3 class="font-bold text-white">Shoulder</h3>
+                    </div>
+                    <span class="block text-xs font-bold text-blue-400 uppercase tracking-widest mb-2">Pitch
+                        Motion</span>
+                    <p class="text-sm text-slate-400">The primary "lifter," directly counteracting gravity on the arm.
+                    </p>
+                </div>
+                <div
+                    class="bg-white/5 p-6 rounded-2xl border border-white/10 hover:bg-blue-500/5 hover:border-blue-500/20 transition">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span
+                            class="w-8 h-8 bg-blue-500/20 text-blue-400 rounded-lg flex items-center justify-center font-black text-sm">3</span>
+                        <h3 class="font-bold text-white">Elbow</h3>
+                    </div>
+                    <span class="block text-xs font-bold text-blue-400 uppercase tracking-widest mb-2">Pitch
+                        Motion</span>
+                    <p class="text-sm text-slate-400">Extends or retracts the arm to define the radial reach distance.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Orientation Sub-Assembly -->
+        <section class="glass p-8 rounded-[2.5rem] border-l-4 border-purple-500">
+            <div class="flex items-center gap-4 mb-8">
+                <i class="fas fa-sync-alt text-purple-500 text-2xl"></i>
+                <h2 class="text-2xl font-black uppercase tracking-tight">Orientation Sub-Assembly (Axes 4–6)</h2>
+            </div>
+            <p class="text-slate-400 mb-8 italic">The "Spherical Wrist" — defines the tool pose without changing 3D
+                position.</p>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div
+                    class="bg-white/5 p-6 rounded-2xl border border-white/10 hover:bg-purple-500/5 hover:border-purple-500/20 transition">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span
+                            class="w-8 h-8 bg-purple-500/20 text-purple-400 rounded-lg flex items-center justify-center font-black text-sm">4</span>
+                        <h3 class="font-bold text-white">Wrist Roll</h3>
+                    </div>
+                    <span class="block text-xs font-bold text-purple-400 uppercase tracking-widest mb-2">Forearm
+                        Rotation</span>
+                    <p class="text-sm text-slate-400">Rotates the forearm. Essential for aligning welding torches or
+                        drills.</p>
+                </div>
+                <div
+                    class="bg-white/5 p-6 rounded-2xl border border-white/10 hover:bg-purple-500/5 hover:border-purple-500/20 transition">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span
+                            class="w-8 h-8 bg-purple-500/20 text-purple-400 rounded-lg flex items-center justify-center font-black text-sm">5</span>
+                        <h3 class="font-bold text-white">Wrist Pitch</h3>
+                    </div>
+                    <span class="block text-xs font-bold text-purple-400 uppercase tracking-widest mb-2">Bend /
+                        Tilt</span>
+                    <p class="text-sm text-slate-400">Tilts the end-effector up and down for approach angle control.</p>
+                </div>
+                <div
+                    class="bg-white/5 p-6 rounded-2xl border border-white/10 hover:bg-purple-500/5 hover:border-purple-500/20 transition">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span
+                            class="w-8 h-8 bg-purple-500/20 text-purple-400 rounded-lg flex items-center justify-center font-black text-sm">6</span>
+                        <h3 class="font-bold text-white">Tool Flange</h3>
+                    </div>
+                    <span class="block text-xs font-bold text-purple-400 uppercase tracking-widest mb-2">Tool
+                        Roll</span>
+                    <p class="text-sm text-slate-400">Final rotation that spins the gripper or tool directly.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Joint Reference Table -->
+        <section class="glass p-8 rounded-[2.5rem] border-t-4 border-white">
+            <div class="flex items-center gap-4 mb-8">
+                <i class="fas fa-table text-white text-2xl"></i>
+                <h2 class="text-2xl font-black uppercase tracking-tight">Joint Reference Table</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-white/10">
+                            <th class="pb-3 pl-2">Joint</th>
+                            <th class="pb-3">Type</th>
+                            <th class="pb-3">Functional Name</th>
+                            <th class="pb-3">Primary Duty</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm divide-y divide-white/5">
+                        <tr>
+                            <td class="py-3 pl-2 font-mono font-bold text-blue-400">J1</td>
+                            <td class="py-3 text-slate-300">Revolute</td>
+                            <td class="py-3 font-bold text-white">Waist</td>
+                            <td class="py-3 text-slate-400">Horizontal Workspace</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 pl-2 font-mono font-bold text-blue-400">J2</td>
+                            <td class="py-3 text-slate-300">Revolute</td>
+                            <td class="py-3 font-bold text-white">Shoulder</td>
+                            <td class="py-3 text-slate-400">Vertical Elevation</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 pl-2 font-mono font-bold text-blue-400">J3</td>
+                            <td class="py-3 text-slate-300">Revolute</td>
+                            <td class="py-3 font-bold text-white">Elbow</td>
+                            <td class="py-3 text-slate-400">Reach Extension</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 pl-2 font-mono font-bold text-purple-400">J4</td>
+                            <td class="py-3 text-slate-300">Revolute</td>
+                            <td class="py-3 font-bold text-white">Forearm Roll</td>
+                            <td class="py-3 text-slate-400">Orientation Prep</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 pl-2 font-mono font-bold text-purple-400">J5</td>
+                            <td class="py-3 text-slate-300">Revolute</td>
+                            <td class="py-3 font-bold text-white">Wrist Pitch</td>
+                            <td class="py-3 text-slate-400">Approach Angle</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 pl-2 font-mono font-bold text-purple-400">J6</td>
+                            <td class="py-3 text-slate-300">Revolute</td>
+                            <td class="py-3 font-bold text-white">Tool Roll</td>
+                            <td class="py-3 text-slate-400">Final Alignment</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="mt-32 py-12 text-center bg-black/40 border-t border-slate-900">
+        <p class="text-slate-600 text-[10px] font-bold tracking-[0.3em] uppercase mb-2">Manipal University Jaipur</p>
+    </footer>
+
+</body>
+
+</html>

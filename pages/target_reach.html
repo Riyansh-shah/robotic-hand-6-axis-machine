@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Target Reach | PBL 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+
+        body {
+            background-color: #020617;
+            color: #f8fafc;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #60a5fa, #a855f7);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+
+<body class="pb-20">
+
+    <nav class="fixed w-full z-50 glass border-b border-slate-800/50 px-8 py-4 flex justify-between items-center">
+        <a href="dataset.html" class="flex items-center gap-2 group">
+            <i class="fas fa-arrow-left text-slate-400 group-hover:text-white transition"></i>
+            <span
+                class="text-sm font-bold text-slate-400 group-hover:text-white transition uppercase tracking-widest">Back
+                to Dataset</span>
+        </a>
+        <span class="text-xl font-black text-white leading-none uppercase tracking-tighter">Target <span
+                class="text-indigo-500 italic">Reach</span></span>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-6 pt-32 space-y-16">
+
+        <section class="text-center space-y-6">
+            <h1 class="text-4xl md:text-5xl font-extrabold uppercase leading-tight">Target <span
+                    class="gradient-text">Reach</span></h1>
+            <p class="text-slate-400 max-w-2xl mx-auto text-lg leading-relaxed">
+                Defining the theoretical limits and the practical "Goldilocks Zone" for optimal robotic arm performance.
+            </p>
+        </section>
+
+        <!-- 1. Theoretical Maximum -->
+        <section class="glass p-8 rounded-[2.5rem] border-l-4 border-slate-500">
+            <div class="flex items-center gap-4 mb-8">
+                <i class="fas fa-ruler-horizontal text-slate-500 text-2xl"></i>
+                <h2 class="text-2xl font-black uppercase tracking-tight">Theoretical Maximum: 400mm</h2>
+            </div>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <h3 class="font-bold text-white mb-2">The Limit</h3>
+                    <p class="text-sm text-slate-400">A sphere with radius 400mm centered at the first joint.</p>
+                </div>
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <h3 class="font-bold text-rose-400 mb-2">The Singularity Trap</h3>
+                    <p class="text-sm text-slate-400">At exactly 400mm, the arm is a straight line. It cannot extend
+                        further, and orientation adjustment is severely limited.</p>
+                </div>
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <h3 class="font-bold text-amber-400 mb-2">Motor Stress</h3>
+                    <p class="text-sm text-slate-400">Highest leverage point. A 0.5kg load here puts maximum torque on
+                        NEMA 23 base & NEMA 17 shoulder.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Realistic Working Reach -->
+        <section class="glass p-8 rounded-[2.5rem] border-l-4 border-indigo-500">
+            <div class="flex items-center gap-4 mb-8">
+                <i class="fas fa-crosshairs text-indigo-500 text-2xl"></i>
+                <h2 class="text-2xl font-black uppercase tracking-tight">Realistic Working Reach: 200mm – 320mm</h2>
+            </div>
+            <p class="text-slate-400 mb-6 italic">The "Goldilocks Zone" for accuracy, strength, and fluidity.</p>
+
+            <div class="space-y-4">
+                <!-- Inner Dead Zone -->
+                <div
+                    class="flex flex-col md:flex-row gap-4 bg-white/5 p-4 rounded-xl border border-white/10 items-start md:items-center">
+                    <div class="w-full md:w-32 shrink-0 text-center md:text-left">
+                        <span class="block font-mono text-lg font-bold text-slate-500">0 – 100mm</span>
+                        <span class="text-[10px] uppercase font-bold text-slate-600 tracking-wider">Dead Zone</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-white">Self-Collision Risk</h3>
+                        <p class="text-sm text-slate-400">The arm cannot reach here without "biceps" or "forearm"
+                            colliding with the base.</p>
+                    </div>
+                </div>
+
+                <!-- Sweet Spot -->
+                <div
+                    class="flex flex-col md:flex-row gap-4 bg-indigo-500/10 p-4 rounded-xl border border-indigo-500/30 items-start md:items-center">
+                    <div class="w-full md:w-32 shrink-0 text-center md:text-left">
+                        <span class="block font-mono text-lg font-bold text-indigo-400">200 – 300mm</span>
+                        <span class="text-[10px] uppercase font-bold text-indigo-300 tracking-wider">Sweet Spot</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-white">Best Accuracy & Advantage</h3>
+                        <p class="text-sm text-slate-300">Joints are at ~90°, providing optimal mechanical advantage and
+                            minimal bounce/vibration.</p>
+                    </div>
+                </div>
+
+                <!-- Maximum Utility -->
+                <div
+                    class="flex flex-col md:flex-row gap-4 bg-white/5 p-4 rounded-xl border border-white/10 items-start md:items-center">
+                    <div class="w-full md:w-32 shrink-0 text-center md:text-left">
+                        <span class="block font-mono text-lg font-bold text-white">320mm</span>
+                        <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Max Utility</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-white">Reliable Limit</h3>
+                        <p class="text-sm text-slate-400">Furthest point where wrist orientation (roll/pitch) is
+                            reliable without hitting a singularity.</p>
+                    </div>
+                </div>
+
+                <!-- Danger Zone -->
+                <div
+                    class="flex flex-col md:flex-row gap-4 bg-rose-500/5 p-4 rounded-xl border border-rose-500/20 items-start md:items-center">
+                    <div class="w-full md:w-32 shrink-0 text-center md:text-left">
+                        <span class="block font-mono text-lg font-bold text-rose-400">350 – 400mm</span>
+                        <span class="text-[10px] uppercase font-bold text-rose-300 tracking-wider">Danger Zone</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-white">Stall Risk</h3>
+                        <p class="text-sm text-slate-400">Best used only for momentary reaches (e.g., hitting a button).
+                            High risk of motor stalling.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Why Stay Within Realistic Reach? -->
+        <section class="glass p-8 rounded-[2.5rem] border-t-4 border-white">
+            <div class="flex items-center gap-4 mb-8">
+                <i class="fas fa-question-circle text-white text-2xl"></i>
+                <h2 class="text-2xl font-black uppercase tracking-tight">Why Stay Within Realistic Reach?</h2>
+            </div>
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Singularity -->
+                <div class="relative group">
+                    <div
+                        class="absolute -inset-0.5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-2xl opacity-50 group-hover:opacity-100 transition duration-500 blur">
+                    </div>
+                    <div class="relative bg-black p-6 rounded-2xl border border-white/10 h-full">
+                        <h3 class="font-bold text-white mb-3">A. Singularity Avoidance</h3>
+                        <p class="text-sm text-slate-400 leading-relaxed">
+                            At full extension (400mm), Inverse Kinematics math often fails, causing erratic jumps.
+                            Staying within 80% ensures "room to move."
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Precision -->
+                <div class="relative group">
+                    <div
+                        class="absolute -inset-0.5 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl opacity-50 group-hover:opacity-100 transition duration-500 blur">
+                    </div>
+                    <div class="relative bg-black p-6 rounded-2xl border border-white/10 h-full">
+                        <h3 class="font-bold text-white mb-3">B. Precision & "Jitter"</h3>
+                        <p class="text-sm text-slate-400 leading-relaxed">
+                            Microscopic play magnifies at distance. A 0.5mm shoulder gap becomes a 5mm wobble at 400mm.
+                            Working closer significantly reduces error.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Payload -->
+                <div class="relative group">
+                    <div
+                        class="absolute -inset-0.5 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl opacity-50 group-hover:opacity-100 transition duration-500 blur">
+                    </div>
+                    <div class="relative bg-black p-6 rounded-2xl border border-white/10 h-full">
+                        <h3 class="font-bold text-white mb-3">C. Payload Capacity</h3>
+                        <p class="text-sm text-slate-400 leading-relaxed">
+                            Torque required at 400mm is DOUBLE that at 200mm. The "Sweet Spot" allows the NEMA 17 elbow
+                            to lift heavier objects without skipping steps.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="mt-32 py-12 text-center bg-black/40 border-t border-slate-900">
+        <p class="text-slate-600 text-[10px] font-bold tracking-[0.3em] uppercase mb-2">Manipal University Jaipur</p>
+    </footer>
+
+</body>
+
+</html>

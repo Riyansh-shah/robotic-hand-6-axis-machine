@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drivetrain System | PBL 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+
+        body {
+            background-color: #020617;
+            color: #f8fafc;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #f59e0b, #f97316);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+
+<body class="pb-20">
+
+    <nav class="fixed w-full z-50 glass border-b border-slate-800/50 px-8 py-4 flex justify-between items-center">
+        <a href="model_architecture.html" class="flex items-center gap-2 group">
+            <i class="fas fa-arrow-left text-slate-400 group-hover:text-white transition"></i>
+            <span
+                class="text-sm font-bold text-slate-400 group-hover:text-white transition uppercase tracking-widest">Back
+                to Architecture</span>
+        </a>
+        <span class="text-xl font-black text-white leading-none uppercase tracking-tighter">Drivetrain <span
+                class="text-amber-500 italic">System</span></span>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-6 pt-32 space-y-16">
+
+        <section class="text-center space-y-6">
+            <h1 class="text-4xl md:text-5xl font-extrabold uppercase leading-tight">Drivetrain <span
+                    class="gradient-text">System</span></h1>
+            <p class="text-slate-400 max-w-2xl mx-auto text-lg leading-relaxed">
+                The transmission ecosystem: stepper motors, gear reductions, and the critical role of backlash control.
+            </p>
+        </section>
+
+        <!-- 1. Drive Type Recommendations -->
+        <section class="glass p-8 rounded-[2.5rem] border-l-4 border-amber-500">
+            <div class="flex items-center gap-4 mb-8">
+                <i class="fas fa-table text-amber-500 text-2xl"></i>
+                <h2 class="text-2xl font-black uppercase tracking-tight">Axis Drive Recommendations</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-white/10">
+                            <th class="pb-3 pl-2">Component</th>
+                            <th class="pb-3">Joint Role</th>
+                            <th class="pb-3">Drive Type</th>
+                            <th class="pb-3">Rationale</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm divide-y divide-white/5">
+                        <tr>
+                            <td class="py-4 pl-2 font-mono font-bold text-amber-400">Axis 1 & 2</td>
+                            <td class="py-4 text-slate-300">Base / Shoulder</td>
+                            <td class="py-4 font-bold text-white">Belt Drive or Planetary</td>
+                            <td class="py-4 text-slate-400">Handles high torque; keeps the motor's weight centered.</td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 pl-2 font-mono font-bold text-amber-400">Axis 3</td>
+                            <td class="py-4 text-slate-300">Elbow</td>
+                            <td class="py-4 font-bold text-white">Planetary or Cycloidal</td>
+                            <td class="py-4 text-slate-400">Needs high reduction in a small space to fight leverage.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 pl-2 font-mono font-bold text-amber-400">Axis 4, 5, 6</td>
+                            <td class="py-4 text-slate-300">Wrist</td>
+                            <td class="py-4 font-bold text-white">Direct Drive (Servos)</td>
+                            <td class="py-4 text-slate-400">Minimum weight; speed is more important than raw torque.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 2. Drive Types In Detail -->
+        <section class="space-y-8">
+            <h2 class="text-3xl font-black uppercase tracking-tight text-center">Drive Types <span
+                    class="text-amber-500">In Detail</span></h2>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- A. Belt Drive -->
+                <div class="glass p-8 rounded-[2rem] border-t-4 border-sky-500">
+                    <i class="fas fa-link text-sky-500 text-2xl mb-4 block"></i>
+                    <h3 class="text-xl font-bold mb-1">Belt Drive</h3>
+                    <p class="text-sky-400 text-xs font-bold uppercase tracking-widest mb-4">The "Flexible" Option</p>
+                    <p class="text-sm text-slate-400 mb-4">Uses timing belts (GT2 or HTD) and pulleys.</p>
+                    <div class="space-y-3 mb-4">
+                        <div class="bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/10">
+                            <span class="text-[10px] text-emerald-400 font-bold uppercase block mb-1">Pros</span>
+                            <p class="text-xs text-slate-300">Easy to 3D print; allows offsetting the motor to reduce
+                                arm inertia.</p>
+                        </div>
+                        <div class="bg-rose-500/10 p-3 rounded-xl border border-rose-500/10">
+                            <span class="text-[10px] text-rose-400 font-bold uppercase block mb-1">Cons</span>
+                            <p class="text-xs text-slate-300">Belts can stretch → backlash (slop) in movements.</p>
+                        </div>
+                    </div>
+                    <div class="bg-sky-500/10 p-2 rounded-lg text-center border border-sky-500/20">
+                        <span class="text-[10px] text-sky-400 font-bold uppercase"><i
+                                class="fas fa-lightbulb mr-1"></i>Model belt path as Red Obstacle Geometry</span>
+                    </div>
+                </div>
+
+                <!-- B. Planetary Gearbox -->
+                <div class="glass p-8 rounded-[2rem] border-t-4 border-amber-500">
+                    <i class="fas fa-sun text-amber-500 text-2xl mb-4 block"></i>
+                    <h3 class="text-xl font-bold mb-1">Planetary Gearbox</h3>
+                    <p class="text-amber-400 text-xs font-bold uppercase tracking-widest mb-4">The "Power" Option</p>
+                    <p class="text-sm text-slate-400 mb-4">Central "sun" gear spins "planet" gears inside a "ring" gear.
+                    </p>
+                    <div class="space-y-3 mb-4">
+                        <div class="bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/10">
+                            <span class="text-[10px] text-emerald-400 font-bold uppercase block mb-1">Pros</span>
+                            <p class="text-xs text-slate-300">High torque density; ~98% efficient; compact form factor.
+                            </p>
+                        </div>
+                        <div class="bg-rose-500/10 p-3 rounded-xl border border-rose-500/10">
+                            <span class="text-[10px] text-rose-400 font-bold uppercase block mb-1">Cons</span>
+                            <p class="text-xs text-slate-300">Hard to 3D print precisely; requires grease; backlash
+                                risk.</p>
+                        </div>
+                    </div>
+                    <div class="bg-amber-500/10 p-2 rounded-lg text-center border border-amber-500/20">
+                        <span class="text-[10px] text-amber-400 font-bold uppercase"><i class="fas fa-cog mr-1"></i>Use
+                            Fusion's "Spur Gear" script to generate</span>
+                    </div>
+                </div>
+
+                <!-- C. Cycloidal Drive -->
+                <div class="glass p-8 rounded-[2rem] border-t-4 border-purple-500">
+                    <i class="fas fa-compact-disc text-purple-500 text-2xl mb-4 block"></i>
+                    <h3 class="text-xl font-bold mb-1">Cycloidal Drive</h3>
+                    <p class="text-purple-400 text-xs font-bold uppercase tracking-widest mb-4">The "Pro" Option</p>
+                    <p class="text-sm text-slate-400 mb-4">Eccentric bearing wobbles a disc inside a ring of pins.</p>
+                    <div class="space-y-3 mb-4">
+                        <div class="bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/10">
+                            <span class="text-[10px] text-emerald-400 font-bold uppercase block mb-1">Pros</span>
+                            <p class="text-xs text-slate-300">Zero backlash; up to 100:1 ratio; incredible shock
+                                resistance.</p>
+                        </div>
+                        <div class="bg-rose-500/10 p-3 rounded-xl border border-rose-500/10">
+                            <span class="text-[10px] text-rose-400 font-bold uppercase block mb-1">Cons</span>
+                            <p class="text-xs text-slate-300">Complex design; requires very high 3D printing tolerances.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="bg-purple-500/10 p-2 rounded-lg text-center border border-purple-500/20">
+                        <span class="text-[10px] text-purple-400 font-bold uppercase"><i
+                                class="fas fa-magic mr-1"></i>Pairs beautifully with generative aesthetic</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Backlash -->
+        <section class="glass p-8 rounded-[2.5rem] border-l-4 border-rose-500">
+            <div class="flex items-center gap-4 mb-8">
+                <i class="fas fa-exclamation-triangle text-rose-500 text-2xl"></i>
+                <h2 class="text-2xl font-black uppercase tracking-tight">Backlash: The "Silent Killer"</h2>
+            </div>
+            <p class="text-slate-400 mb-6">In a 6-axis arm, backlash is the tiny "wiggle" a joint has when the motor
+                isn't moving.</p>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-rose-500/5 p-6 rounded-2xl border border-rose-500/20">
+                    <span class="text-rose-400 font-bold text-xs uppercase tracking-widest block mb-3">The
+                        Problem</span>
+                    <p class="text-sm text-slate-300 mb-3">A tiny gap in your drivetrain gears at the shoulder amplifies
+                        dramatically at the tip:</p>
+                    <div class="bg-black/40 p-4 rounded-xl text-center space-y-1">
+                        <span class="font-mono text-sm text-slate-500">Gap at Shoulder →</span>
+                        <span class="font-mono text-lg font-black text-rose-400 block">0.1mm → 2.0–5.0mm error</span>
+                        <span class="font-mono text-sm text-slate-500">at the tip of a 400mm arm</span>
+                    </div>
+                </div>
+                <div class="bg-emerald-500/5 p-6 rounded-2xl border border-emerald-500/20">
+                    <span class="text-emerald-400 font-bold text-xs uppercase tracking-widest block mb-3">The
+                        Solution</span>
+                    <p class="text-sm text-slate-300 mb-3">If using 3D printed gears, use specialized gear patterns to
+                        minimize play:</p>
+                    <div class="bg-black/40 p-4 rounded-xl text-center">
+                        <i class="fas fa-cog text-emerald-400 text-2xl mb-2 block"></i>
+                        <span class="font-bold text-white block">Herringbone or Helical</span>
+                        <span class="text-[10px] text-slate-500 uppercase">Gear Pattern</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Generative Design Integration -->
+        <section class="glass p-8 rounded-[2.5rem] border-l-4 border-blue-500">
+            <div class="flex items-center gap-4 mb-8">
+                <i class="fas fa-project-diagram text-blue-500 text-2xl"></i>
+                <h2 class="text-2xl font-black uppercase tracking-tight">Generative Design Integration</h2>
+            </div>
+            <p class="text-slate-400 mb-8 italic">How to properly model your drivetrain in Fusion 360's Generative
+                Design workspace.</p>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-blue-500/5 p-6 rounded-2xl border border-blue-500/20">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i class="fas fa-arrows-alt-v text-blue-400"></i>
+                        <h3 class="text-lg font-bold text-white">Preserve Shafts</h3>
+                    </div>
+                    <p class="text-sm text-slate-400">Model the output shaft of your gearbox as a <strong
+                            class="text-white">Preserve Geometry</strong> so the AI keeps this critical interface.</p>
+                </div>
+                <div class="bg-blue-500/5 p-6 rounded-2xl border border-blue-500/20">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i class="fas fa-ban text-blue-400"></i>
+                        <h3 class="text-lg font-bold text-white">Obstacle Cylinders</h3>
+                    </div>
+                    <p class="text-sm text-slate-400">Create <strong class="text-white">"Keep-Out" cylinders</strong>
+                        around gears or pulleys so the AI doesn't build bone into spinning teeth.</p>
+                </div>
+                <div class="bg-blue-500/5 p-6 rounded-2xl border border-blue-500/20">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i class="fas fa-ring text-blue-400"></i>
+                        <h3 class="text-lg font-bold text-white">Bearing Seats</h3>
+                    </div>
+                    <p class="text-sm text-slate-400">Always preserve the ring where <strong class="text-white">ball
+                            bearings</strong> sit. A generative structure is useless without press-fit bearings.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="mt-32 py-12 text-center bg-black/40 border-t border-slate-900">
+        <p class="text-slate-600 text-[10px] font-bold tracking-[0.3em] uppercase mb-2">Manipal University Jaipur</p>
+    </footer>
+
+</body>
+
+</html>

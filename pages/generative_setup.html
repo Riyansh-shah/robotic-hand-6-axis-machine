@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generative Setup | PBL 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+
+        body {
+            background-color: #020617;
+            color: #f8fafc;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #60a5fa, #a855f7);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+
+<body class="pb-20">
+
+    <nav class="fixed w-full z-50 glass border-b border-slate-800/50 px-8 py-4 flex justify-between items-center">
+        <a href="model_architecture.html" class="flex items-center gap-2 group">
+            <i class="fas fa-arrow-left text-slate-400 group-hover:text-white transition"></i>
+            <span
+                class="text-sm font-bold text-slate-400 group-hover:text-white transition uppercase tracking-widest">Back
+                to Architecture</span>
+        </a>
+        <span class="text-xl font-black text-white leading-none uppercase tracking-tighter">Generative <span
+                class="text-purple-500 italic">Setup</span></span>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-6 pt-32 space-y-16">
+
+        <section class="text-center space-y-6">
+            <h1 class="text-4xl md:text-5xl font-extrabold uppercase leading-tight">Generative <span
+                    class="gradient-text">Setup</span></h1>
+            <p class="text-slate-400 max-w-2xl mx-auto text-lg leading-relaxed">
+                The optimization logic that drives AI-powered material distribution for maximum stiffness at minimum
+                mass.
+            </p>
+        </section>
+        <!-- 0. Base Setup -->
+        <section class="glass p-8 rounded-[2.5rem] border-l-4 border-blue-500">
+            <div class="flex items-center gap-4 mb-8">
+                <i class="fas fa-drafting-compass text-blue-500 text-2xl"></i>
+                <h2 class="text-2xl font-black uppercase tracking-tight">Base Setup</h2>
+            </div>
+            <p class="text-slate-400 mb-8 italic">Foundational configuration steps before launching a Generative Design
+                study.</p>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Component Structure -->
+                <div class="bg-blue-500/5 p-6 rounded-2xl border border-blue-500/20">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i class="fas fa-cubes text-blue-400"></i>
+                        <h3 class="text-lg font-bold text-white">Component Structure</h3>
+                    </div>
+                    <p class="text-sm text-slate-400">Create a separate <strong class="text-white">"Component"</strong>
+                        for each axis. This allows you to define different Preserve Geometries for each segment.</p>
+                </div>
+
+                <!-- Axis Alignment -->
+                <div class="bg-blue-500/5 p-6 rounded-2xl border border-blue-500/20">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i class="fas fa-crosshairs text-blue-400"></i>
+                        <h3 class="text-lg font-bold text-white">Axis Alignment</h3>
+                    </div>
+                    <p class="text-sm text-slate-400 mb-3">Follow a standard articulated robot layout:</p>
+                    <ul class="space-y-2 text-sm text-slate-300">
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-grip-lines text-blue-400 mt-1 text-xs"></i>
+                            <span>Axis 2 (Shoulder) & Axis 3 (Elbow) must be <strong class="text-white">perfectly
+                                    parallel</strong>.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fas fa-dot-circle text-blue-400 mt-1 text-xs"></i>
+                            <span>Axes 4, 5, & 6 should intersect at a <strong class="text-white">single "Wrist
+                                    Center"</strong> point to simplify IK math.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Starting Shape -->
+                <div class="bg-blue-500/5 p-6 rounded-2xl border border-blue-500/20">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i class="fas fa-cube text-blue-400"></i>
+                        <h3 class="text-lg font-bold text-white">The "Starting Shape"</h3>
+                    </div>
+                    <p class="text-sm text-slate-400">While optional, creating a simple <strong class="text-white">box
+                            connecting your motor mounts</strong> helps Fusion understand the general volume you want
+                        the arm to occupy.</p>
+                    <div class="mt-3 bg-blue-500/10 p-2 rounded-lg text-center border border-blue-500/20">
+                        <span class="text-[10px] text-blue-400 font-bold uppercase"><i
+                                class="fas fa-lightbulb mr-1"></i>Recommended for faster convergence</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Load Case Strategy -->
+        <section class="glass p-8 rounded-[2.5rem] border-l-4 border-rose-500">
+            <div class="flex items-center gap-4 mb-8">
+                <i class="fas fa-weight-hanging text-rose-500 text-2xl"></i>
+                <h2 class="text-2xl font-black uppercase tracking-tight">Load Case Strategy</h2>
+            </div>
+            <p class="text-slate-400 mb-8 italic">In the Loads & Constraints section, create Load Case Attributes to
+                simulate real-world forces on the arm.</p>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Gravity -->
+                <div class="bg-rose-500/5 p-6 rounded-2xl border border-rose-500/20">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i class="fas fa-arrow-down text-rose-400"></i>
+                        <h3 class="text-lg font-bold text-white">Gravity</h3>
+                    </div>
+                    <p class="text-sm text-slate-400 mb-3">Under "Loads," click Gravity. Ensure the vector is pointing
+                        in the correct direction.</p>
+                    <div class="bg-black/30 p-3 rounded-lg text-center">
+                        <span class="font-mono text-xl font-black text-rose-400">−Z</span>
+                        <span class="block text-[9px] text-slate-500 uppercase mt-1">Downward Vector</span>
+                    </div>
+                </div>
+
+                <!-- Remote Force -->
+                <div class="bg-rose-500/5 p-6 rounded-2xl border border-rose-500/20">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i class="fas fa-hand-rock text-rose-400"></i>
+                        <h3 class="text-lg font-bold text-white">Remote Force</h3>
+                    </div>
+                    <p class="text-sm text-slate-400 mb-3">Place the payload force at a <strong
+                            class="text-white">"Remote Point"</strong> where the gripper would be, simulating the
+                        leverage on the wrist.</p>
+                    <div class="bg-black/30 p-2 rounded-lg text-center">
+                        <span class="text-[10px] text-rose-400 font-bold uppercase"><i
+                                class="fas fa-crosshairs mr-1"></i>Gripper Tip Location</span>
+                    </div>
+                </div>
+
+                <!-- Clutch Case -->
+                <div class="bg-rose-500/5 p-6 rounded-2xl border border-rose-500/20">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i class="fas fa-exchange-alt text-rose-400"></i>
+                        <h3 class="text-lg font-bold text-white">The "Clutch" Case</h3>
+                    </div>
+                    <p class="text-sm text-slate-400 mb-3">Create a second load case with torque in the <strong
+                            class="text-white">opposite direction</strong>.</p>
+                    <div class="bg-black/30 p-2 rounded-lg text-center">
+                        <span class="text-[10px] text-rose-400 font-bold uppercase"><i
+                                class="fas fa-sync-alt mr-1"></i>CW + CCW Reinforcement</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 1. Primary Optimization Target -->
+        <section class="glass p-8 rounded-[2.5rem] border-l-4 border-purple-500">
+            <div class="flex items-center gap-4 mb-8">
+                <i class="fas fa-bullseye text-purple-500 text-2xl"></i>
+                <h2 class="text-2xl font-black uppercase tracking-tight">Primary Target: Specific Stiffness</h2>
+            </div>
+            <p class="text-slate-400 mb-8 italic">The AI optimizes for the Stiffness-to-Mass Ratio (Specific Stiffness).
+            </p>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <span class="text-purple-400 font-bold text-xs uppercase tracking-widest block mb-2">Math</span>
+                    <h3 class="text-lg font-bold text-white mb-2">Objective Function</h3>
+                    <p class="text-sm text-slate-400"><strong class="text-white">Minimize Compliance</strong> — the
+                        mathematical inverse of maximizing stiffness.</p>
+                </div>
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <span class="text-purple-400 font-bold text-xs uppercase tracking-widest block mb-2">Process</span>
+                    <h3 class="text-lg font-bold text-white mb-2">The Goal</h3>
+                    <p class="text-sm text-slate-400">Remove material from <strong class="text-slate-200">low-stress
+                            areas</strong> (beam centers) and reinforce <strong class="text-slate-200">high-stress
+                            areas</strong> (motor mount corners).</p>
+                </div>
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <span
+                        class="text-purple-400 font-bold text-xs uppercase tracking-widest block mb-2">Constraint</span>
+                    <h3 class="text-lg font-bold text-white mb-2">Mass Target</h3>
+                    <p class="text-sm text-slate-400">Set to <strong class="font-mono text-white">30%–40%</strong> of
+                        the original bounding box — forcing the AI to find the most efficient "skeleton."</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Segment-Specific Safety Factors -->
+        <section class="glass p-8 rounded-[2.5rem] border-l-4 border-amber-500">
+            <div class="flex items-center gap-4 mb-8">
+                <i class="fas fa-shield-alt text-amber-500 text-2xl"></i>
+                <h2 class="text-2xl font-black uppercase tracking-tight">Segment-Specific Safety Factors</h2>
+            </div>
+            <p class="text-slate-400 mb-8 italic">Different arm segments require different safety margins based on their
+                load profile and failure risk.</p>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-white/10">
+                            <th class="pb-3 pl-2">Segment</th>
+                            <th class="pb-3 text-right">Recommended FOS</th>
+                            <th class="pb-3 pl-8">Rationale</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm divide-y divide-white/5">
+                        <tr>
+                            <td class="py-4 pl-2 font-bold text-white">Base & Shoulder</td>
+                            <td class="py-4 text-right font-mono text-amber-400 font-bold">2.5 – 3.0</td>
+                            <td class="py-4 pl-8 text-slate-300">High fatigue risk from NEMA 23 torque & constant
+                                vibration.</td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 pl-2 font-bold text-white">Forearm (Axis 4)</td>
+                            <td class="py-4 text-right font-mono text-amber-400 font-bold">2.0</td>
+                            <td class="py-4 pl-8 text-slate-300">Balance of strength and speed; must stay light.</td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 pl-2 font-bold text-white">Wrist (Axis 5 & 6)</td>
+                            <td class="py-4 text-right font-mono text-amber-400 font-bold">1.5 – 2.0</td>
+                            <td class="py-4 pl-8 text-slate-300">Minimal catastrophic failure risk; every gram saved
+                                helps the shoulder.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+
+        <!-- 4. Manufacturing Constraints -->
+        <section class="glass p-8 rounded-[2.5rem] border-l-4 border-emerald-500">
+            <div class="flex items-center gap-4 mb-8">
+                <i class="fas fa-industry text-emerald-500 text-2xl"></i>
+                <h2 class="text-2xl font-black uppercase tracking-tight">Manufacturing Constraints</h2>
+            </div>
+            <p class="text-slate-400 mb-8 italic">Tell the AI how you plan to build the arm so it doesn't generate
+                "illegal" shapes. Fusion shines here.</p>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Additive -->
+                <div class="bg-emerald-500/5 p-6 rounded-2xl border border-emerald-500/20">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i class="fas fa-print text-emerald-400"></i>
+                        <h3 class="text-lg font-bold text-white">Additive (3D Printing)</h3>
+                    </div>
+                    <p class="text-sm text-slate-400 mb-4">Ensures organic "tendons" can be printed without failing.</p>
+                    <div class="bg-black/30 p-3 rounded-lg flex items-center justify-between">
+                        <span class="text-[10px] text-slate-500 font-bold uppercase">Min. Wall Thickness</span>
+                        <span class="font-mono text-lg font-black text-emerald-400">3.5 mm</span>
+                    </div>
+                </div>
+
+                <!-- Milling -->
+                <div class="bg-amber-500/5 p-6 rounded-2xl border border-amber-500/20">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i class="fas fa-tools text-amber-400"></i>
+                        <h3 class="text-lg font-bold text-white">Milling (CNC)</h3>
+                    </div>
+                    <p class="text-sm text-slate-400 mb-4">For CNC-machined parts like the <strong
+                            class="text-white">NEMA 23 base</strong>, add a 3-axis milling constraint.</p>
+                    <div class="bg-black/30 p-3 rounded-lg text-center">
+                        <span class="font-mono text-lg font-black text-amber-400">3-Axis</span>
+                        <span class="block text-[9px] text-slate-500 uppercase mt-1">Forces drill-reachable
+                            geometry</span>
+                    </div>
+                </div>
+
+                <!-- Unrestricted -->
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i class="fas fa-bezier-curve text-slate-400"></i>
+                        <h3 class="text-lg font-bold text-white">Unrestricted</h3>
+                    </div>
+                    <p class="text-sm text-slate-400 mb-4">Always include one unrestricted method. Yields the most
+                        "alien" and optimized shapes — use as a <strong class="text-slate-200">visual guide</strong>.
+                    </p>
+                    <div class="bg-blue-500/10 p-2 rounded-lg text-center border border-blue-500/20">
+                        <span class="text-[10px] text-blue-400 font-bold uppercase"><i
+                                class="fas fa-lightbulb mr-1"></i>Best for design inspiration</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Modal Frequency Targets -->
+        <section class="glass p-8 rounded-[2.5rem] border-l-4 border-cyan-500">
+            <div class="flex items-center gap-4 mb-8">
+                <i class="fas fa-wave-square text-cyan-500 text-2xl"></i>
+                <h2 class="text-2xl font-black uppercase tracking-tight">Modal Frequency Targets</h2>
+            </div>
+            <p class="text-slate-400 mb-8 italic">A "hidden" optimization critical for 6-axis arms — long, thin arms
+                tend to oscillate or shake when they stop moving.</p>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-cyan-500/5 p-6 rounded-2xl border border-cyan-500/20">
+                    <span class="text-cyan-400 font-bold text-xs uppercase tracking-widest block mb-2">Constraint</span>
+                    <h3 class="text-lg font-bold text-white mb-2">First Natural Frequency</h3>
+                    <p class="font-mono text-2xl font-black text-white mb-2">&gt; 30 Hz</p>
+                    <p class="text-sm text-slate-400">The fundamental frequency must exceed this threshold to prevent
+                        low-frequency vibration.</p>
+                </div>
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <span class="text-cyan-400 font-bold text-xs uppercase tracking-widest block mb-2">AI
+                        Response</span>
+                    <h3 class="text-lg font-bold text-white mb-2">Structural Reinforcement</h3>
+                    <p class="text-sm text-slate-400">If the arm is too "bendy," the AI adds <strong
+                            class="text-slate-200">ribs or thickening</strong> to the structure — making the arm
+                        "snappier" and more stable, like stiffening a diving board.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="mt-32 py-12 text-center bg-black/40 border-t border-slate-900">
+        <p class="text-slate-600 text-[10px] font-bold tracking-[0.3em] uppercase mb-2">Manipal University Jaipur</p>
+    </footer>
+
+</body>
+
+</html>

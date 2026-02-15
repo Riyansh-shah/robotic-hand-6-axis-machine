@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obstacle Geometry | PBL 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+
+        body {
+            background-color: #020617;
+            color: #f8fafc;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #60a5fa, #a855f7);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+
+<body class="pb-20">
+
+    <nav class="fixed w-full z-50 glass border-b border-slate-800/50 px-8 py-4 flex justify-between items-center">
+        <a href="dataset.html" class="flex items-center gap-2 group">
+            <i class="fas fa-arrow-left text-slate-400 group-hover:text-white transition"></i>
+            <span
+                class="text-sm font-bold text-slate-400 group-hover:text-white transition uppercase tracking-widest">Back
+                to Dataset</span>
+        </a>
+        <span class="text-xl font-black text-white leading-none uppercase tracking-tighter">Obstacle <span
+                class="text-rose-500 italic">Geometry</span></span>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-6 pt-32 space-y-16">
+
+        <section class="text-center space-y-6">
+            <h1 class="text-4xl md:text-5xl font-extrabold uppercase leading-tight">Obstacle <span
+                    class="gradient-text">Geometry</span></h1>
+            <p class="text-slate-400 max-w-2xl mx-auto text-lg leading-relaxed">
+                Defining the "No-Go Zones" where the AI cannot place material, ensuring clearance for moving parts and
+                assembly.
+            </p>
+        </section>
+
+        <!-- 1. Primary Actuator Envelopes -->
+        <section class="glass p-8 rounded-[2.5rem] border-l-4 border-rose-500">
+            <div class="flex items-center gap-4 mb-8">
+                <i class="fas fa-cube text-rose-500 text-2xl"></i>
+                <h2 class="text-2xl font-black uppercase tracking-tight">Primary Actuator Envelopes (Hard Obstacles)
+                </h2>
+            </div>
+            <p class="text-slate-400 mb-6 italic">Physical volumes of the motors with a 3mm "Air Gap" for cooling.</p>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <span class="text-rose-400 font-bold text-xs uppercase tracking-widest block mb-2">Axis 1 & 2 (NEMA
+                        23)</span>
+                    <p class="text-2xl font-mono font-black text-white">57x57x80<span
+                            class="text-sm text-slate-500 ml-1">mm</span></p>
+                    <p class="text-xs text-slate-500 mt-2">Buffer for long-body high-torque versions.</p>
+                </div>
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <span class="text-rose-400 font-bold text-xs uppercase tracking-widest block mb-2">Axis 3 (NEMA
+                        17)</span>
+                    <p class="text-2xl font-mono font-black text-white">42x42x48<span
+                            class="text-sm text-slate-500 ml-1">mm</span></p>
+                    <p class="text-xs text-slate-500 mt-2">Standard stepper dimensions.</p>
+                </div>
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <span class="text-rose-400 font-bold text-xs uppercase tracking-widest block mb-2">Axis 4 (NEMA 14 /
+                        Servo)</span>
+                    <div class="space-y-2">
+                        <p class="text-sm text-slate-300"><strong class="text-white">NEMA 14:</strong> 35x35x36 mm</p>
+                        <p class="text-sm text-slate-300"><strong class="text-white">Large Servo:</strong> 40x20x40 mm
+                        </p>
+                    </div>
+                </div>
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10 md:col-span-3">
+                    <span class="text-rose-400 font-bold text-xs uppercase tracking-widest block mb-2">Axis 5 & 6
+                        (Servos)</span>
+                    <p class="text-xl font-mono font-black text-white inline-block mr-4">40x20x36<span
+                            class="text-sm text-slate-500 ml-1">mm</span></p>
+                    <span class="text-xs text-slate-500 italic">Standard servo box dimensions.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Transmission & Kinetic Paths -->
+        <section class="glass p-8 rounded-[2.5rem] border-l-4 border-amber-500">
+            <div class="flex items-center gap-4 mb-8">
+                <i class="fas fa-cogs text-amber-500 text-2xl"></i>
+                <h2 class="text-2xl font-black uppercase tracking-tight">Transmission & Kinetic Paths</h2>
+            </div>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <h4 class="font-bold text-amber-400 mb-2">Pulley Cylinders</h4>
+                    <p class="text-sm text-slate-300">Cylinders at motor shafts and pivots, modeled <strong
+                            class="text-white">10% larger</strong> than actual pulley diameter.</p>
+                </div>
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <h4 class="font-bold text-amber-400 mb-2">Belt "Tunnels"</h4>
+                    <p class="text-sm text-slate-300">Rectangular extrusions representing the GT2 belt path to prevent
+                        material growth blocking installation.</p>
+                </div>
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <h4 class="font-bold text-amber-400 mb-2">Shaft Extensions</h4>
+                    <p class="text-sm text-slate-300">Cylinder from motor face to bearing to keep rotating shafts clear
+                        of generated material.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Wire & Cable Management -->
+        <section class="glass p-8 rounded-[2.5rem] border-l-4 border-blue-500 relative overflow-hidden">
+            <div class="absolute -right-10 -top-10 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none">
+            </div>
+            <div class="flex items-center gap-4 mb-8 relative z-10">
+                <i class="fas fa-plug text-blue-500 text-2xl"></i>
+                <h2 class="text-2xl font-black uppercase tracking-tight">Wire & Cable Management (The "Veins")</h2>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8 relative z-10">
+                <div class="flex gap-4">
+                    <div
+                        class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 font-bold shrink-0">
+                        1</div>
+                    <div>
+                        <h4 class="font-bold text-white mb-1">The Hollow Core</h4>
+                        <p class="text-sm text-slate-400">15-20mm diameter "snake" tube running from base through center
+                            of every joint to the wrist.</p>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <div
+                        class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 font-bold shrink-0">
+                        2</div>
+                    <div>
+                        <h4 class="font-bold text-white mb-1">Service Loops</h4>
+                        <p class="text-sm text-slate-400">Spheres of obstacle space at joints (shoulder/elbow) to allow
+                            wires to loop and flex without pinching.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- 4. Range of Motion -->
+            <section class="glass p-8 rounded-[2.5rem] border-t-4 border-purple-500">
+                <div class="flex items-center gap-4 mb-6">
+                    <i class="fas fa-sync-alt text-purple-500 text-xl"></i>
+                    <h2 class="text-xl font-black uppercase tracking-tight">Range of Motion</h2>
+                </div>
+                <ul class="space-y-4">
+                    <li class="bg-white/5 p-4 rounded-xl border border-white/10">
+                        <span class="block text-xs font-bold text-purple-400 uppercase tracking-wider mb-1">Joint Arc
+                            Sweeps (Axis 2 & 3)</span>
+                        <p class="text-sm text-slate-300">"Pie slice" geometry representing full 180°/270° travel.</p>
+                    </li>
+                    <li class="bg-white/5 p-4 rounded-xl border border-white/10">
+                        <span class="block text-xs font-bold text-purple-400 uppercase tracking-wider mb-1">Wrist Flip
+                            (Axis 5/6)</span>
+                        <p class="text-sm text-slate-300">Full sphere obstacle to prevent forearm interference.</p>
+                    </li>
+                </ul>
+            </section>
+
+            <!-- 5. Fastener & Tool Access -->
+            <section class="glass p-8 rounded-[2.5rem] border-t-4 border-emerald-500">
+                <div class="flex items-center gap-4 mb-6">
+                    <i class="fas fa-tools text-emerald-500 text-xl"></i>
+                    <h2 class="text-xl font-black uppercase tracking-tight">Fastener & Tool Access</h2>
+                </div>
+                <ul class="space-y-4">
+                    <li class="bg-white/5 p-4 rounded-xl border border-white/10">
+                        <span class="block text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">Bolt
+                            Clearance</span>
+                        <p class="text-sm text-slate-300">100mm long cylinders above M3/M4/M5 holes for screwdriver
+                            access.</p>
+                    </li>
+                    <li class="bg-white/5 p-4 rounded-xl border border-white/10">
+                        <span class="block text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">Wrench
+                            Clearance</span>
+                        <p class="text-sm text-slate-300">Hexagonal/circular obstacle around nut seats for socket
+                            wrenches.</p>
+                    </li>
+                </ul>
+            </section>
+        </div>
+
+    </main>
+
+    <footer class="mt-32 py-12 text-center bg-black/40 border-t border-slate-900">
+        <p class="text-slate-600 text-[10px] font-bold tracking-[0.3em] uppercase mb-2">Manipal University Jaipur</p>
+    </footer>
+
+</body>
+
+</html>
