@@ -1,0 +1,22 @@
+Component,Specification,Quantity,Unit_Price_INR,Total_INR,Notes
+NEMA 17 Stepper Motor,42mm; 1.8°/step; 0.4 Nm,6,350,2100,Standard bipolar stepper; joints 1–6 actuation
+Planetary Gearbox,1:5 ratio (joints 1–3),3,800,2400,Reduces speed; increases torque for shoulder/elbow
+Planetary Gearbox,1:3 ratio (joints 4–6),3,800,2400,Wrist joint reduction; compact form factor
+TMC2209 Stepper Driver,2A RMS; SPI control,6,250,1500,Silent operation; current limiting; one per motor
+Arduino Mega 2560,ATmega2560; 16 MHz,1,650,650,Main controller; alternative: STM32F407 (~₹1200)
+RAMPS 1.4 Shield,Stepper driver breakout,1,400,400,Simplifies wiring; alternative: custom PCB
+E3D V6 Hotend,All-metal; 1.75mm filament,1,1500,1500,Direct mount on end-effector; 24V heater
+Bowden Extruder,BMG clone; 1.75mm; geared,1,600,600,Remote feeder; reduces arm inertia
+PTFE Bowden Tube,2m length; 1.75mm inner diameter,1,150,150,Filament conduit from extruder to hotend
+24V 15A Power Supply,Regulated PSU; ATX form factor,1,900,900,Supplies motors; heater; control electronics
+6001ZZ Deep Groove Bearing,12mm OD; 6mm bore; sealed,12,60,720,Joint pivot points; two per primary joint
+5mm–8mm Shaft Coupling,Flexible jaw; aluminum,6,120,720,Motor-to-gearbox connections; vibration isolation
+2020 Aluminum Extrusion,300mm lengths; anodized,8,180,1440,Structural frame; joints and mounting rails
+GT2 Timing Belt + Pulleys,6mm wide; 20-tooth pulleys,1,300,300,Optional belt drive for non-stepper axes
+3D-Printed Joint Housings,PLA/PETG; designed parts (~500g),1,500,500,Material cost; CAD designs provided in project repo
+Limit Switches,Mechanical; NO/NC contact,6,30,180,Home sensing; one per joint
+Wiring & Connectors Kit,Dupont connectors; terminal blocks; crimps,1,400,400,PSU cables; motor leads; sensor wiring
+Heated Bed (Optional),200×200mm; 24V 300W,1,800,800,Improves print adhesion; optional add-on
+PLA/PETG Filament,1kg spool; 1.75mm diameter,1,500,500,Initial test prints; multiple colors available
+Miscellaneous Hardware,M3/M5 screws; nuts; washers; standoffs; heat-shrink,1,500,500,Assembly consumables
+TOTAL,,,17760,17760,Core build (excluding optional heated bed: ₹16960)

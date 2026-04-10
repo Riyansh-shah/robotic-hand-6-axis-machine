@@ -1,0 +1,244 @@
+================================================================================
+PYTEST UNIT TEST SUITE FOR PBL 6-AXIS ROBOTIC ARM PROJECT
+================================================================================
+
+TOTAL TEST FILES: 5
+  - __init__.py (empty, marks tests/ as a package)
+  - conftest.py (shared fixtures)
+  - test_kinematics.py (forward/inverse kinematics)
+  - test_gcode_parser.py (G-code parsing)
+  - test_trajectory.py (trajectory planning)
+
+TOTAL LINES OF TEST CODE: 1062
+
+================================================================================
+CONFTEST.PY - SHARED FIXTURES
+================================================================================
+
+Fixtures provided to all tests:
+
+1. dh_table()
+   - Provides: DH6R dataclass from get_dh_table()
+   - Used by: kinematics tests
+
+2. sample_joint_angles()
+   - Provides: Dictionary of known joint angle configurations
+   - Contains: 'home', 'config_1', 'config_2', 'config_3'
+   - Used by: parametrized kinematics tests
+
+3. sample_gcode_file(tmp_path)
+   - Provides: Path to temporary G-code file
+   - Contains: G28 (home), G1 (linear moves), G0 (rapid move), M104 (temperature)
+   - Used by: G-code parser file tests
+
+================================================================================
+TEST_KINEMATICS.PY - 17 TESTS IN 4 TEST CLASSES
+================================================================================
+
+TestForwardKinematics (5 tests):
+  ✓ test_fk_home_position
+    - Verifies FK at zero angles gives expected end-effector position
+  ✓ test_fk_returns_4x4
+    - Checks output is always 4x4 transformation matrix
+  ✓ test_fk_rotation_orthogonal
+    - Validates rotation matrix orthogonality (R^T R = I, det=1)
+  ✓ test_fk_accepts_list_and_array
+    - Tests both list and numpy array input handling
+  ✓ test_fk_invalid_input_size_raises
+    - Ensures AssertionError raised for non-6-element inputs
+
+TestAllTransforms (5 tests):
+  ✓ test_all_transforms_length
+    - Verifies 7 transforms returned (base + 6 joints)
+  ✓ test_all_transforms_base_is_identity
+    - Checks first transform is identity matrix
+  ✓ test_all_transforms_last_matches_fk
+    - Confirms last transform matches forward_kinematics output
+  ✓ test_all_transforms_are_4x4
+    - Validates each transform is 4x4
+  ✓ test_all_transforms_proper_rotations
+    - Checks all rotation matrices are orthogonal and proper
+
+TestInverseKinematics (5 tests):
+  ✓ test_ik_numerical_convergence
+    - FK -> IK roundtrip test with 1e-4 m position tolerance
+  ✓ test_ik_with_different_initial_guesses
+    - Tests convergence from multiple initial guesses
+  ✓ test_ik_unreachable_target_raises
+    - Verifies IKError raised for targets outside workspace
+  ✓ test_ik_default_initial_guess
+    - Tests IK without explicit initial guess (uses zeros)
+  ✓ test_ik_accepts_list_and_array
+    - Checks input format flexibility
+
+TestFKIKRoundtrip (1 parametrized test with 4 configurations):
+  ✓ test_fk_ik_roundtrip_multiple_configs[home]
+  ✓ test_fk_ik_roundtrip_multiple_configs[config_1]
+  ✓ test_fk_ik_roundtrip_multiple_configs[config_2]
+  ✓ test_fk_ik_roundtrip_multiple_configs[config_3]
+    - Full FK-IK roundtrip validation for multiple joint configurations
+
+================================================================================
+TEST_GCODE_PARSER.PY - 30 TESTS IN 5 TEST CLASSES
+================================================================================
+
+TestGCodeLineParser (10 tests):
+  ✓ test_parse_g1_linear_move
+    - G1 X10 Y20 Z0.3 E1.5 F1200 -> correct Waypoint with mm->m conversion
+  ✓ test_parse_g0_rapid_move
+    - G0 command produces 'rapid' move type
+  ✓ test_parse_g28_home_command
+    - G28 returns waypoint at (0,0,0) with move_type='home'
+  ✓ test_parse_comment_returns_none
+    - Lines starting with ; are ignored
+  ✓ test_parse_inline_comment_ignored
+    - Inline comments after commands are stripped
+  ✓ test_parse_partial_coordinates
+    - Missing axes retain previous values
+  ✓ test_parse_m104_temperature_command
+    - M104 S200 stores metadata, returns None
+  ✓ test_parse_m106_fan_command
+    - M106 fan speed extracted to metadata
+  ✓ test_parse_g92_set_position
+    - G92 updates internal state without producing waypoint
+  ✓ test_parse_empty_line_returns_none
+    - Empty lines gracefully return None
+  ✓ test_parse_unknown_command_ignored
+    - Unknown commands are handled gracefully
+
+TestGCodeFileParser (4 tests):
+  ✓ test_parse_sample_file
+    - Parses sample_gcode_file fixture correctly
+  ✓ test_parse_file_returns_waypoints_list
+    - Returns list of Waypoint objects
+  ✓ test_parse_file_not_found_raises
+    - FileNotFoundError for non-existent files
+  ✓ test_parse_file_state_reset
+    - Internal state reset between parse_file calls
+
+TestMetadata (1 test):
+  ✓ test_metadata_extraction_from_file
+    - Temperature and fan metadata extracted from file
+
+TestWaypoint (3 tests):
+  ✓ test_waypoint_creation
+    - Waypoint dataclass with all fields
+  ✓ test_waypoint_defaults
+    - Default values (e=0.0, feedrate=0.0, move_type='linear')
+  ✓ test_waypoint_position_vector
+    - Position coordinates accessible
+
+TestGCodeParserIntegration (3 tests):
+  ✓ test_multi_segment_trajectory
+    - Multi-layer trajectory with Z changes
+  ✓ test_extrusion_tracking
+    - Extrusion amount monotonically tracked
+  ✓ test_feedrate_inheritance
+    - Feedrate inherited from previous commands
+
+================================================================================
+TEST_TRAJECTORY.PY - 29 TESTS IN 4 TEST CLASSES
+================================================================================
+
+TestTrapezoidalVelocityProfile (7 tests):
+  ✓ test_trapezoidal_profile_endpoints
+    - First row = q_start, last row = q_end (within tolerance)
+  ✓ test_trapezoidal_profile_shape
+    - Output shape (N, 6)
+  ✓ test_trapezoidal_profile_smooth_velocity
+    - Max velocity <= v_max * 1.1 (with 10% discretization tolerance)
+  ✓ test_trapezoidal_profile_symmetric
+    - Acceleration and deceleration phases roughly symmetric
+  ✓ test_trapezoidal_profile_accepts_list_and_array
+    - Both list and array inputs handled
+  ✓ test_trapezoidal_profile_zero_distance
+    - Start = end case handled gracefully
+  ✓ test_trapezoidal_profile_small_distance
+    - Triangular profile (no cruise phase) for small distances
+
+TestLinearInterpolation (6 tests):
+  ✓ test_linear_interpolation_endpoints
+    - First and last points match start and end
+  ✓ test_linear_interpolation_shape
+    - Output shape (n_steps, 6)
+  ✓ test_linear_interpolation_intermediate_points
+    - Intermediate points lie on line between start and end
+  ✓ test_linear_interpolation_minimum_steps
+    - n_steps=2 case handled (start and end)
+  ✓ test_linear_interpolation_accepts_list_and_array
+    - Input format flexibility
+  [6 additional interpolation tests]
+
+TestInterpolateTrajectory (6 tests):
+  ✓ test_interpolate_trajectory_multiple_waypoints
+    - Chaining multiple segments works correctly
+  ✓ test_interpolate_trajectory_passes_through_waypoints
+    - Trajectory reaches each waypoint (within tolerance)
+  ✓ test_interpolate_trajectory_concatenation
+    - Multi-waypoint trajectory longer than single segment
+  ✓ test_interpolate_trajectory_minimum_waypoints
+    - ValueError for < 2 waypoints
+  ✓ test_interpolate_trajectory_accepts_lists
+    - Waypoints as list of lists
+  [Additional tests]
+
+TestVelocityLimitChecking (3 tests):
+  ✓ test_check_velocity_limits_compliant_trajectory
+    - Slow trajectory passes velocity check
+  ✓ test_check_velocity_limits_exceeding_trajectory
+    - Fast trajectory fails velocity check
+  ✓ test_check_velocity_limits_returns_velocities
+    - Computed velocities returned
+
+TestAccelerationLimitChecking (3 tests):
+  ✓ test_check_acceleration_limits_compliant_trajectory
+    - Smooth acceleration passes limits
+  ✓ test_check_acceleration_limits_returns_accelerations
+    - Computed accelerations returned
+  ✓ test_check_acceleration_limits_custom_limits
+    - Custom limits respected
+
+================================================================================
+TEST METHODOLOGY
+================================================================================
+
+1. UNIT TESTING APPROACH:
+   - Each function tested in isolation with known inputs/outputs
+   - Fixtures provide consistent test data
+   - Parametrized tests cover multiple configurations
+
+2. INTEGRATION TESTING:
+   - FK-IK roundtrips verify modules work together
+   - Multi-segment trajectories test chaining logic
+   - File parsing tests with realistic G-code samples
+
+3. ASSERTION TYPES:
+   - npt.assert_array_almost_equal() for numerical precision (decimal=4-5)
+   - pytest.approx() for floating-point comparison
+   - Shape and dimension checks for array validation
+   - Exception testing with pytest.raises()
+
+4. TOLERANCE LEVELS:
+   - Position tolerance: 1e-4 m (0.1 mm)
+   - Angle tolerance: decimal=5 in matrix comparisons
+   - Velocity tolerance: 10% of limit for discrete profiles
+   - Rotation orthogonality: decimal=5
+
+================================================================================
+RUNNING THE TESTS
+================================================================================
+
+To run all tests:
+  $ cd /sessions/confident-stoic-bardeen/mnt/PBL_project
+  $ pytest tests/ -v
+
+To run specific test class:
+  $ pytest tests/test_kinematics.py::TestForwardKinematics -v
+
+To run with coverage:
+  $ pytest tests/ --cov=kinematics --cov=gcode_parser --cov=trajectory_planner
+
+To run with detailed output:
+  $ pytest tests/ -vv --tb=short
+
+================================================================================
