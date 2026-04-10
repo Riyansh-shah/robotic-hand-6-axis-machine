@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workspace Analysis | PBL 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { background-color: #020617; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
+        .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
+        .gradient-text { background: linear-gradient(90deg,#60a5fa,#a855f7); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+    </style>
+</head>
+<body class="pb-24">
+
+<nav class="fixed w-full z-50 glass border-b border-slate-800/50 px-8 py-4 flex justify-between items-center">
+    <a href="../index.html" class="flex items-center gap-2 group">
+        <i class="fas fa-arrow-left text-slate-400 group-hover:text-white transition"></i>
+        <span class="text-sm font-bold text-slate-400 group-hover:text-white transition uppercase tracking-widest">Home</span>
+    </a>
+    <div class="flex items-center gap-3">
+        <span class="text-[10px] font-black text-slate-600 uppercase tracking-widest">04 of 12</span>
+        <span class="text-lg font-black text-white uppercase tracking-tighter">Workspace <span class="text-emerald-400 italic">Analysis</span></span>
+    </div>
+    <div class="flex items-center gap-4">
+        <a href="kinematics.html" class="flex items-center gap-2 group">
+            <i class="fas fa-arrow-left text-slate-500 group-hover:text-white transition text-sm"></i>
+            <span class="text-xs font-bold text-slate-500 group-hover:text-white transition uppercase tracking-widest">Prev</span>
+        </a>
+        <a href="motion_planning.html" class="flex items-center gap-2 group">
+            <span class="text-xs font-bold text-slate-400 group-hover:text-white transition uppercase tracking-widest">Next</span>
+            <i class="fas fa-arrow-right text-slate-400 group-hover:text-white transition text-sm"></i>
+        </a>
+    </div>
+</nav>
+
+<main class="max-w-6xl mx-auto px-6 pt-32 space-y-20">
+
+    <section class="text-center space-y-6">
+        <div class="inline-block px-4 py-1 border border-slate-800 rounded-full text-slate-500 text-[10px] font-mono mb-2 uppercase tracking-widest">Chapter 04 — Spatial Capability</div>
+        <h1 class="text-5xl md:text-6xl font-extrabold uppercase leading-tight">Workspace <span class="gradient-text">Analysis</span></h1>
+        <p class="text-slate-400 max-w-3xl mx-auto text-lg leading-relaxed">
+            Characterizing the three-dimensional volume the arm's nozzle can reach, identifying dead zones and singularities, and mapping the effective print volume within that workspace.
+        </p>
+    </section>
+
+    <!-- Shape of Workspace -->
+    <section class="glass p-10 rounded-[2.5rem] border-l-4 border-emerald-500">
+        <div class="flex items-center gap-4 mb-8">
+            <i class="fas fa-globe text-emerald-400 text-2xl"></i>
+            <h2 class="text-2xl font-black uppercase tracking-tight">Reachable Workspace — Toroidal Shell</h2>
+        </div>
+        <div class="grid md:grid-cols-2 gap-10 items-center">
+            <div class="space-y-4 text-sm text-slate-400 leading-relaxed">
+                <p>The full reachable workspace of a 6R arm is not a simple sphere. It forms a <strong class="text-white">hollow toroidal (donut-shaped) shell</strong>. The outer radius is bounded by the maximum reach of the fully extended arm (J2 and J3 both at maximum), and the inner radius is the minimum reach when the arm is fully retracted.</p>
+                <p>Practically, the workspace is further constrained by joint mechanical limits (physical stops prevent the full theoretical range). After applying joint limits, the effective workspace becomes an irregular swept volume — still toroidal in cross-section but with angular gaps in the azimuthal direction from the J1 base limits.</p>
+                <p>For 3D printing, we restrict operation to the <strong class="text-white">"Goldilocks Zone"</strong> — a cylindrical sub-volume at radii 150mm to 300mm from the base center and heights 20mm to 280mm above the base plate, where the arm maintains good stiffness and manageable joint velocities.</p>
+            </div>
+            <div class="space-y-4">
+                <div class="bg-emerald-500/5 border border-emerald-500/20 p-6 rounded-2xl">
+                    <p class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-4">Workspace Dimensions</p>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                            <span class="text-sm text-slate-400">Maximum Reach Radius</span>
+                            <span class="font-mono font-bold text-white">350mm</span>
+                        </div>
+                        <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                            <span class="text-sm text-slate-400">Minimum Reach Radius</span>
+                            <span class="font-mono font-bold text-white">80mm</span>
+                        </div>
+                        <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                            <span class="text-sm text-slate-400">Max Height Above Base</span>
+                            <span class="font-mono font-bold text-white">420mm</span>
+                        </div>
+                        <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                            <span class="text-sm text-slate-400">Min Height (below base)</span>
+                            <span class="font-mono font-bold text-white">−120mm</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-slate-400">Azimuthal Range (J1)</span>
+                            <span class="font-mono font-bold text-white">±170°</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-blue-500/5 border border-blue-500/20 p-5 rounded-2xl text-center">
+                    <p class="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-2">Effective Print Volume</p>
+                    <p class="text-3xl font-black font-mono text-white">Ø280 × H200</p>
+                    <p class="text-xs text-slate-500 mt-2">Cylindrical print envelope (mm)</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Singularities -->
+    <section class="space-y-6">
+        <h2 class="text-3xl font-black uppercase tracking-tight text-center">Singularities &amp; <span class="text-red-400">Dead Zones</span></h2>
+        <p class="text-slate-500 text-sm text-center max-w-2xl mx-auto">Singularities are configurations where the Jacobian loses rank — the arm loses at least one DOF and cannot move the TCP in certain directions, regardless of joint velocities. All 6-axis arms have three types:</p>
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="glass p-7 rounded-[2rem] border-t-4 border-red-500">
+                <i class="fas fa-compress-arrows-alt text-red-400 text-2xl mb-4"></i>
+                <h3 class="font-bold text-white mb-3">Shoulder Singularity</h3>
+                <p class="text-sm text-slate-400 leading-relaxed mb-4">Occurs when the TCP lies directly above or below J1 — the wrist center lies on the J1 axis. J1 and J4 become collinear and the arm cannot control the azimuthal direction. Detection: |Wcx| + |Wcy| &lt; ε.</p>
+                <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-3 text-xs text-red-300 font-mono">
+                    Condition: r = √(Wcx²+Wcy²) ≈ 0
+                </div>
+            </div>
+            <div class="glass p-7 rounded-[2rem] border-t-4 border-orange-500">
+                <i class="fas fa-ruler-combined text-orange-400 text-2xl mb-4"></i>
+                <h3 class="font-bold text-white mb-3">Elbow Singularity</h3>
+                <p class="text-sm text-slate-400 leading-relaxed mb-4">Occurs when the arm is fully extended or fully retracted — J3 is at 0° or 180°. The elbow loses the ability to change reach. This creates a boundary "shell" in the workspace where path planning must avoid straight-through moves.</p>
+                <div class="bg-orange-500/10 border border-orange-500/20 rounded-xl p-3 text-xs text-orange-300 font-mono">
+                    Condition: D = ±1 in IK formula
+                </div>
+            </div>
+            <div class="glass p-7 rounded-[2rem] border-t-4 border-yellow-500">
+                <i class="fas fa-sync-alt text-yellow-400 text-2xl mb-4"></i>
+                <h3 class="font-bold text-white mb-3">Wrist Singularity</h3>
+                <p class="text-sm text-slate-400 leading-relaxed mb-4">Occurs when J5 = 0° — the J4 and J6 axes become collinear and only their sum/difference can be controlled, not each individually. The arm can still reach the position but cannot control azimuthal orientation. Most problematic for non-planar print paths with vertical nozzle orientation.</p>
+                <div class="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-3 text-xs text-yellow-300 font-mono">
+                    Condition: sin(θ₅) ≈ 0
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Print Volume Comparison -->
+    <section class="glass p-10 rounded-[2.5rem] border-t-4 border-blue-500">
+        <div class="flex items-center gap-4 mb-8">
+            <i class="fas fa-chart-bar text-blue-400 text-2xl"></i>
+            <h2 class="text-2xl font-black uppercase tracking-tight">Print Volume vs. Cartesian Comparison</h2>
+        </div>
+        <div class="overflow-x-auto mb-6">
+            <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                    <tr class="border-b border-white/10 text-[10px] uppercase tracking-widest text-slate-500">
+                        <th class="pb-4 pr-6">Metric</th>
+                        <th class="pb-4 pr-6 text-slate-400">Ender-3 (Cartesian)</th>
+                        <th class="pb-4 pr-6 text-slate-400">Prusa MK4 (Cartesian)</th>
+                        <th class="pb-4 text-blue-400">Our 6-Axis Arm</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    <tr>
+                        <td class="py-3 pr-6 font-bold text-slate-300">Print Volume</td>
+                        <td class="py-3 pr-6 text-slate-400 font-mono">220×220×250mm</td>
+                        <td class="py-3 pr-6 text-slate-400 font-mono">250×210×220mm</td>
+                        <td class="py-3 text-blue-300 font-mono">Ø280×H200mm cyl.</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 pr-6 font-bold text-slate-300">Footprint</td>
+                        <td class="py-3 pr-6 text-slate-400 font-mono">~440×410mm</td>
+                        <td class="py-3 pr-6 text-slate-400 font-mono">~500×550mm</td>
+                        <td class="py-3 text-blue-300 font-mono">Ø200mm base</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 pr-6 font-bold text-slate-300">Volume/Footprint ratio</td>
+                        <td class="py-3 pr-6 text-slate-400">0.30×</td>
+                        <td class="py-3 pr-6 text-slate-400">0.19×</td>
+                        <td class="py-3 text-emerald-400 font-bold">1.27× (4× better)</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 pr-6 font-bold text-slate-300">Non-planar printing</td>
+                        <td class="py-3 pr-6 text-red-400">No</td>
+                        <td class="py-3 pr-6 text-red-400">No</td>
+                        <td class="py-3 text-emerald-400">Yes (full 6DOF)</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 pr-6 font-bold text-slate-300">Approximate BOM cost</td>
+                        <td class="py-3 pr-6 text-slate-400">₹18,000</td>
+                        <td class="py-3 pr-6 text-slate-400">₹38,000</td>
+                        <td class="py-3 text-blue-300">~₹50,000</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="text-slate-500 text-xs italic">Note: the 6-axis arm's cylindrical print volume is not directly comparable to a Cartesian box — many organic parts benefit more from the conformal capability than from raw volume. Our effective usable workspace for non-planar prints exceeds what any Cartesian printer can achieve regardless of size.</p>
+    </section>
+
+    <!-- Singularity Avoidance -->
+    <section class="glass p-8 rounded-[2.5rem] border-l-4 border-emerald-500">
+        <div class="flex items-center gap-4 mb-6">
+            <i class="fas fa-shield-alt text-emerald-400 text-xl"></i>
+            <h2 class="text-xl font-black uppercase tracking-tight">Singularity Avoidance Strategy</h2>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6 text-sm text-slate-400">
+            <div class="space-y-3">
+                <p><strong class="text-white">Pre-flight Check:</strong> Before executing any toolpath, the IK solver checks all waypoints for proximity to singularities. Waypoints within 5° of a singular configuration are flagged.</p>
+                <p><strong class="text-white">Path Re-routing:</strong> Flagged segments are re-routed via an intermediate waypoint that arcs around the singularity, keeping J5 &gt;10° from zero throughout the print path.</p>
+            </div>
+            <div class="space-y-3">
+                <p><strong class="text-white">Damped Least Squares (DLS):</strong> Near singularities, the numerical fallback uses DLS Jacobian inversion with a damping factor λ=0.05 to prevent joint velocity blow-up while sacrificing a small amount of TCP accuracy.</p>
+                <p><strong class="text-white">Speed Limiting:</strong> When |sin(θ₅)| &lt; 0.15, the system automatically caps the commanded joint velocities to 30% of normal to prevent sudden large joint motions.</p>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="mt-32 py-12 text-center bg-black/40 border-t border-slate-900">
+    <p class="text-slate-600 text-[10px] font-bold tracking-[0.3em] uppercase mb-2">Manipal University Jaipur</p>
+    <p class="text-slate-500 text-[9px] font-medium tracking-[0.2em] uppercase opacity-50">Department of Computer Science &amp; Engineering • 2026</p>
+</footer>
+</body>
+</html>

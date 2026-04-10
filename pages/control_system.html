@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control System | PBL 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { background-color: #020617; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
+        .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
+        .gradient-text { background: linear-gradient(90deg,#60a5fa,#a855f7); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+        .mono-box { background: #0d1117; border: 1px solid rgba(255,255,255,0.08); border-radius: 1rem; padding: 1.25rem 1.5rem; font-family: 'Courier New', monospace; font-size: 0.78rem; color: #f87171; line-height: 1.8; overflow-x: auto; }
+    </style>
+</head>
+<body class="pb-24">
+
+<nav class="fixed w-full z-50 glass border-b border-slate-800/50 px-8 py-4 flex justify-between items-center">
+    <a href="../index.html" class="flex items-center gap-2 group">
+        <i class="fas fa-arrow-left text-slate-400 group-hover:text-white transition"></i>
+        <span class="text-sm font-bold text-slate-400 group-hover:text-white transition uppercase tracking-widest">Home</span>
+    </a>
+    <div class="flex items-center gap-3">
+        <span class="text-[10px] font-black text-slate-600 uppercase tracking-widest">06 of 12</span>
+        <span class="text-lg font-black text-white uppercase tracking-tighter">Control <span class="text-red-400 italic">System</span></span>
+    </div>
+    <div class="flex items-center gap-4">
+        <a href="motion_planning.html" class="flex items-center gap-2 group">
+            <i class="fas fa-arrow-left text-slate-500 group-hover:text-white transition text-sm"></i>
+            <span class="text-xs font-bold text-slate-500 group-hover:text-white transition uppercase tracking-widest">Prev</span>
+        </a>
+        <a href="extruder_material.html" class="flex items-center gap-2 group">
+            <span class="text-xs font-bold text-slate-400 group-hover:text-white transition uppercase tracking-widest">Next</span>
+            <i class="fas fa-arrow-right text-slate-400 group-hover:text-white transition text-sm"></i>
+        </a>
+    </div>
+</nav>
+
+<main class="max-w-6xl mx-auto px-6 pt-32 space-y-20">
+
+    <section class="text-center space-y-6">
+        <div class="inline-block px-4 py-1 border border-slate-800 rounded-full text-slate-500 text-[10px] font-mono mb-2 uppercase tracking-widest">Chapter 06 — Electronics &amp; Firmware</div>
+        <h1 class="text-5xl md:text-6xl font-extrabold uppercase leading-tight">Control <span class="gradient-text">System</span></h1>
+        <p class="text-slate-400 max-w-3xl mx-auto text-lg leading-relaxed">
+            The hardware and firmware stack that translates planned joint trajectories into precise stepper pulses and servo commands in real time — coordinating 6+ axes simultaneously while managing temperature, fans, and safety limits.
+        </p>
+    </section>
+
+    <!-- Hardware Stack -->
+    <section class="glass p-10 rounded-[2.5rem] border-l-4 border-red-500">
+        <div class="flex items-center gap-4 mb-8">
+            <i class="fas fa-microchip text-red-400 text-2xl"></i>
+            <h2 class="text-2xl font-black uppercase tracking-tight">Hardware Architecture</h2>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="bg-red-500/5 border border-red-500/20 p-6 rounded-2xl">
+                <i class="fas fa-server text-red-400 text-2xl mb-4"></i>
+                <h3 class="font-bold text-white mb-3">Host Computer</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">Raspberry Pi 4 (4GB) running a Python-based motion server. Handles G-code parsing, IK solving, trajectory generation, and trajectory streaming to the motion controller over USB serial at 250,000 baud. OctoPrint provides the web interface for job management.</p>
+            </div>
+            <div class="bg-red-500/5 border border-red-500/20 p-6 rounded-2xl">
+                <i class="fas fa-microchip text-red-400 text-2xl mb-4"></i>
+                <h3 class="font-bold text-white mb-3">Motion Controller</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">Arduino Mega 2560 running a modified Marlin 2.x firmware. Receives pre-computed absolute joint angles from the host and executes precise step/direction pulses for the 5 stepper axes plus PWM control for J6 servo. Step rate up to 40 kHz per axis via hardware timers.</p>
+            </div>
+            <div class="bg-red-500/5 border border-red-500/20 p-6 rounded-2xl">
+                <i class="fas fa-bolt text-red-400 text-2xl mb-4"></i>
+                <h3 class="font-bold text-white mb-3">Stepper Drivers</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">TMC2208 drivers in UART mode for J1–J5. Silent StealthChop mode for low-speed precision; SpreadCycle mode for high-speed travel. Current set to 1.2A RMS for J1–J3 (NEMA 17), 0.8A RMS for J4–J5 (NEMA 14). Sensorless homing via StallGuard2.</p>
+            </div>
+        </div>
+        <div class="mt-6 grid md:grid-cols-2 gap-6">
+            <div class="bg-slate-800/50 border border-slate-700 p-5 rounded-2xl">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Power Supply</p>
+                <p class="text-sm text-slate-400">24V / 20A switching PSU (480W). 24V rail for stepper drivers and heated bed; 12V step-down for Raspberry Pi and fan rail; 5V for servo and logic. All rails fused independently.</p>
+            </div>
+            <div class="bg-slate-800/50 border border-slate-700 p-5 rounded-2xl">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Safety Features</p>
+                <p class="text-sm text-slate-400">Hardware joint limit switches on J1–J3. Thermal runaway detection on hotend and bed. Watchdog timer resets controller if host communication drops for &gt;500ms — printer pauses gracefully.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Firmware & Software Stack -->
+    <section class="glass p-10 rounded-[2.5rem] border-l-4 border-blue-500">
+        <div class="flex items-center gap-4 mb-8">
+            <i class="fas fa-code text-blue-400 text-2xl"></i>
+            <h2 class="text-2xl font-black uppercase tracking-tight">Firmware &amp; Software Stack</h2>
+        </div>
+        <div class="space-y-4">
+            <div class="flex items-start gap-4 p-5 bg-blue-500/5 border border-blue-500/15 rounded-2xl">
+                <i class="fas fa-layer-group text-blue-400 text-lg flex-shrink-0 mt-0.5"></i>
+                <div>
+                    <p class="font-bold text-white text-sm mb-1">Marlin 2.1 (Modified) — Low-Level Firmware</p>
+                    <p class="text-sm text-slate-400">Standard Marlin modified to accept absolute joint angles rather than Cartesian coordinates. The kinematic transform module is replaced with a passthrough — Marlin sees each joint as an independent linear axis. Stepper stepping and thermal management remain unchanged from stock Marlin.</p>
+                </div>
+            </div>
+            <div class="flex items-start gap-4 p-5 bg-blue-500/5 border border-blue-500/15 rounded-2xl">
+                <i class="fab fa-python text-blue-400 text-lg flex-shrink-0 mt-0.5"></i>
+                <div>
+                    <p class="font-bold text-white text-sm mb-1">Python Motion Server — Mid-Level</p>
+                    <p class="text-sm text-slate-400">Runs on Raspberry Pi. Modules: <strong class="text-white">gcode_parser.py</strong> (lexer + G1 extractor), <strong class="text-white">ik_solver.py</strong> (analytical IK), <strong class="text-white">trajectory_gen.py</strong> (spline fitting, velocity profiling), <strong class="text-white">stream_controller.py</strong> (serial framing, flow control). Written in Python with NumPy for matrix math.</p>
+                </div>
+            </div>
+            <div class="flex items-start gap-4 p-5 bg-blue-500/5 border border-blue-500/15 rounded-2xl">
+                <i class="fas fa-desktop text-blue-400 text-lg flex-shrink-0 mt-0.5"></i>
+                <div>
+                    <p class="font-bold text-white text-sm mb-1">OctoPrint + Custom Plugin — High-Level UI</p>
+                    <p class="text-sm text-slate-400">OctoPrint handles job queueing, webcam monitoring, and temperature graphs. A custom plugin intercepts uploaded G-code files, passes them through the motion server pipeline, and substitutes the processed joint-angle command stream before sending to Marlin.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PID Tuning -->
+    <section class="glass p-10 rounded-[2.5rem] border-t-4 border-amber-500">
+        <div class="flex items-center gap-4 mb-8">
+            <i class="fas fa-sliders-h text-amber-400 text-2xl"></i>
+            <h2 class="text-2xl font-black uppercase tracking-tight">PID Tuning — Joint Position Control</h2>
+        </div>
+        <p class="text-slate-400 text-sm leading-relaxed mb-8">Since stepper motors operate open-loop (no encoder feedback), "PID tuning" here refers to the <strong class="text-white">hotend and heated-bed temperature controllers</strong>. Joint position accuracy is achieved through step counting + mechanical repeatability. Future closed-loop work with encoders is discussed in Chapter 12.</p>
+        <div class="overflow-x-auto mb-6">
+            <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                    <tr class="border-b border-amber-500/30 text-[10px] uppercase tracking-widest text-amber-500">
+                        <th class="pb-4 pr-6">Loop</th>
+                        <th class="pb-4 pr-6">Kp</th>
+                        <th class="pb-4 pr-6">Ki</th>
+                        <th class="pb-4 pr-6">Kd</th>
+                        <th class="pb-4">Setpoint Accuracy</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5 font-mono text-sm">
+                    <tr>
+                        <td class="py-3 pr-6 font-bold text-white">Hotend Temp</td>
+                        <td class="py-3 pr-6 text-slate-300">21.73</td>
+                        <td class="py-3 pr-6 text-slate-300">1.54</td>
+                        <td class="py-3 pr-6 text-slate-300">76.55</td>
+                        <td class="py-3 text-emerald-400">±0.5°C</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 pr-6 font-bold text-white">Bed Temp</td>
+                        <td class="py-3 pr-6 text-slate-300">54.00</td>
+                        <td class="py-3 pr-6 text-slate-300">0.78</td>
+                        <td class="py-3 pr-6 text-slate-300">938.0</td>
+                        <td class="py-3 text-emerald-400">±1.0°C</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="mono-box">
+            -- Marlin PID auto-tune output (E0 at 200°C, 8 cycles) --<br>
+            Kp: 21.73  Ki: 1.54  Kd: 76.55<br>
+            Classic method: Kp=21.73, Ki=0.00, Kd=0.00<br>
+            &gt; M301 P21.73 I1.54 D76.55   ← saved to EEPROM
+        </div>
+    </section>
+
+    <!-- Real-time Coordination -->
+    <section class="grid md:grid-cols-2 gap-8">
+        <div class="glass p-8 rounded-[2rem] border-l-4 border-red-500/50">
+            <h3 class="text-red-400 font-bold text-xs uppercase tracking-widest mb-5">6-Axis Synchronization</h3>
+            <p class="text-sm text-slate-400 leading-relaxed mb-4">Marlin's stepper ISR uses a Bresenham-like stepping algorithm to synchronize all six axes. All joints reach their commanded positions at exactly the same time step, even when they move by very different angular amounts — critical for maintaining the correct TCP trajectory.</p>
+            <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4 font-mono text-xs text-red-300">
+                ISR rate: 40 kHz (25μs period)<br>
+                Worst-case jitter: &lt;5μs<br>
+                Position error: &lt;1 microstep
+            </div>
+        </div>
+        <div class="glass p-8 rounded-[2rem] border-l-4 border-blue-500/50">
+            <h3 class="text-blue-400 font-bold text-xs uppercase tracking-widest mb-5">Communication Protocol</h3>
+            <p class="text-sm text-slate-400 leading-relaxed mb-4">The Raspberry Pi streams pre-computed joint angle commands to Marlin using a custom binary framing protocol over USB serial. Each frame is 32 bytes: 6 × 4-byte floats (joint angles) + 1 × 4-byte float (extrusion amount) + 4 bytes header/checksum. At 250k baud, this allows 600+ frames/second — far exceeding the 1kHz control requirement.</p>
+            <div class="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 font-mono text-xs text-blue-300">
+                Frame: [0xAA][θ₁..θ₆][E][CRC]<br>
+                Size: 32 bytes / frame<br>
+                Rate: up to 625 frames/s
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="mt-32 py-12 text-center bg-black/40 border-t border-slate-900">
+    <p class="text-slate-600 text-[10px] font-bold tracking-[0.3em] uppercase mb-2">Manipal University Jaipur</p>
+    <p class="text-slate-500 text-[9px] font-medium tracking-[0.2em] uppercase opacity-50">Department of Computer Science &amp; Engineering • 2026</p>
+</footer>
+</body>
+</html>

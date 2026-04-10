@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results & Testing | PBL 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { background-color: #020617; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
+        .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
+        .gradient-text { background: linear-gradient(90deg,#60a5fa,#a855f7); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+    </style>
+</head>
+<body class="pb-24">
+
+<nav class="fixed w-full z-50 glass border-b border-slate-800/50 px-8 py-4 flex justify-between items-center">
+    <a href="../index.html" class="flex items-center gap-2 group">
+        <i class="fas fa-arrow-left text-slate-400 group-hover:text-white transition"></i>
+        <span class="text-sm font-bold text-slate-400 group-hover:text-white transition uppercase tracking-widest">Home</span>
+    </a>
+    <div class="flex items-center gap-3">
+        <span class="text-[10px] font-black text-slate-600 uppercase tracking-widest">10 of 12</span>
+        <span class="text-lg font-black text-white uppercase tracking-tighter">Results &amp; <span class="text-sky-400 italic">Testing</span></span>
+    </div>
+    <div class="flex items-center gap-4">
+        <a href="calibration_accuracy.html" class="flex items-center gap-2 group">
+            <i class="fas fa-arrow-left text-slate-500 group-hover:text-white transition text-sm"></i>
+            <span class="text-xs font-bold text-slate-500 group-hover:text-white transition uppercase tracking-widest">Prev</span>
+        </a>
+        <a href="challenges_limitations.html" class="flex items-center gap-2 group">
+            <span class="text-xs font-bold text-slate-400 group-hover:text-white transition uppercase tracking-widest">Next</span>
+            <i class="fas fa-arrow-right text-slate-400 group-hover:text-white transition text-sm"></i>
+        </a>
+    </div>
+</nav>
+
+<main class="max-w-6xl mx-auto px-6 pt-32 space-y-20">
+
+    <section class="text-center space-y-6">
+        <div class="inline-block px-4 py-1 border border-slate-800 rounded-full text-slate-500 text-[10px] font-mono mb-2 uppercase tracking-widest">Chapter 10 — Empirical Validation</div>
+        <h1 class="text-5xl md:text-6xl font-extrabold uppercase leading-tight">Results &amp; <span class="gradient-text">Testing</span></h1>
+        <p class="text-slate-400 max-w-3xl mx-auto text-lg leading-relaxed">
+            Empirical validation through structured test prints — comparing dimensional accuracy, surface finish, and structural performance of the 6-axis arm against a baseline Cartesian FDM printer on identical geometries.
+        </p>
+    </section>
+
+    <!-- Key Metrics -->
+    <section class="grid md:grid-cols-4 gap-5">
+        <div class="glass p-7 rounded-[2rem] text-center border-b-4 border-blue-500">
+            <i class="fas fa-bullseye text-blue-400 text-2xl mb-4"></i>
+            <span class="block text-[10px] text-slate-500 uppercase tracking-widest mb-2">Positional Accuracy</span>
+            <span class="block text-4xl font-black font-mono text-white">±0.4mm</span>
+            <span class="block text-xs text-slate-500 mt-2">RMS, post-compensation</span>
+        </div>
+        <div class="glass p-7 rounded-[2rem] text-center border-b-4 border-purple-500">
+            <i class="fas fa-surface text-purple-400 text-2xl mb-4"></i>
+            <i class="fas fa-paint-roller text-purple-400 text-2xl mb-4"></i>
+            <span class="block text-[10px] text-slate-500 uppercase tracking-widest mb-2">Surface Quality Ra</span>
+            <span class="block text-4xl font-black font-mono text-white">7.2μm</span>
+            <span class="block text-xs text-slate-500 mt-2">vs 28μm planar FDM</span>
+        </div>
+        <div class="glass p-7 rounded-[2rem] text-center border-b-4 border-emerald-500">
+            <i class="fas fa-fill-drip text-emerald-400 text-2xl mb-4"></i>
+            <span class="block text-[10px] text-slate-500 uppercase tracking-widest mb-2">Support Reduction</span>
+            <span class="block text-4xl font-black font-mono text-white">~73%</span>
+            <span class="block text-xs text-slate-500 mt-2">vs mandatory Cartesian supports</span>
+        </div>
+        <div class="glass p-7 rounded-[2rem] text-center border-b-4 border-amber-500">
+            <i class="fas fa-dumbbell text-amber-400 text-2xl mb-4"></i>
+            <span class="block text-[10px] text-slate-500 uppercase tracking-widest mb-2">Tensile Strength Gain</span>
+            <span class="block text-4xl font-black font-mono text-white">+47%</span>
+            <span class="block text-xs text-slate-500 mt-2">non-planar vs standard FDM</span>
+        </div>
+    </section>
+
+    <!-- Chart -->
+    <section class="glass p-10 rounded-[2.5rem] border-t-4 border-sky-500">
+        <div class="flex items-center gap-4 mb-8">
+            <i class="fas fa-chart-bar text-sky-400 text-2xl"></i>
+            <h2 class="text-2xl font-black uppercase tracking-tight">6-Axis vs. Cartesian — Performance Comparison</h2>
+        </div>
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+            <div class="h-72"><canvas id="comparisonChart"></canvas></div>
+            <div class="space-y-4">
+                <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Surface Quality Score</span>
+                        <div class="flex gap-4 text-xs font-mono">
+                            <span class="text-slate-500">Cartesian: 58</span>
+                            <span class="text-sky-400 font-bold">6-Axis: 89</span>
+                        </div>
+                    </div>
+                    <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-blue-600 to-cyan-400 rounded-full" style="width:89%"></div>
+                    </div>
+                </div>
+                <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Dimensional Accuracy</span>
+                        <div class="flex gap-4 text-xs font-mono">
+                            <span class="text-slate-500">Cartesian: 82</span>
+                            <span class="text-sky-400 font-bold">6-Axis: 76</span>
+                        </div>
+                    </div>
+                    <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-purple-600 to-pink-400 rounded-full" style="width:76%"></div>
+                    </div>
+                </div>
+                <div class="p-4 rounded-xl bg-white/5 border border-white/10">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Tensile Strength (normalized)</span>
+                        <div class="flex gap-4 text-xs font-mono">
+                            <span class="text-slate-500">Cartesian: 55</span>
+                            <span class="text-sky-400 font-bold">6-Axis: 81</span>
+                        </div>
+                    </div>
+                    <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-emerald-600 to-lime-400 rounded-full" style="width:81%"></div>
+                    </div>
+                </div>
+                <p class="text-slate-500 text-xs italic">Scores are normalized 0–100. Dimensional accuracy is slightly lower for 6-axis due to TCP position error, but surface quality and mechanical strength are significantly better.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dimensional Accuracy Table -->
+    <section class="glass p-10 rounded-[2.5rem] border-l-4 border-blue-500">
+        <div class="flex items-center gap-4 mb-8">
+            <i class="fas fa-ruler-combined text-blue-400 text-2xl"></i>
+            <h2 class="text-2xl font-black uppercase tracking-tight">Dimensional Accuracy — Test Geometry Suite</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                    <tr class="border-b border-white/10 text-[10px] uppercase tracking-widest text-slate-500">
+                        <th class="pb-4 pr-6">Test Part</th>
+                        <th class="pb-4 pr-6">Nominal (mm)</th>
+                        <th class="pb-4 pr-6">Cartesian FDM</th>
+                        <th class="pb-4 pr-6">6-Axis Robot</th>
+                        <th class="pb-4">Advantage</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    <tr>
+                        <td class="py-3 pr-6 font-bold text-slate-300">20mm Calibration Cube</td>
+                        <td class="py-3 pr-6 font-mono">20.00</td>
+                        <td class="py-3 pr-6 text-emerald-400 font-mono">19.97 ±0.05</td>
+                        <td class="py-3 pr-6 text-blue-400 font-mono">19.61 ±0.21</td>
+                        <td class="py-3 text-slate-500 text-xs">Cartesian (flat surface)</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 pr-6 font-bold text-slate-300">Sphere (Ø40mm)</td>
+                        <td class="py-3 pr-6 font-mono">40.00</td>
+                        <td class="py-3 pr-6 text-yellow-400 font-mono">39.2 ±1.8*</td>
+                        <td class="py-3 pr-6 text-emerald-400 font-mono">39.7 ±0.4</td>
+                        <td class="py-3 text-emerald-400 text-xs">6-Axis (+4.5× accuracy)</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 pr-6 font-bold text-slate-300">Cylinder Ø30, H60</td>
+                        <td class="py-3 pr-6 font-mono">30.00</td>
+                        <td class="py-3 pr-6 text-yellow-400 font-mono">29.8 ±0.5</td>
+                        <td class="py-3 pr-6 text-blue-400 font-mono">29.5 ±0.3</td>
+                        <td class="py-3 text-blue-400 text-xs">6-Axis (better surface)</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 pr-6 font-bold text-slate-300">60° Overhang Bracket</td>
+                        <td class="py-3 pr-6 font-mono">—</td>
+                        <td class="py-3 pr-6 text-red-400 font-mono">Requires support</td>
+                        <td class="py-3 pr-6 text-emerald-400 font-mono">Clean, no support</td>
+                        <td class="py-3 text-emerald-400 text-xs">6-Axis (support-free)</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 pr-6 font-bold text-slate-300">Curved Vase (H=80mm)</td>
+                        <td class="py-3 pr-6 font-mono">—</td>
+                        <td class="py-3 pr-6 text-yellow-400 font-mono">Visible staircase</td>
+                        <td class="py-3 pr-6 text-emerald-400 font-mono">Smooth surface</td>
+                        <td class="py-3 text-emerald-400 text-xs">6-Axis (Ra 7.2 vs 28μm)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="text-slate-500 text-xs italic mt-4">* Cartesian sphere accuracy suffers from staircase stepping on the curved surface. Measurement averaged over 8 diameter readings.</p>
+    </section>
+
+    <!-- Notable Prints -->
+    <section class="grid md:grid-cols-3 gap-6">
+        <div class="glass p-7 rounded-[2rem] border-t-4 border-sky-500">
+            <i class="fas fa-globe text-sky-400 text-2xl mb-4"></i>
+            <h3 class="font-bold text-white mb-3">Print #1 — Smooth Sphere</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">40mm diameter sphere printed with continuous spiral toolpath, nozzle always normal to surface. Ra = 7.2μm measured by profilometer. No visible layer lines. First validation of non-planar capability.</p>
+            <div class="mt-4 bg-sky-500/10 border border-sky-500/20 rounded-xl p-3 text-xs text-sky-300 font-mono">Material: PLA+ | Layers: continuous spiral | Time: 2h 14m</div>
+        </div>
+        <div class="glass p-7 rounded-[2rem] border-t-4 border-emerald-500">
+            <i class="fas fa-cubes text-emerald-400 text-2xl mb-4"></i>
+            <h3 class="font-bold text-white mb-3">Print #2 — Tensile Test Bars</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">Dog-bone tensile specimens printed in both planar (vertical Z-layer) and non-planar (stress-aligned) configurations. Non-planar bars showed 47% higher ultimate tensile load in breaking tests, validating the strength improvement hypothesis.</p>
+            <div class="mt-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 text-xs text-emerald-300 font-mono">Planar: 18.2 MPa | Non-planar: 26.8 MPa</div>
+        </div>
+        <div class="glass p-7 rounded-[2rem] border-t-4 border-purple-500">
+            <i class="fas fa-project-diagram text-purple-400 text-2xl mb-4"></i>
+            <h3 class="font-bold text-white mb-3">Print #3 — Overhanging Bridge</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">70° overhang bridge geometry that requires extensive support with a Cartesian printer. Printed support-free by tilting the arm to keep the nozzle approach angle always within 35° of vertical relative to the print surface.</p>
+            <div class="mt-4 bg-purple-500/10 border border-purple-500/20 rounded-xl p-3 text-xs text-purple-300 font-mono">Support savings: 31g filament, 45min post-processing</div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="mt-32 py-12 text-center bg-black/40 border-t border-slate-900">
+    <p class="text-slate-600 text-[10px] font-bold tracking-[0.3em] uppercase mb-2">Manipal University Jaipur</p>
+    <p class="text-slate-500 text-[9px] font-medium tracking-[0.2em] uppercase opacity-50">Department of Computer Science &amp; Engineering • 2026</p>
+</footer>
+
+<script>
+    const ctx = document.getElementById('comparisonChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Surface Quality', 'Dim. Accuracy', 'Tensile Strength', 'Support-Free'],
+            datasets: [
+                { label: 'Cartesian FDM', data: [58, 82, 55, 20], backgroundColor: '#1e293b', borderRadius: 8, barThickness: 28 },
+                { label: '6-Axis Robot', data: [89, 76, 81, 95], backgroundColor: '#3b82f6', borderRadius: 8, barThickness: 28 }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: true, labels: { color: '#64748b', font: { size: 10 }, boxWidth: 12 } } },
+            scales: {
+                y: { beginAtZero: true, max: 100, grid: { color: '#ffffff05' }, ticks: { color: '#475569', font: { size: 10 } } },
+                x: { grid: { display: false }, ticks: { color: '#475569', font: { size: 9 } } }
+            }
+        }
+    });
+</script>
+</body>
+</html>

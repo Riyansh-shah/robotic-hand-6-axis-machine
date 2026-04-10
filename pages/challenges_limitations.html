@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenges & Limitations | PBL 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { background-color: #020617; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
+        .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
+        .gradient-text { background: linear-gradient(90deg,#60a5fa,#a855f7); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+    </style>
+</head>
+<body class="pb-24">
+
+<nav class="fixed w-full z-50 glass border-b border-slate-800/50 px-8 py-4 flex justify-between items-center">
+    <a href="../index.html" class="flex items-center gap-2 group">
+        <i class="fas fa-arrow-left text-slate-400 group-hover:text-white transition"></i>
+        <span class="text-sm font-bold text-slate-400 group-hover:text-white transition uppercase tracking-widest">Home</span>
+    </a>
+    <div class="flex items-center gap-3">
+        <span class="text-[10px] font-black text-slate-600 uppercase tracking-widest">11 of 12</span>
+        <span class="text-lg font-black text-white uppercase tracking-tighter">Challenges &amp; <span class="text-yellow-400 italic">Limits</span></span>
+    </div>
+    <div class="flex items-center gap-4">
+        <a href="results_testing.html" class="flex items-center gap-2 group">
+            <i class="fas fa-arrow-left text-slate-500 group-hover:text-white transition text-sm"></i>
+            <span class="text-xs font-bold text-slate-500 group-hover:text-white transition uppercase tracking-widest">Prev</span>
+        </a>
+        <a href="future_scope.html" class="flex items-center gap-2 group">
+            <span class="text-xs font-bold text-slate-400 group-hover:text-white transition uppercase tracking-widest">Next</span>
+            <i class="fas fa-arrow-right text-slate-400 group-hover:text-white transition text-sm"></i>
+        </a>
+    </div>
+</nav>
+
+<main class="max-w-6xl mx-auto px-6 pt-32 space-y-20">
+
+    <section class="text-center space-y-6">
+        <div class="inline-block px-4 py-1 border border-slate-800 rounded-full text-slate-500 text-[10px] font-mono mb-2 uppercase tracking-widest">Chapter 11 — Honest Assessment</div>
+        <h1 class="text-5xl md:text-6xl font-extrabold uppercase leading-tight">Challenges &amp; <span class="gradient-text">Limitations</span></h1>
+        <p class="text-slate-400 max-w-3xl mx-auto text-lg leading-relaxed">
+            An honest engineering evaluation: what didn't work as planned, what we underestimated, and what the hard physical limits of the current design are. Understanding these is as important as the successes.
+        </p>
+    </section>
+
+    <!-- Main Challenges Grid -->
+    <section class="grid md:grid-cols-2 gap-8">
+
+        <div class="glass p-8 rounded-[2rem] border-t-4 border-red-500">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-10 h-10 bg-red-500/20 rounded-xl flex items-center justify-center text-red-400 font-black">01</div>
+                <h3 class="text-lg font-bold">Structural Stiffness — The Dominant Problem</h3>
+            </div>
+            <p class="text-sm text-slate-400 leading-relaxed mb-4">This is the most significant technical limitation of the current design. The printed PLA link bodies deflect under their own weight and payload — particularly the shoulder and elbow links at maximum reach. Measured deflection at maximum extension under 500g payload: <strong class="text-white">1.8mm at TCP</strong>.</p>
+            <p class="text-sm text-slate-400 leading-relaxed mb-4">The root cause is the stiffness-to-mass ratio of FDM-printed parts. Hollow or lattice-infill structures achieve good mass savings but sacrifice bending stiffness. At full reach, the second area moment of inertia (I) of our 40×25mm box section is insufficient to hold TCP error below 0.5mm under full payload.</p>
+            <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
+                <p class="text-xs font-bold text-red-400 uppercase tracking-widest mb-2">Severity: HIGH</p>
+                <p class="text-xs text-slate-400"><strong class="text-white">Mitigation:</strong> Static gravity compensation model reduces this to ~0.4mm. Long-term fix: carbon fiber reinforcement or all-aluminum links. Both add cost and complexity.</p>
+            </div>
+        </div>
+
+        <div class="glass p-8 rounded-[2rem] border-t-4 border-orange-500">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-10 h-10 bg-orange-500/20 rounded-xl flex items-center justify-center text-orange-400 font-black">02</div>
+                <h3 class="text-lg font-bold">Singularity Avoidance in Real Toolpaths</h3>
+            </div>
+            <p class="text-sm text-slate-400 leading-relaxed mb-4">The analytical singularity avoidance works well for simple test paths but fails on complex organic geometries. When non-planar slicers generate paths over highly curved surfaces, they frequently command the nozzle to orientations near J5=0° (wrist singularity) — causing sudden joint velocity spikes and brief print speed drops.</p>
+            <p class="text-sm text-slate-400 leading-relaxed mb-4">Detected singularity encounters during testing: <strong class="text-white">23 events</strong> in a 45-minute complex print. Each caused a 1–3 second speed reduction. The printed surface shows faint speed-change artifacts at each of these locations.</p>
+            <div class="bg-orange-500/10 border border-orange-500/20 rounded-xl p-4">
+                <p class="text-xs font-bold text-orange-400 uppercase tracking-widest mb-2">Severity: MEDIUM</p>
+                <p class="text-xs text-slate-400"><strong class="text-white">Mitigation:</strong> Global path optimization pre-processing (currently in development) will re-orient the entire print to minimize wrist singularity encounters during slicing.</p>
+            </div>
+        </div>
+
+        <div class="glass p-8 rounded-[2rem] border-t-4 border-yellow-500">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-10 h-10 bg-yellow-500/20 rounded-xl flex items-center justify-center text-yellow-400 font-black">03</div>
+                <h3 class="text-lg font-bold">Software Integration Complexity</h3>
+            </div>
+            <p class="text-sm text-slate-400 leading-relaxed mb-4">The multi-stage pipeline (slicer → Python motion server → Marlin → hardware) creates numerous integration failure points. Real failures observed during development:</p>
+            <ul class="space-y-2 text-sm text-slate-400 mb-4 ml-2">
+                <li class="flex gap-2"><i class="fas fa-bug text-yellow-400 flex-shrink-0 mt-0.5"></i><p>Serial buffer overflow during high-density toolpaths caused frame drops → missed steps</p></li>
+                <li class="flex gap-2"><i class="fas fa-bug text-yellow-400 flex-shrink-0 mt-0.5"></i><p>IK solver returning NaN at workspace boundary → arm moved to home position mid-print</p></li>
+                <li class="flex gap-2"><i class="fas fa-bug text-yellow-400 flex-shrink-0 mt-0.5"></i><p>Raspberry Pi thermal throttling under sustained IK computation → trajectory timing errors</p></li>
+            </ul>
+            <div class="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4">
+                <p class="text-xs font-bold text-yellow-400 uppercase tracking-widest mb-2">Severity: MEDIUM</p>
+                <p class="text-xs text-slate-400">All three bugs were found and fixed, but this highlights the debugging difficulty of a multi-layer software stack with hardware in the loop.</p>
+            </div>
+        </div>
+
+        <div class="glass p-8 rounded-[2rem] border-t-4 border-purple-500">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center text-purple-400 font-black">04</div>
+                <h3 class="text-lg font-bold">Print Speed — Significantly Slower Than Cartesian</h3>
+            </div>
+            <p class="text-sm text-slate-400 leading-relaxed mb-4">The 6-axis arm prints at a maximum practical speed of <strong class="text-white">40mm/s TCP</strong>, compared to 80–150mm/s for a modern Cartesian printer. Three compounding factors:</p>
+            <ul class="space-y-2 text-sm text-slate-400 mb-4 ml-2">
+                <li class="flex gap-2"><i class="fas fa-arrow-right text-purple-400 flex-shrink-0 mt-0.5"></i><p><strong class="text-white">Joint velocity limits:</strong> Angular velocity limits map to lower linear TCP speeds at larger reach radii</p></li>
+                <li class="flex gap-2"><i class="fas fa-arrow-right text-purple-400 flex-shrink-0 mt-0.5"></i><p><strong class="text-white">IK computation latency:</strong> 12ms/segment on Raspberry Pi limits trajectory update rate</p></li>
+                <li class="flex gap-2"><i class="fas fa-arrow-right text-purple-400 flex-shrink-0 mt-0.5"></i><p><strong class="text-white">Vibration:</strong> Above 50mm/s, motor excitation causes ringing artifacts on surfaces</p></li>
+            </ul>
+            <div class="bg-purple-500/10 border border-purple-500/20 rounded-xl p-4">
+                <p class="text-xs font-bold text-purple-400 uppercase tracking-widest mb-2">Severity: HIGH (for production use)</p>
+                <p class="text-xs text-slate-400">Speed is not a blocker for the research objectives. A 20cm-tall vase takes ~3.5 hours vs ~1.5 hours on Cartesian — acceptable for prototyping, not for manufacturing.</p>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Minor Limitations -->
+    <section class="glass p-10 rounded-[2.5rem] border-l-4 border-slate-600">
+        <div class="flex items-center gap-4 mb-8">
+            <i class="fas fa-list text-slate-400 text-2xl"></i>
+            <h2 class="text-2xl font-black uppercase tracking-tight">Additional Known Limitations</h2>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6 text-sm text-slate-400">
+            <div>
+                <h4 class="font-bold text-white mb-3 text-sm uppercase tracking-wider text-slate-300">Open-Loop Motors</h4>
+                <p class="leading-relaxed">No position feedback encoders on the stepper axes. Missed steps from electrical noise or mechanical shock cause cumulative position error that grows through the print with no way to detect or correct it.</p>
+            </div>
+            <div>
+                <h4 class="font-bold text-white mb-3 text-sm uppercase tracking-wider text-slate-300">No Heated Enclosure</h4>
+                <p class="leading-relaxed">Open frame design cannot print ABS or PC reliably due to warping from ambient temperature gradients. Limits the material palette to PLA and PETG for current hardware.</p>
+            </div>
+            <div>
+                <h4 class="font-bold text-white mb-3 text-sm uppercase tracking-wider text-slate-300">Non-Planar Slicer Gap</h4>
+                <p class="leading-relaxed">No mature, fully automated non-planar slicer exists yet. Current workflow requires manual toolpath specification for curved surfaces — a significant barrier to usability for non-experts.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lessons Learned -->
+    <section class="glass p-10 rounded-[2.5rem] border-t-4 border-white/20">
+        <h2 class="text-2xl font-black uppercase tracking-tight mb-8">Lessons Learned</h2>
+        <div class="grid md:grid-cols-2 gap-6 text-sm text-slate-400">
+            <div class="border-l-2 border-blue-500/50 pl-5">
+                <p class="font-bold text-white mb-2">Design for stiffness first, mass second</p>
+                <p class="leading-relaxed">We optimized for minimum mass early in the design, inadvertently under-sizing the link cross-sections. For a 3D printing robot, accuracy matters more than maximum speed — a stiffer (heavier) arm with better TCP accuracy would have been the right trade-off.</p>
+            </div>
+            <div class="border-l-2 border-purple-500/50 pl-5">
+                <p class="font-bold text-white mb-2">Closed-loop control is not optional for robot printing</p>
+                <p class="leading-relaxed">Stepper motors work in Cartesian printers because the gantry mechanics are inherently stiff and over-damped. A serial chain arm amplifies disturbances — any compliance or missed step compounds through all downstream joints. Encoders are a V2 priority.</p>
+            </div>
+            <div class="border-l-2 border-emerald-500/50 pl-5">
+                <p class="font-bold text-white mb-2">Hardware-in-loop testing must happen early</p>
+                <p class="leading-relaxed">Many of the software bugs were only discovered when running against real hardware. Simulation-only development gave false confidence. A motion simulator with realistic timing constraints would have caught the serial buffer overflow much earlier.</p>
+            </div>
+            <div class="border-l-2 border-amber-500/50 pl-5">
+                <p class="font-bold text-white mb-2">Non-planar printing needs a dedicated slicer ecosystem</p>
+                <p class="leading-relaxed">Adapting existing planar slicers for non-planar paths is fragile and labor-intensive. The biggest multiplier for this project would be a purpose-built non-planar slicer with built-in singularity avoidance and orientation optimization.</p>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="mt-32 py-12 text-center bg-black/40 border-t border-slate-900">
+    <p class="text-slate-600 text-[10px] font-bold tracking-[0.3em] uppercase mb-2">Manipal University Jaipur</p>
+    <p class="text-slate-500 text-[9px] font-medium tracking-[0.2em] uppercase opacity-50">Department of Computer Science &amp; Engineering • 2026</p>
+</footer>
+</body>
+</html>

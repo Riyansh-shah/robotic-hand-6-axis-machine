@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mechanical Design | PBL 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { background-color: #020617; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
+        .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
+        .gradient-text { background: linear-gradient(90deg,#60a5fa,#a855f7); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+    </style>
+</head>
+<body class="pb-24">
+
+<nav class="fixed w-full z-50 glass border-b border-slate-800/50 px-8 py-4 flex justify-between items-center">
+    <a href="../index.html" class="flex items-center gap-2 group">
+        <i class="fas fa-arrow-left text-slate-400 group-hover:text-white transition"></i>
+        <span class="text-sm font-bold text-slate-400 group-hover:text-white transition uppercase tracking-widest">Home</span>
+    </a>
+    <div class="flex items-center gap-3">
+        <span class="text-[10px] font-black text-slate-600 uppercase tracking-widest">02 of 12</span>
+        <span class="text-lg font-black text-white uppercase tracking-tighter">Mechanical <span class="text-purple-500 italic">Design</span></span>
+    </div>
+    <div class="flex items-center gap-4">
+        <a href="problem_statement.html" class="flex items-center gap-2 group">
+            <i class="fas fa-arrow-left text-slate-500 group-hover:text-white transition text-sm"></i>
+            <span class="text-xs font-bold text-slate-500 group-hover:text-white transition uppercase tracking-widest">Prev</span>
+        </a>
+        <a href="kinematics.html" class="flex items-center gap-2 group">
+            <span class="text-xs font-bold text-slate-400 group-hover:text-white transition uppercase tracking-widest">Next</span>
+            <i class="fas fa-arrow-right text-slate-400 group-hover:text-white transition text-sm"></i>
+        </a>
+    </div>
+</nav>
+
+<main class="max-w-6xl mx-auto px-6 pt-32 space-y-20">
+
+    <!-- Hero -->
+    <section class="text-center space-y-6">
+        <div class="inline-block px-4 py-1 border border-slate-800 rounded-full text-slate-500 text-[10px] font-mono mb-2 uppercase tracking-widest">Chapter 02 — Physical System</div>
+        <h1 class="text-5xl md:text-6xl font-extrabold uppercase leading-tight"><span class="gradient-text">Mechanical</span> Design</h1>
+        <p class="text-slate-400 max-w-3xl mx-auto text-lg leading-relaxed">
+            A 6R fully-articulated arm configuration with mass-optimized links, stepper/servo actuation, and a direct-drive extruder end-effector. Every design decision is driven by the dual constraint of minimizing inertia while maximizing structural rigidity.
+        </p>
+    </section>
+
+    <!-- Arm Configuration -->
+    <section class="glass p-10 rounded-[2.5rem] border-l-4 border-purple-500">
+        <div class="flex items-center gap-4 mb-8">
+            <i class="fas fa-robot text-purple-500 text-2xl"></i>
+            <h2 class="text-2xl font-black uppercase tracking-tight">6R Articulated Configuration</h2>
+        </div>
+        <div class="grid md:grid-cols-2 gap-10 items-center">
+            <div class="space-y-4 text-sm text-slate-400 leading-relaxed">
+                <p>The arm follows a <strong class="text-white">6-revolute (6R) serial chain</strong> topology — the most common industrial configuration (FANUC, KUKA, ABB all use this). All six joints are revolute (rotational), producing a robot with a complete 6-DOF workspace: three DOF for <em>position</em> (J1–J3) and three DOF for <em>orientation</em> (J4–J6).</p>
+                <p>The wrist is designed as a <strong class="text-white">spherical wrist</strong> — axes J4, J5, and J6 all intersect at a single point (the wrist center). This critically decouples the position and orientation problems, enabling a clean analytical inverse kinematics solution.</p>
+                <p>The arm is split into two functional sub-assemblies:</p>
+                <ul class="space-y-2 ml-4">
+                    <li class="flex gap-2"><span class="text-purple-400 font-bold">J1–J3:</span> Positioning assembly — places the wrist center at any point in the reachable workspace</li>
+                    <li class="flex gap-2"><span class="text-purple-400 font-bold">J4–J6:</span> Orientation assembly — spherical wrist controls nozzle approach direction</li>
+                </ul>
+            </div>
+            <div class="space-y-3">
+                <div class="bg-purple-500/5 border border-purple-500/20 p-4 rounded-2xl flex items-center gap-4">
+                    <span class="w-9 h-9 bg-purple-500/20 rounded-lg flex items-center justify-center text-purple-400 font-black text-sm flex-shrink-0">J1</span>
+                    <div><p class="font-bold text-white text-sm">Waist — Yaw</p><p class="text-xs text-slate-500">Base rotation, ±170°, carries full arm weight</p></div>
+                </div>
+                <div class="bg-purple-500/5 border border-purple-500/20 p-4 rounded-2xl flex items-center gap-4">
+                    <span class="w-9 h-9 bg-purple-500/20 rounded-lg flex items-center justify-center text-purple-400 font-black text-sm flex-shrink-0">J2</span>
+                    <div><p class="font-bold text-white text-sm">Shoulder — Pitch</p><p class="text-xs text-slate-500">Primary lifter, +90°/−65°, highest torque demand</p></div>
+                </div>
+                <div class="bg-purple-500/5 border border-purple-500/20 p-4 rounded-2xl flex items-center gap-4">
+                    <span class="w-9 h-9 bg-purple-500/20 rounded-lg flex items-center justify-center text-purple-400 font-black text-sm flex-shrink-0">J3</span>
+                    <div><p class="font-bold text-white text-sm">Elbow — Pitch</p><p class="text-xs text-slate-500">Reach extension, +70°/−180°</p></div>
+                </div>
+                <div class="bg-blue-500/5 border border-blue-500/20 p-4 rounded-2xl flex items-center gap-4">
+                    <span class="w-9 h-9 bg-blue-500/20 rounded-lg flex items-center justify-center text-blue-400 font-black text-sm flex-shrink-0">J4</span>
+                    <div><p class="font-bold text-white text-sm">Forearm Roll</p><p class="text-xs text-slate-500">±190°, aligns wrist for approach</p></div>
+                </div>
+                <div class="bg-blue-500/5 border border-blue-500/20 p-4 rounded-2xl flex items-center gap-4">
+                    <span class="w-9 h-9 bg-blue-500/20 rounded-lg flex items-center justify-center text-blue-400 font-black text-sm flex-shrink-0">J5</span>
+                    <div><p class="font-bold text-white text-sm">Wrist Pitch</p><p class="text-xs text-slate-500">+120°/−120°, controls nozzle tilt</p></div>
+                </div>
+                <div class="bg-blue-500/5 border border-blue-500/20 p-4 rounded-2xl flex items-center gap-4">
+                    <span class="w-9 h-9 bg-blue-500/20 rounded-lg flex items-center justify-center text-blue-400 font-black text-sm flex-shrink-0">J6</span>
+                    <div><p class="font-bold text-white text-sm">Tool Roll</p><p class="text-xs text-slate-500">±360° continuous, final orientation DOF</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Link Dimensions -->
+    <section class="glass p-10 rounded-[2.5rem] border-t-4 border-white/20">
+        <div class="flex items-center gap-4 mb-8">
+            <i class="fas fa-ruler-combined text-slate-300 text-2xl"></i>
+            <h2 class="text-2xl font-black uppercase tracking-tight">Link Dimensions &amp; Payload</h2>
+        </div>
+        <div class="overflow-x-auto mb-8">
+            <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                    <tr class="border-b border-white/10 text-[10px] uppercase tracking-widest text-slate-500">
+                        <th class="pb-4 pr-6">Link</th>
+                        <th class="pb-4 pr-6">Name</th>
+                        <th class="pb-4 pr-6">Length (mm)</th>
+                        <th class="pb-4 pr-6">Cross-Section</th>
+                        <th class="pb-4">Mass (g)</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    <tr>
+                        <td class="py-3 pr-6 font-mono font-bold text-purple-400">L1</td>
+                        <td class="py-3 pr-6 text-slate-300">Base Column</td>
+                        <td class="py-3 pr-6 font-mono">120</td>
+                        <td class="py-3 pr-6 text-slate-400">80mm hex section</td>
+                        <td class="py-3 font-mono">~310</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 pr-6 font-mono font-bold text-purple-400">L2</td>
+                        <td class="py-3 pr-6 text-slate-300">Upper Arm</td>
+                        <td class="py-3 pr-6 font-mono">210</td>
+                        <td class="py-3 pr-6 text-slate-400">40×25mm box, lattice-infill</td>
+                        <td class="py-3 font-mono">~185</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 pr-6 font-mono font-bold text-purple-400">L3</td>
+                        <td class="py-3 pr-6 text-slate-300">Forearm</td>
+                        <td class="py-3 pr-6 font-mono">185</td>
+                        <td class="py-3 pr-6 text-slate-400">30×20mm box, lattice-infill</td>
+                        <td class="py-3 font-mono">~120</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 pr-6 font-mono font-bold text-blue-400">L4</td>
+                        <td class="py-3 pr-6 text-slate-300">Wrist Body</td>
+                        <td class="py-3 pr-6 font-mono">80</td>
+                        <td class="py-3 pr-6 text-slate-400">Compact bevel housing</td>
+                        <td class="py-3 font-mono">~95</td>
+                    </tr>
+                    <tr>
+                        <td class="py-3 pr-6 font-mono font-bold text-blue-400">L5</td>
+                        <td class="py-3 pr-6 text-slate-300">Tool Flange</td>
+                        <td class="py-3 pr-6 font-mono">30</td>
+                        <td class="py-3 pr-6 text-slate-400">Adapter plate</td>
+                        <td class="py-3 font-mono">~40</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="grid md:grid-cols-3 gap-5">
+            <div class="bg-white/5 border border-white/10 p-5 rounded-2xl text-center">
+                <span class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Total Arm Reach</span>
+                <span class="block text-3xl font-black text-white font-mono">350mm</span>
+                <span class="block text-xs text-slate-500 mt-1">from base to TCP</span>
+            </div>
+            <div class="bg-white/5 border border-white/10 p-5 rounded-2xl text-center">
+                <span class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Arm Total Mass</span>
+                <span class="block text-3xl font-black text-white font-mono">~750g</span>
+                <span class="block text-xs text-slate-500 mt-1">excl. base motor &amp; extruder</span>
+            </div>
+            <div class="bg-white/5 border border-white/10 p-5 rounded-2xl text-center">
+                <span class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Rated Payload</span>
+                <span class="block text-3xl font-black text-white font-mono">500g</span>
+                <span class="block text-xs text-slate-500 mt-1">at full reach, 1.5× safety factor</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Materials -->
+    <section class="grid md:grid-cols-2 gap-8">
+        <div class="glass p-8 rounded-[2rem] border-t-4 border-emerald-500">
+            <div class="flex items-center gap-4 mb-6">
+                <i class="fas fa-layer-group text-emerald-400 text-xl"></i>
+                <h2 class="text-xl font-black uppercase tracking-tight">Structural Materials</h2>
+            </div>
+            <div class="space-y-5 text-sm">
+                <div class="border-l-2 border-emerald-500/50 pl-4">
+                    <p class="font-bold text-white mb-1">Aluminium 6061-T6 — Base &amp; Motor Mounts</p>
+                    <p class="text-slate-400">Yield strength 276 MPa, density 2.7 g/cm³. CNC-machined base plate and motor mounts where dimensional tolerances and rigidity are critical. Anodized for corrosion resistance.</p>
+                </div>
+                <div class="border-l-2 border-emerald-500/50 pl-4">
+                    <p class="font-bold text-white mb-1">PLA+ / PETG — Link Bodies</p>
+                    <p class="text-slate-400">Printed at 40% gyroid infill for the optimal stiffness-to-mass ratio. Link cross-sections are sized so first natural frequency stays above 20 Hz to avoid resonance during motion.</p>
+                </div>
+                <div class="border-l-2 border-emerald-500/50 pl-4">
+                    <p class="font-bold text-white mb-1">Steel M3/M4 Fasteners + Bearings</p>
+                    <p class="text-slate-400">All joints use 608ZZ deep-groove ball bearings (8mm ID) for smooth rotation and minimal friction. Shoulder joint uses a 6804ZZ (20mm ID) for higher load capacity.</p>
+                </div>
+            </div>
+        </div>
+        <div class="glass p-8 rounded-[2rem] border-t-4 border-amber-500">
+            <div class="flex items-center gap-4 mb-6">
+                <i class="fas fa-bolt text-amber-400 text-xl"></i>
+                <h2 class="text-xl font-black uppercase tracking-tight">Actuator Selection</h2>
+            </div>
+            <div class="space-y-5 text-sm">
+                <div class="border-l-2 border-amber-500/50 pl-4">
+                    <p class="font-bold text-white mb-1">NEMA 17 Steppers — J1, J2, J3</p>
+                    <p class="text-slate-400">1.8°/step (200 steps/rev), holding torque 0.59 N·m. Driven with TMC2208 drivers at 1/16 microstepping → 3200 steps/rev for smooth motion. Gear-reduced via cycloidal drive (ratio 21:1) for joint torque up to 12 N·m.</p>
+                </div>
+                <div class="border-l-2 border-amber-500/50 pl-4">
+                    <p class="font-bold text-white mb-1">NEMA 14 Steppers — J4, J5</p>
+                    <p class="text-slate-400">Smaller footprint for the wrist assembly. 0.40 N·m holding torque. Gear reduced 9:1 via bevel gear pair. Adequate for orientation control of the lightweight wrist.</p>
+                </div>
+                <div class="border-l-2 border-amber-500/50 pl-4">
+                    <p class="font-bold text-white mb-1">MG996R Servo — J6 (Tool Roll)</p>
+                    <p class="text-slate-400">High-torque metal gear servo, 11 kg·cm at 5V. Used for J6 continuous rotation with positional feedback via potentiometer. Easily interchangeable for future closed-loop upgrade.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- End-Effector -->
+    <section class="glass p-10 rounded-[2.5rem] border-l-4 border-blue-500">
+        <div class="flex items-center gap-4 mb-8">
+            <i class="fas fa-print text-blue-400 text-2xl"></i>
+            <h2 class="text-2xl font-black uppercase tracking-tight">End-Effector — Extruder Mount</h2>
+        </div>
+        <div class="grid md:grid-cols-2 gap-10">
+            <div class="space-y-4 text-sm text-slate-400 leading-relaxed">
+                <p>The end-effector is a custom-designed <strong class="text-white">direct-drive extruder mount</strong> that attaches to the J6 tool flange. The total end-effector assembly mass is kept under <strong class="text-white">220g</strong> — including motor, hotend, and part cooling fan — to stay within the arm's rated payload capacity.</p>
+                <p>The mount uses a 3-point kinematic coupling interface with M3 captive nuts, allowing the extruder to be swapped within 90 seconds without tools. This is important for maintenance and future multi-material upgrades.</p>
+                <p>A strain-relief bracket manages the six cable runs (heater, thermistor, part cooling fan, stepper motor, limit switch) that must flex through the full ±120° range of J5 without fatigue failure over thousands of print hours.</p>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-blue-500/5 border border-blue-500/20 p-4 rounded-2xl text-center">
+                    <i class="fas fa-weight-hanging text-blue-400 text-xl mb-2"></i>
+                    <span class="block text-[10px] text-slate-500 uppercase tracking-widest mb-1">EE Mass</span>
+                    <span class="block text-2xl font-black font-mono text-white">218g</span>
+                </div>
+                <div class="bg-blue-500/5 border border-blue-500/20 p-4 rounded-2xl text-center">
+                    <i class="fas fa-thermometer-half text-red-400 text-xl mb-2"></i>
+                    <span class="block text-[10px] text-slate-500 uppercase tracking-widest mb-1">Max Nozzle Temp</span>
+                    <span class="block text-2xl font-black font-mono text-white">240°C</span>
+                </div>
+                <div class="bg-blue-500/5 border border-blue-500/20 p-4 rounded-2xl text-center">
+                    <i class="fas fa-compress-arrows-alt text-purple-400 text-xl mb-2"></i>
+                    <span class="block text-[10px] text-slate-500 uppercase tracking-widest mb-1">Nozzle Diameter</span>
+                    <span class="block text-2xl font-black font-mono text-white">0.4mm</span>
+                </div>
+                <div class="bg-blue-500/5 border border-blue-500/20 p-4 rounded-2xl text-center">
+                    <i class="fas fa-ruler text-emerald-400 text-xl mb-2"></i>
+                    <span class="block text-[10px] text-slate-500 uppercase tracking-widest mb-1">Filament Dia.</span>
+                    <span class="block text-2xl font-black font-mono text-white">1.75mm</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="mt-32 py-12 text-center bg-black/40 border-t border-slate-900">
+    <p class="text-slate-600 text-[10px] font-bold tracking-[0.3em] uppercase mb-2">Manipal University Jaipur</p>
+    <p class="text-slate-500 text-[9px] font-medium tracking-[0.2em] uppercase opacity-50">Department of Computer Science &amp; Engineering • 2026</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software Pipeline | PBL 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { background-color: #020617; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
+        .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
+        .gradient-text { background: linear-gradient(90deg,#60a5fa,#a855f7); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+        .mono-box { background: #0d1117; border: 1px solid rgba(255,255,255,0.08); border-radius: 1rem; padding: 1.25rem 1.5rem; font-family: 'Courier New', monospace; font-size: 0.78rem; color: #c4b5fd; line-height: 1.8; overflow-x: auto; }
+        .stage-arrow { color: #334155; font-size: 1.5rem; text-align: center; margin: 0.25rem 0; }
+    </style>
+</head>
+<body class="pb-24">
+
+<nav class="fixed w-full z-50 glass border-b border-slate-800/50 px-8 py-4 flex justify-between items-center">
+    <a href="../index.html" class="flex items-center gap-2 group">
+        <i class="fas fa-arrow-left text-slate-400 group-hover:text-white transition"></i>
+        <span class="text-sm font-bold text-slate-400 group-hover:text-white transition uppercase tracking-widest">Home</span>
+    </a>
+    <div class="flex items-center gap-3">
+        <span class="text-[10px] font-black text-slate-600 uppercase tracking-widest">08 of 12</span>
+        <span class="text-lg font-black text-white uppercase tracking-tighter">Software <span class="text-indigo-400 italic">Pipeline</span></span>
+    </div>
+    <div class="flex items-center gap-4">
+        <a href="extruder_material.html" class="flex items-center gap-2 group">
+            <i class="fas fa-arrow-left text-slate-500 group-hover:text-white transition text-sm"></i>
+            <span class="text-xs font-bold text-slate-500 group-hover:text-white transition uppercase tracking-widest">Prev</span>
+        </a>
+        <a href="calibration_accuracy.html" class="flex items-center gap-2 group">
+            <span class="text-xs font-bold text-slate-400 group-hover:text-white transition uppercase tracking-widest">Next</span>
+            <i class="fas fa-arrow-right text-slate-400 group-hover:text-white transition text-sm"></i>
+        </a>
+    </div>
+</nav>
+
+<main class="max-w-6xl mx-auto px-6 pt-32 space-y-20">
+
+    <section class="text-center space-y-6">
+        <div class="inline-block px-4 py-1 border border-slate-800 rounded-full text-slate-500 text-[10px] font-mono mb-2 uppercase tracking-widest">Chapter 08 — Full Stack</div>
+        <h1 class="text-5xl md:text-6xl font-extrabold uppercase leading-tight">Software <span class="gradient-text">Pipeline</span></h1>
+        <p class="text-slate-400 max-w-3xl mx-auto text-lg leading-relaxed">
+            The complete workflow from a CAD model on a designer's screen to synchronized motor pulses at the joint actuators — seven distinct stages, three software environments, and one continuous data flow.
+        </p>
+    </section>
+
+    <!-- Pipeline Visual -->
+    <section class="glass p-10 rounded-[2.5rem] border-l-4 border-indigo-500">
+        <div class="flex items-center gap-4 mb-10">
+            <i class="fas fa-code-branch text-indigo-400 text-2xl"></i>
+            <h2 class="text-2xl font-black uppercase tracking-tight">End-to-End Pipeline</h2>
+        </div>
+        <div class="grid md:grid-cols-7 gap-3 items-center">
+            <div class="glass p-4 rounded-2xl text-center border-t-2 border-blue-500">
+                <i class="fas fa-cube text-blue-400 text-2xl mb-2"></i>
+                <p class="text-[10px] font-black text-white uppercase tracking-wider">CAD Model</p>
+                <p class="text-[9px] text-slate-500 mt-1">Fusion 360 / SolidWorks</p>
+            </div>
+            <div class="stage-arrow hidden md:block"><i class="fas fa-chevron-right"></i></div>
+            <div class="glass p-4 rounded-2xl text-center border-t-2 border-purple-500">
+                <i class="fas fa-file-export text-purple-400 text-2xl mb-2"></i>
+                <p class="text-[10px] font-black text-white uppercase tracking-wider">STL / 3MF</p>
+                <p class="text-[9px] text-slate-500 mt-1">Mesh export</p>
+            </div>
+            <div class="stage-arrow hidden md:block"><i class="fas fa-chevron-right"></i></div>
+            <div class="glass p-4 rounded-2xl text-center border-t-2 border-cyan-500">
+                <i class="fas fa-layer-group text-cyan-400 text-2xl mb-2"></i>
+                <p class="text-[10px] font-black text-white uppercase tracking-wider">Slicer</p>
+                <p class="text-[9px] text-slate-500 mt-1">PrusaSlicer / Cura</p>
+            </div>
+            <div class="stage-arrow hidden md:block"><i class="fas fa-chevron-right"></i></div>
+            <div class="glass p-4 rounded-2xl text-center border-t-2 border-emerald-500">
+                <i class="fas fa-file-code text-emerald-400 text-2xl mb-2"></i>
+                <p class="text-[10px] font-black text-white uppercase tracking-wider">G-Code</p>
+                <p class="text-[9px] text-slate-500 mt-1">Toolpath file</p>
+            </div>
+        </div>
+        <div class="flex justify-center my-4 md:hidden"><i class="fas fa-chevron-down text-slate-700 text-2xl"></i></div>
+        <div class="hidden md:flex justify-center my-2"><i class="fas fa-chevron-down text-slate-700 text-xl"></i></div>
+        <div class="grid md:grid-cols-7 gap-3 items-center">
+            <div class="glass p-4 rounded-2xl text-center border-t-2 border-orange-500">
+                <i class="fab fa-python text-orange-400 text-2xl mb-2"></i>
+                <p class="text-[10px] font-black text-white uppercase tracking-wider">IK Solver</p>
+                <p class="text-[9px] text-slate-500 mt-1">Python / NumPy</p>
+            </div>
+            <div class="stage-arrow hidden md:block"><i class="fas fa-chevron-right"></i></div>
+            <div class="glass p-4 rounded-2xl text-center border-t-2 border-red-500">
+                <i class="fas fa-project-diagram text-red-400 text-2xl mb-2"></i>
+                <p class="text-[10px] font-black text-white uppercase tracking-wider">Trajectory</p>
+                <p class="text-[9px] text-slate-500 mt-1">Spline smoothing</p>
+            </div>
+            <div class="stage-arrow hidden md:block"><i class="fas fa-chevron-right"></i></div>
+            <div class="glass p-4 rounded-2xl text-center border-t-2 border-amber-500">
+                <i class="fas fa-microchip text-amber-400 text-2xl mb-2"></i>
+                <p class="text-[10px] font-black text-white uppercase tracking-wider">Controller</p>
+                <p class="text-[9px] text-slate-500 mt-1">Marlin / Arduino</p>
+            </div>
+            <div class="stage-arrow hidden md:block"><i class="fas fa-chevron-right"></i></div>
+            <div class="glass p-4 rounded-2xl text-center border-t-2 border-indigo-500">
+                <i class="fas fa-cogs text-indigo-400 text-2xl mb-2"></i>
+                <p class="text-[10px] font-black text-white uppercase tracking-wider">Motors</p>
+                <p class="text-[9px] text-slate-500 mt-1">Step pulses</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stage Details -->
+    <section class="space-y-8">
+        <h2 class="text-3xl font-black uppercase tracking-tight text-center">Stage <span class="text-indigo-400">Details</span></h2>
+
+        <div class="grid md:grid-cols-2 gap-6">
+
+            <div class="glass p-7 rounded-[2rem] border-l-4 border-blue-500">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-7 h-7 bg-blue-500/20 rounded-lg flex items-center justify-center text-blue-400 font-black text-xs">1</span>
+                    <h3 class="font-bold text-white">CAD Design</h3>
+                </div>
+                <p class="text-sm text-slate-400 leading-relaxed">Fusion 360 is used for all arm structural parts. The kinematic skeleton (joint axes, link lengths, DH parameters) is defined first as a parametric sketch, then link geometry is designed around it. All files are version-controlled in Autodesk cloud and exported as STEP for FEM analysis and as STL for printing.</p>
+            </div>
+
+            <div class="glass p-7 rounded-[2rem] border-l-4 border-cyan-500">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-7 h-7 bg-cyan-500/20 rounded-lg flex items-center justify-center text-cyan-400 font-black text-xs">2</span>
+                    <h3 class="font-bold text-white">Slicing — Standard &amp; Non-Planar</h3>
+                </div>
+                <p class="text-sm text-slate-400 leading-relaxed">PrusaSlicer handles standard planar slicing for calibration prints. For non-planar paths, a modified version of FullControl GCode Designer generates 5-axis toolpaths (X, Y, Z + nozzle tilt I, J). Future integration with <strong class="text-white">Slicer4RTN</strong> (a non-planar slicer research tool from TU Delft) is planned for fully automated curved-surface slicing.</p>
+            </div>
+
+            <div class="glass p-7 rounded-[2rem] border-l-4 border-orange-500">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-7 h-7 bg-orange-500/20 rounded-lg flex items-center justify-center text-orange-400 font-black text-xs">3</span>
+                    <h3 class="font-bold text-white">IK Solver (Python)</h3>
+                </div>
+                <p class="text-sm text-slate-400 leading-relaxed mb-3">The core Python solver implements the analytical decoupled IK from Chapter 3. Key libraries: NumPy for matrix operations, SciPy for spline fitting. Typical processing time for a 200-waypoint segment: ~12ms on Raspberry Pi 4.</p>
+                <div class="mono-box">
+                    # Core IK call<br>
+                    def ik_solve(pose: np.ndarray,<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;q_prev: np.ndarray) -&gt; np.ndarray:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;wc = compute_wrist_center(pose)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;q123 = solve_position(wc)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;q456 = solve_orientation(pose, q123)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;return select_nearest(q123+q456, q_prev)
+                </div>
+            </div>
+
+            <div class="glass p-7 rounded-[2rem] border-l-4 border-red-500">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-7 h-7 bg-red-500/20 rounded-lg flex items-center justify-center text-red-400 font-black text-xs">4</span>
+                    <h3 class="font-bold text-white">Trajectory Generation</h3>
+                </div>
+                <p class="text-sm text-slate-400 leading-relaxed mb-3">SciPy's CubicSpline fits a smooth trajectory through all IK-solved joint angles. The spline is evaluated at 1kHz to produce the command stream. Velocity and acceleration continuity are enforced by natural boundary conditions at the spline knots.</p>
+                <div class="mono-box">
+                    from scipy.interpolate import CubicSpline<br>
+                    cs = CubicSpline(t_waypoints,<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;joint_angles,<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bc_type='natural')<br>
+                    t_fine = np.arange(0, T_total, 0.001)<br>
+                    q_stream = cs(t_fine)  # 1kHz commands
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Tool Summary -->
+    <section class="glass p-10 rounded-[2.5rem] border-t-4 border-indigo-500">
+        <div class="flex items-center gap-4 mb-8">
+            <i class="fas fa-tools text-indigo-400 text-2xl"></i>
+            <h2 class="text-2xl font-black uppercase tracking-tight">Tools &amp; Technologies Used</h2>
+        </div>
+        <div class="grid md:grid-cols-3 gap-5">
+            <div class="bg-indigo-500/5 border border-indigo-500/15 p-5 rounded-2xl">
+                <p class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-3">CAD &amp; Design</p>
+                <div class="space-y-2 text-sm text-slate-400">
+                    <p><i class="fas fa-cube text-blue-400 mr-2"></i>Autodesk Fusion 360</p>
+                    <p><i class="fas fa-drafting-compass text-blue-400 mr-2"></i>SolidWorks (FEA)</p>
+                    <p><i class="fas fa-vector-square text-blue-400 mr-2"></i>FreeCAD (open-source)</p>
+                </div>
+            </div>
+            <div class="bg-indigo-500/5 border border-indigo-500/15 p-5 rounded-2xl">
+                <p class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-3">Slicing &amp; Toolpath</p>
+                <div class="space-y-2 text-sm text-slate-400">
+                    <p><i class="fas fa-layer-group text-cyan-400 mr-2"></i>PrusaSlicer 2.7</p>
+                    <p><i class="fas fa-layer-group text-cyan-400 mr-2"></i>Ultimaker Cura 5.x</p>
+                    <p><i class="fas fa-code text-cyan-400 mr-2"></i>FullControl GCode Designer</p>
+                </div>
+            </div>
+            <div class="bg-indigo-500/5 border border-indigo-500/15 p-5 rounded-2xl">
+                <p class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-3">Motion &amp; Control</p>
+                <div class="space-y-2 text-sm text-slate-400">
+                    <p><i class="fab fa-python text-orange-400 mr-2"></i>Python 3.11 + NumPy + SciPy</p>
+                    <p><i class="fas fa-microchip text-red-400 mr-2"></i>Marlin 2.1 (modified)</p>
+                    <p><i class="fas fa-desktop text-purple-400 mr-2"></i>OctoPrint + custom plugin</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="mt-32 py-12 text-center bg-black/40 border-t border-slate-900">
+    <p class="text-slate-600 text-[10px] font-bold tracking-[0.3em] uppercase mb-2">Manipal University Jaipur</p>
+    <p class="text-slate-500 text-[9px] font-medium tracking-[0.2em] uppercase opacity-50">Department of Computer Science &amp; Engineering • 2026</p>
+</footer>
+</body>
+</html>

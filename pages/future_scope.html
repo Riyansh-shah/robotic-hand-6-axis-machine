@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Future Scope | PBL 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { background-color: #020617; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
+        .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
+        .gradient-text { background: linear-gradient(90deg,#60a5fa,#a855f7); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+    </style>
+</head>
+<body class="pb-24">
+
+<nav class="fixed w-full z-50 glass border-b border-slate-800/50 px-8 py-4 flex justify-between items-center">
+    <a href="../index.html" class="flex items-center gap-2 group">
+        <i class="fas fa-arrow-left text-slate-400 group-hover:text-white transition"></i>
+        <span class="text-sm font-bold text-slate-400 group-hover:text-white transition uppercase tracking-widest">Home</span>
+    </a>
+    <div class="flex items-center gap-3">
+        <span class="text-[10px] font-black text-slate-600 uppercase tracking-widest">12 of 12</span>
+        <span class="text-lg font-black text-white uppercase tracking-tighter">Future <span class="text-pink-400 italic">Scope</span></span>
+    </div>
+    <a href="challenges_limitations.html" class="flex items-center gap-2 group">
+        <i class="fas fa-arrow-left text-slate-500 group-hover:text-white transition text-sm"></i>
+        <span class="text-xs font-bold text-slate-500 group-hover:text-white transition uppercase tracking-widest">Prev</span>
+    </a>
+</nav>
+
+<main class="max-w-6xl mx-auto px-6 pt-32 space-y-20">
+
+    <section class="text-center space-y-6">
+        <div class="inline-block px-4 py-1 border border-slate-800 rounded-full text-slate-500 text-[10px] font-mono mb-2 uppercase tracking-widest">Chapter 12 — Roadmap</div>
+        <h1 class="text-5xl md:text-6xl font-extrabold uppercase leading-tight">Future <span class="gradient-text">Scope</span></h1>
+        <p class="text-slate-400 max-w-3xl mx-auto text-lg leading-relaxed">
+            The current system establishes proof of concept for desktop 6-axis FDM printing. The roadmap extends this foundation toward closed-loop intelligence, richer material capability, automated non-planar slicing, and scaled platforms.
+        </p>
+    </section>
+
+    <!-- Version Roadmap -->
+    <section class="glass p-10 rounded-[2.5rem] border-l-4 border-pink-500">
+        <div class="flex items-center gap-4 mb-10">
+            <i class="fas fa-road text-pink-400 text-2xl"></i>
+            <h2 class="text-2xl font-black uppercase tracking-tight">Development Roadmap</h2>
+        </div>
+        <div class="space-y-8">
+            <div class="relative pl-8 border-l-2 border-pink-500/30">
+                <div class="absolute -left-3 top-0 w-5 h-5 bg-pink-500 rounded-full flex items-center justify-center text-[9px] font-black text-white">✓</div>
+                <div class="mb-2 flex items-center gap-3">
+                    <span class="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-[10px] font-black rounded-full uppercase">v1.0 — Current</span>
+                </div>
+                <h3 class="font-bold text-white mb-2">Proof of Concept Platform</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">Open-loop stepper control, analytical IK, PLA/PETG printing, manual non-planar G-code, 40mm/s max speed, ±0.4mm accuracy. Demonstrated non-planar printing and support-free overhangs.</p>
+            </div>
+            <div class="relative pl-8 border-l-2 border-blue-500/30">
+                <div class="absolute -left-3 top-0 w-5 h-5 bg-blue-500/50 border-2 border-blue-500 rounded-full"></div>
+                <div class="mb-2 flex items-center gap-3">
+                    <span class="px-3 py-1 bg-blue-500/20 text-blue-400 text-[10px] font-black rounded-full uppercase">v2.0 — Near Term</span>
+                    <span class="text-[10px] text-slate-600 uppercase tracking-widest">~12 months</span>
+                </div>
+                <h3 class="font-bold text-white mb-2">Closed-Loop Control + Vision Calibration</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">Add encoder feedback to all joints for closed-loop PID position control. Integrate a monocular camera on the end-effector for real-time TCP position verification using marker-based pose estimation. Target accuracy: ±0.15mm. Also add heated enclosure for ABS/PC printing.</p>
+            </div>
+            <div class="relative pl-8 border-l-2 border-purple-500/30">
+                <div class="absolute -left-3 top-0 w-5 h-5 bg-purple-500/30 border-2 border-purple-500/50 rounded-full"></div>
+                <div class="mb-2 flex items-center gap-3">
+                    <span class="px-3 py-1 bg-purple-500/20 text-purple-400 text-[10px] font-black rounded-full uppercase">v3.0 — Mid Term</span>
+                    <span class="text-[10px] text-slate-600 uppercase tracking-widest">~24 months</span>
+                </div>
+                <h3 class="font-bold text-white mb-2">Non-Planar Slicer + Multi-Material</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">Develop or integrate a purpose-built non-planar slicer with automated curved surface detection, stress-aligned toolpath generation, and built-in singularity avoidance. Add a dual-extruder end-effector for multi-material printing (support material + structural material, or two-color).</p>
+            </div>
+            <div class="relative pl-8">
+                <div class="absolute -left-3 top-0 w-5 h-5 bg-pink-500/20 border-2 border-pink-500/30 rounded-full"></div>
+                <div class="mb-2 flex items-center gap-3">
+                    <span class="px-3 py-1 bg-pink-500/20 text-pink-400 text-[10px] font-black rounded-full uppercase">v4.0 — Long Term</span>
+                    <span class="text-[10px] text-slate-600 uppercase tracking-widest">~36+ months</span>
+                </div>
+                <h3 class="font-bold text-white mb-2">Scaled Platform + High-Performance Materials</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">Scale the arm to ~600mm reach for printing automotive and aerospace components. Carbon fiber reinforced links, servo-driven joints with harmonic drive reduction for ±0.05mm accuracy. Integrate high-temperature extruder for PEEK, Ultem, and continuous fiber composites.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4 Future Features -->
+    <section class="grid md:grid-cols-2 gap-8">
+
+        <div class="glass p-8 rounded-[2rem] border-t-4 border-blue-500 hover:-translate-y-1 transition duration-300">
+            <div class="flex items-center gap-4 mb-5">
+                <div class="w-12 h-12 bg-blue-500/20 rounded-2xl flex items-center justify-center">
+                    <i class="fas fa-eye text-blue-400 text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white">Vision-Based Closed-Loop Correction</h3>
+                    <span class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">v2.0 Priority</span>
+                </div>
+            </div>
+            <p class="text-sm text-slate-400 leading-relaxed mb-5">A camera mounted near the nozzle continuously monitors the printed bead using structured light or line laser profilometry. Detected errors — width deviations, gaps, bead height anomalies — feed back into a real-time controller that adjusts feed rate, print speed, or nozzle Z offset within the current layer.</p>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-blue-500/5 border border-blue-500/15 p-3 rounded-xl text-center">
+                    <p class="text-[9px] text-slate-500 uppercase tracking-widest mb-1">Sensor</p>
+                    <p class="text-xs font-bold text-white">OAK-D Pro<br>Stereo Cam</p>
+                </div>
+                <div class="bg-blue-500/5 border border-blue-500/15 p-3 rounded-xl text-center">
+                    <p class="text-[9px] text-slate-500 uppercase tracking-widest mb-1">Target Latency</p>
+                    <p class="text-xs font-bold text-white">&lt;50ms<br>feedback loop</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass p-8 rounded-[2rem] border-t-4 border-purple-500 hover:-translate-y-1 transition duration-300">
+            <div class="flex items-center gap-4 mb-5">
+                <div class="w-12 h-12 bg-purple-500/20 rounded-2xl flex items-center justify-center">
+                    <i class="fas fa-layer-group text-purple-400 text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white">Automated Non-Planar Slicing</h3>
+                    <span class="text-[10px] text-purple-400 font-bold uppercase tracking-widest">v3.0 Priority</span>
+                </div>
+            </div>
+            <p class="text-sm text-slate-400 leading-relaxed mb-5">Current non-planar toolpaths are manually specified. A purpose-built slicer would automatically: (1) compute surface normals on the STL, (2) generate conformal toolpaths following the surface, (3) optimize nozzle orientations to avoid singularities, and (4) schedule extrusion rate for non-uniform bead widths on curved surfaces.</p>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-purple-500/5 border border-purple-500/15 p-3 rounded-xl text-center">
+                    <p class="text-[9px] text-slate-500 uppercase tracking-widest mb-1">Research Base</p>
+                    <p class="text-xs font-bold text-white">Slicer4RTN<br>(TU Delft)</p>
+                </div>
+                <div class="bg-purple-500/5 border border-purple-500/15 p-3 rounded-xl text-center">
+                    <p class="text-[9px] text-slate-500 uppercase tracking-widest mb-1">Expected Gain</p>
+                    <p class="text-xs font-bold text-white">Ra &lt;4μm<br>surface finish</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass p-8 rounded-[2rem] border-t-4 border-amber-500 hover:-translate-y-1 transition duration-300">
+            <div class="flex items-center gap-4 mb-5">
+                <div class="w-12 h-12 bg-amber-500/20 rounded-2xl flex items-center justify-center">
+                    <i class="fas fa-fill-drip text-amber-400 text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white">Multi-Material Printing</h3>
+                    <span class="text-[10px] text-amber-400 font-bold uppercase tracking-widest">v3.0 Priority</span>
+                </div>
+            </div>
+            <p class="text-sm text-slate-400 leading-relaxed mb-5">A toolchanger mechanism on the J6 flange allows swapping between two or more extruder assemblies during a print. Applications: (1) water-soluble PVA support material for complex overhangs, (2) dual-color aesthetic printing, (3) rigid + flexible material combinations (PLA skeleton + TPU damping layer). The tool change sequence is integrated into the G-code pipeline.</p>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-amber-500/5 border border-amber-500/15 p-3 rounded-xl text-center">
+                    <p class="text-[9px] text-slate-500 uppercase tracking-widest mb-1">Tool Change Time</p>
+                    <p class="text-xs font-bold text-white">&lt;30s<br>target</p>
+                </div>
+                <div class="bg-amber-500/5 border border-amber-500/15 p-3 rounded-xl text-center">
+                    <p class="text-[9px] text-slate-500 uppercase tracking-widest mb-1">First Material Combo</p>
+                    <p class="text-xs font-bold text-white">PLA + PVA<br>soluble support</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass p-8 rounded-[2rem] border-t-4 border-pink-500 hover:-translate-y-1 transition duration-300">
+            <div class="flex items-center gap-4 mb-5">
+                <div class="w-12 h-12 bg-pink-500/20 rounded-2xl flex items-center justify-center">
+                    <i class="fas fa-rocket text-pink-400 text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white">Scale-Up — Industrial 600mm Arm</h3>
+                    <span class="text-[10px] text-pink-400 font-bold uppercase tracking-widest">v4.0 Priority</span>
+                </div>
+            </div>
+            <p class="text-sm text-slate-400 leading-relaxed mb-5">Scaling the arm to 600mm reach unlocks printing of car body panels, composite brackets, and medical implants. The kinematic architecture scales linearly — the IK and motion planning software is unchanged. Link materials must shift to carbon fiber tubes with bonded aluminum joints. Joint actuators upgrade to brushless DC servos with harmonic drive reduction for &lt;0.01° backlash.</p>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-pink-500/5 border border-pink-500/15 p-3 rounded-xl text-center">
+                    <p class="text-[9px] text-slate-500 uppercase tracking-widest mb-1">Target Reach</p>
+                    <p class="text-xs font-bold text-white">600mm<br>radius</p>
+                </div>
+                <div class="bg-pink-500/5 border border-pink-500/15 p-3 rounded-xl text-center">
+                    <p class="text-[9px] text-slate-500 uppercase tracking-widest mb-1">Target Accuracy</p>
+                    <p class="text-xs font-bold text-white">±0.05mm<br>TCP</p>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Final Statement -->
+    <section class="glass p-12 rounded-[3rem] border-t-4 border-gradient text-center" style="border-image: linear-gradient(90deg,#60a5fa,#ec4899) 1;">
+        <div class="max-w-3xl mx-auto">
+            <i class="fas fa-rocket text-pink-400 text-4xl mb-6"></i>
+            <h2 class="text-3xl font-black uppercase mb-6">The Bigger Picture</h2>
+            <p class="text-slate-400 text-lg leading-relaxed mb-6">This project demonstrates that desktop-scale 6-axis FDM printing is not just theoretically sound but practically achievable with student budgets. The core insight — that a serial chain arm's spatial freedom can fundamentally change what additive manufacturing can produce — remains valid regardless of the current accuracy and speed limitations.</p>
+            <p class="text-slate-400 leading-relaxed italic border-l-2 border-pink-500/30 pl-6 text-left">As non-planar slicing matures, closed-loop sensing becomes cheaper, and high-performance filaments more accessible, this class of machine will move from research curiosity to a genuine alternative to both traditional CNC subtractive manufacturing and planar FDM for complex organic geometries.</p>
+        </div>
+    </section>
+
+    <!-- Navigation Back to Index -->
+    <div class="text-center pb-4">
+        <a href="../index.html" class="inline-flex items-center gap-3 px-10 py-4 bg-blue-600 text-white rounded-full font-black hover:bg-blue-500 transition shadow-lg shadow-blue-900/40 uppercase tracking-widest text-sm">
+            <i class="fas fa-home"></i>
+            Return to Overview
+        </a>
+    </div>
+
+</main>
+
+<footer class="mt-20 py-12 text-center bg-black/40 border-t border-slate-900">
+    <p class="text-slate-600 text-[10px] font-bold tracking-[0.3em] uppercase mb-2">Manipal University Jaipur</p>
+    <p class="text-slate-500 text-[9px] font-medium tracking-[0.2em] uppercase opacity-50">Department of Computer Science &amp; Engineering • 2026</p>
+</footer>
+</body>
+</html>

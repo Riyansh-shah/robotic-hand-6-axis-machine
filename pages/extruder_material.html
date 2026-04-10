@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extruder & Material | PBL 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { background-color: #020617; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
+        .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
+        .gradient-text { background: linear-gradient(90deg,#60a5fa,#a855f7); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+    </style>
+</head>
+<body class="pb-24">
+
+<nav class="fixed w-full z-50 glass border-b border-slate-800/50 px-8 py-4 flex justify-between items-center">
+    <a href="../index.html" class="flex items-center gap-2 group">
+        <i class="fas fa-arrow-left text-slate-400 group-hover:text-white transition"></i>
+        <span class="text-sm font-bold text-slate-400 group-hover:text-white transition uppercase tracking-widest">Home</span>
+    </a>
+    <div class="flex items-center gap-3">
+        <span class="text-[10px] font-black text-slate-600 uppercase tracking-widest">07 of 12</span>
+        <span class="text-lg font-black text-white uppercase tracking-tighter">Extruder &amp; <span class="text-amber-400 italic">Material</span></span>
+    </div>
+    <div class="flex items-center gap-4">
+        <a href="control_system.html" class="flex items-center gap-2 group">
+            <i class="fas fa-arrow-left text-slate-500 group-hover:text-white transition text-sm"></i>
+            <span class="text-xs font-bold text-slate-500 group-hover:text-white transition uppercase tracking-widest">Prev</span>
+        </a>
+        <a href="software_pipeline.html" class="flex items-center gap-2 group">
+            <span class="text-xs font-bold text-slate-400 group-hover:text-white transition uppercase tracking-widest">Next</span>
+            <i class="fas fa-arrow-right text-slate-400 group-hover:text-white transition text-sm"></i>
+        </a>
+    </div>
+</nav>
+
+<main class="max-w-6xl mx-auto px-6 pt-32 space-y-20">
+
+    <section class="text-center space-y-6">
+        <div class="inline-block px-4 py-1 border border-slate-800 rounded-full text-slate-500 text-[10px] font-mono mb-2 uppercase tracking-widest">Chapter 07 — Deposition Hardware</div>
+        <h1 class="text-5xl md:text-6xl font-extrabold uppercase leading-tight">Extruder &amp; <span class="gradient-text">Material</span></h1>
+        <p class="text-slate-400 max-w-3xl mx-auto text-lg leading-relaxed">
+            The end-effector is where mechanics meets chemistry. Choices of filament type, extrusion mechanism, temperature profile, and physical mounting all directly impact print quality — especially when the hotend must move through the full 6DOF range of the wrist.
+        </p>
+    </section>
+
+    <!-- Filament Selection -->
+    <section class="glass p-10 rounded-[2.5rem] border-l-4 border-amber-500">
+        <div class="flex items-center gap-4 mb-8">
+            <i class="fas fa-spool text-amber-400 text-2xl" style="font-size: 1.5rem;"></i>
+            <i class="fas fa-circle-notch text-amber-400 text-2xl"></i>
+            <h2 class="text-2xl font-black uppercase tracking-tight">Filament Selection &amp; Properties</h2>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="bg-amber-500/5 border border-amber-500/20 p-6 rounded-2xl">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-bold text-white">PLA+ (Primary)</h3>
+                    <span class="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-[9px] font-black rounded uppercase">Recommended</span>
+                </div>
+                <div class="space-y-2 text-xs text-slate-400">
+                    <div class="flex justify-between"><span>Print Temp</span><span class="font-mono text-white">200–215°C</span></div>
+                    <div class="flex justify-between"><span>Bed Temp</span><span class="font-mono text-white">60°C</span></div>
+                    <div class="flex justify-between"><span>Density</span><span class="font-mono text-white">1.24 g/cm³</span></div>
+                    <div class="flex justify-between"><span>Tensile Strength</span><span class="font-mono text-white">~60 MPa</span></div>
+                    <div class="flex justify-between"><span>Diameter</span><span class="font-mono text-white">1.75mm ±0.02</span></div>
+                </div>
+                <p class="text-xs text-slate-500 mt-4 leading-relaxed">Low warping, good layer adhesion, adequate for validation prints. Low hygroscopicity means it prints consistently without drying. Chosen for all benchmark tests.</p>
+            </div>
+            <div class="bg-white/5 border border-white/10 p-6 rounded-2xl">
+                <h3 class="font-bold text-white mb-4">PETG (Secondary)</h3>
+                <div class="space-y-2 text-xs text-slate-400">
+                    <div class="flex justify-between"><span>Print Temp</span><span class="font-mono text-white">230–245°C</span></div>
+                    <div class="flex justify-between"><span>Bed Temp</span><span class="font-mono text-white">80°C</span></div>
+                    <div class="flex justify-between"><span>Density</span><span class="font-mono text-white">1.27 g/cm³</span></div>
+                    <div class="flex justify-between"><span>Tensile Strength</span><span class="font-mono text-white">~50 MPa</span></div>
+                    <div class="flex justify-between"><span>Elongation</span><span class="font-mono text-white">~170%</span></div>
+                </div>
+                <p class="text-xs text-slate-500 mt-4 leading-relaxed">Better impact resistance and chemical resistance than PLA. Slightly more stringing — requires retraction tuning. Used for functional structural arm parts.</p>
+            </div>
+            <div class="bg-white/5 border border-white/10 p-6 rounded-2xl">
+                <h3 class="font-bold text-white mb-4">ABS (Future)</h3>
+                <div class="space-y-2 text-xs text-slate-400">
+                    <div class="flex justify-between"><span>Print Temp</span><span class="font-mono text-white">230–250°C</span></div>
+                    <div class="flex justify-between"><span>Bed Temp</span><span class="font-mono text-white">100–110°C</span></div>
+                    <div class="flex justify-between"><span>Density</span><span class="font-mono text-white">1.05 g/cm³</span></div>
+                    <div class="flex justify-between"><span>Tensile Strength</span><span class="font-mono text-white">~40 MPa</span></div>
+                    <div class="flex justify-between"><span>Heat Deflection</span><span class="font-mono text-white">98°C</span></div>
+                </div>
+                <p class="text-xs text-slate-500 mt-4 leading-relaxed">Highest temperature resistance. Significant warping on open-frame printer — requires enclosure. Planned for Version 2 with enclosed print area.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Direct Drive vs Bowden -->
+    <section class="glass p-10 rounded-[2.5rem] border-t-4 border-white/20">
+        <div class="flex items-center gap-4 mb-8">
+            <i class="fas fa-balance-scale text-slate-300 text-2xl"></i>
+            <h2 class="text-2xl font-black uppercase tracking-tight">Direct Drive vs. Bowden — The Decision</h2>
+        </div>
+        <div class="grid md:grid-cols-2 gap-8 mb-8">
+            <div class="space-y-4">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-[10px] font-black rounded-full uppercase tracking-wider">Chosen: Direct Drive</span>
+                </div>
+                <p class="text-sm text-slate-400 leading-relaxed">In a direct-drive setup, the extruder motor sits directly on the hotend carriage — in our case, directly on the J6 tool flange. The filament path from drive gears to nozzle is &lt;30mm.</p>
+                <div class="space-y-2 text-sm">
+                    <div class="flex gap-2"><i class="fas fa-check text-emerald-400 mt-0.5 flex-shrink-0"></i><p class="text-slate-400">Excellent retraction control — short, precise filament retraction eliminates stringing on travel moves across the non-planar workspace</p></div>
+                    <div class="flex gap-2"><i class="fas fa-check text-emerald-400 mt-0.5 flex-shrink-0"></i><p class="text-slate-400">Compatible with flexible filaments (TPU) if needed in future</p></div>
+                    <div class="flex gap-2"><i class="fas fa-check text-emerald-400 mt-0.5 flex-shrink-0"></i><p class="text-slate-400">No Bowden tube flex — eliminates pressure variation lag during deceleration</p></div>
+                    <div class="flex gap-2"><i class="fas fa-times text-red-400 mt-0.5 flex-shrink-0"></i><p class="text-slate-400">Additional ~180g mass on end-effector — increases J5/J6 torque requirement</p></div>
+                    <div class="flex gap-2"><i class="fas fa-times text-red-400 mt-0.5 flex-shrink-0"></i><p class="text-slate-400">Motor cable must flex through full wrist range — strain-relief critical</p></div>
+                </div>
+            </div>
+            <div class="space-y-4">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="px-3 py-1 bg-slate-700/50 text-slate-400 text-[10px] font-black rounded-full uppercase tracking-wider">Rejected: Bowden</span>
+                </div>
+                <p class="text-sm text-slate-400 leading-relaxed">A Bowden setup places the extruder motor at the base of the arm and drives filament through a long PTFE tube to the hotend. The tube must flex through the full range of all 6 joints.</p>
+                <div class="space-y-2 text-sm">
+                    <div class="flex gap-2"><i class="fas fa-check text-emerald-400 mt-0.5 flex-shrink-0"></i><p class="text-slate-400">Lighter end-effector — reduces J5/J6 torque by ~180g</p></div>
+                    <div class="flex gap-2"><i class="fas fa-times text-red-400 mt-0.5 flex-shrink-0"></i><p class="text-slate-400">PTFE tube routing through 6 moving joints is mechanically complex — kinking risk</p></div>
+                    <div class="flex gap-2"><i class="fas fa-times text-red-400 mt-0.5 flex-shrink-0"></i><p class="text-slate-400">Variable tube length and angle changes tube compliance unpredictably, creating pressure transients during direction changes</p></div>
+                    <div class="flex gap-2"><i class="fas fa-times text-red-400 mt-0.5 flex-shrink-0"></i><p class="text-slate-400">Poor retraction control at varying tube orientations — unacceptable stringing</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Temperature Control & Mounting -->
+    <section class="grid md:grid-cols-2 gap-8">
+        <div class="glass p-8 rounded-[2rem] border-t-4 border-red-500">
+            <div class="flex items-center gap-4 mb-6">
+                <i class="fas fa-thermometer-three-quarters text-red-400 text-xl"></i>
+                <h2 class="text-xl font-black uppercase tracking-tight">Temperature Control</h2>
+            </div>
+            <div class="space-y-4 text-sm text-slate-400 leading-relaxed">
+                <p><strong class="text-white">Hotend:</strong> All-metal V6 clone hotend with 40W heater cartridge and 100K NTC thermistor. PID-controlled to ±0.5°C. Hardened nozzle (tungsten steel, 0.4mm) used for longevity with composite filaments.</p>
+                <p><strong class="text-white">Heat Creep Prevention:</strong> The heatsink fan runs continuously whenever the hotend is above 50°C. The heatsink is a full-copper V6 type, chosen for 30% better thermal conductivity vs. aluminum — critical when the arm holds still at a location while the next G-code segment is computed.</p>
+                <p><strong class="text-white">Part Cooling Fan:</strong> 5015 centrifugal fan (blower) mounted on a custom duct that directs airflow at the print regardless of nozzle orientation. Flow rate ~3.5 CFM at 12V.</p>
+            </div>
+        </div>
+        <div class="glass p-8 rounded-[2rem] border-t-4 border-amber-500">
+            <div class="flex items-center gap-4 mb-6">
+                <i class="fas fa-tools text-amber-400 text-xl"></i>
+                <h2 class="text-xl font-black uppercase tracking-tight">Mounting Challenges</h2>
+            </div>
+            <div class="space-y-4 text-sm text-slate-400 leading-relaxed">
+                <p><strong class="text-white">Weight Budget:</strong> The entire end-effector (motor, hotend, fans, wiring) must stay under 250g to preserve J5 torque margins. Current assembly: 218g. Every component was weighed; aluminum parts replaced plastic only where structurally required.</p>
+                <p><strong class="text-white">Cable Management:</strong> Six cable runs (heater 2-wire, thermistor 2-wire, part fan 2-wire, stepper 4-wire, PTFE tube, limit switch 2-wire) must flex through ±120° J5 and ±360° J6 rotation. Self-coiling polyurethane drag chain handles flexing without fatigue.</p>
+                <p><strong class="text-white">Vibration Isolation:</strong> Rubber grommets under the stepper motor and hotend mount dampen vibration at high-speed traversals, reducing ringing artifacts on print surfaces.</p>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="mt-32 py-12 text-center bg-black/40 border-t border-slate-900">
+    <p class="text-slate-600 text-[10px] font-bold tracking-[0.3em] uppercase mb-2">Manipal University Jaipur</p>
+    <p class="text-slate-500 text-[9px] font-medium tracking-[0.2em] uppercase opacity-50">Department of Computer Science &amp; Engineering • 2026</p>
+</footer>
+</body>
+</html>

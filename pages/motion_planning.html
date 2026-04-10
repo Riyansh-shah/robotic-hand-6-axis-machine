@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motion Planning | PBL 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { background-color: #020617; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
+        .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
+        .gradient-text { background: linear-gradient(90deg,#60a5fa,#a855f7); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+        .mono-box { background: #0d1117; border: 1px solid rgba(255,255,255,0.08); border-radius: 1rem; padding: 1.25rem 1.5rem; font-family: 'Courier New', monospace; font-size: 0.78rem; color: #86efac; line-height: 1.8; overflow-x: auto; }
+    </style>
+</head>
+<body class="pb-24">
+
+<nav class="fixed w-full z-50 glass border-b border-slate-800/50 px-8 py-4 flex justify-between items-center">
+    <a href="../index.html" class="flex items-center gap-2 group">
+        <i class="fas fa-arrow-left text-slate-400 group-hover:text-white transition"></i>
+        <span class="text-sm font-bold text-slate-400 group-hover:text-white transition uppercase tracking-widest">Home</span>
+    </a>
+    <div class="flex items-center gap-3">
+        <span class="text-[10px] font-black text-slate-600 uppercase tracking-widest">05 of 12</span>
+        <span class="text-lg font-black text-white uppercase tracking-tighter">Motion <span class="text-orange-400 italic">Planning</span></span>
+    </div>
+    <div class="flex items-center gap-4">
+        <a href="workspace_analysis.html" class="flex items-center gap-2 group">
+            <i class="fas fa-arrow-left text-slate-500 group-hover:text-white transition text-sm"></i>
+            <span class="text-xs font-bold text-slate-500 group-hover:text-white transition uppercase tracking-widest">Prev</span>
+        </a>
+        <a href="control_system.html" class="flex items-center gap-2 group">
+            <span class="text-xs font-bold text-slate-400 group-hover:text-white transition uppercase tracking-widest">Next</span>
+            <i class="fas fa-arrow-right text-slate-400 group-hover:text-white transition text-sm"></i>
+        </a>
+    </div>
+</nav>
+
+<main class="max-w-6xl mx-auto px-6 pt-32 space-y-20">
+
+    <section class="text-center space-y-6">
+        <div class="inline-block px-4 py-1 border border-slate-800 rounded-full text-slate-500 text-[10px] font-mono mb-2 uppercase tracking-widest">Chapter 05 — Path &amp; Trajectory</div>
+        <h1 class="text-5xl md:text-6xl font-extrabold uppercase leading-tight">Motion <span class="gradient-text">Planning</span></h1>
+        <p class="text-slate-400 max-w-3xl mx-auto text-lg leading-relaxed">
+            Converting G-code print paths into synchronized 6-axis joint trajectories — the bridge between slicing software and motor commands. Covering interpolation strategies, velocity profiling, and the critical constraint of maintaining constant nozzle speed for uniform extrusion.
+        </p>
+    </section>
+
+    <!-- Pipeline Overview -->
+    <section class="glass p-10 rounded-[2.5rem] border-l-4 border-orange-500">
+        <div class="flex items-center gap-4 mb-8">
+            <i class="fas fa-route text-orange-400 text-2xl"></i>
+            <h2 class="text-2xl font-black uppercase tracking-tight">Full Planning Pipeline</h2>
+        </div>
+        <div class="space-y-4">
+            <div class="flex items-start gap-4 p-5 bg-orange-500/5 border border-orange-500/15 rounded-2xl">
+                <div class="w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center text-orange-400 font-black text-sm flex-shrink-0">1</div>
+                <div>
+                    <p class="font-bold text-white text-sm mb-1">G-code Parsing → Cartesian Waypoints</p>
+                    <p class="text-sm text-slate-400">The standard G-code output from any slicer (Cura, PrusaSlicer) is parsed line by line. G1 move commands are extracted as Cartesian waypoints (X, Y, Z, E) along with feed-rate F. For non-planar paths, the slicer also outputs nozzle orientation vectors (I, J, K) for each waypoint.</p>
+                </div>
+            </div>
+            <div class="flex items-start gap-4 p-5 bg-orange-500/5 border border-orange-500/15 rounded-2xl">
+                <div class="w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center text-orange-400 font-black text-sm flex-shrink-0">2</div>
+                <div>
+                    <p class="font-bold text-white text-sm mb-1">Waypoint Densification</p>
+                    <p class="text-sm text-slate-400">Long linear segments are subdivided into sub-waypoints spaced ≤1mm apart. This is required because joint-space interpolation between two widely separated Cartesian points does not follow a straight Cartesian line — the TCP traces a curved arc. Fine subdivision ensures the actual path stays within 0.1mm of the intended straight-line segment.</p>
+                </div>
+            </div>
+            <div class="flex items-start gap-4 p-5 bg-orange-500/5 border border-orange-500/15 rounded-2xl">
+                <div class="w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center text-orange-400 font-black text-sm flex-shrink-0">3</div>
+                <div>
+                    <p class="font-bold text-white text-sm mb-1">Inverse Kinematics → Joint Angle Array</p>
+                    <p class="text-sm text-slate-400">Each densified waypoint is passed through the analytical IK solver. The result is a time-series of joint angle arrays [θ₁…θ₆] for every waypoint. Configuration selection (elbow up vs. down) is handled greedily — the solution closest to the previous configuration is always chosen to minimize joint motion.</p>
+                </div>
+            </div>
+            <div class="flex items-start gap-4 p-5 bg-orange-500/5 border border-orange-500/15 rounded-2xl">
+                <div class="w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center text-orange-400 font-black text-sm flex-shrink-0">4</div>
+                <div>
+                    <p class="font-bold text-white text-sm mb-1">Trajectory Timing — Constant TCP Speed</p>
+                    <p class="text-sm text-slate-400">Time is assigned to each waypoint such that the Cartesian speed of the TCP remains constant at the G-code feedrate F. Since joint velocities are non-linear functions of TCP velocity, this requires computing the Jacobian at each waypoint: <strong class="text-white font-mono">q̇ = J⁻¹(q) · ẋ_tcp</strong>. Joint speed limits are then checked and the feedrate is locally reduced if any joint would exceed its maximum velocity.</p>
+                </div>
+            </div>
+            <div class="flex items-start gap-4 p-5 bg-orange-500/5 border border-orange-500/15 rounded-2xl">
+                <div class="w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center text-orange-400 font-black text-sm flex-shrink-0">5</div>
+                <div>
+                    <p class="font-bold text-white text-sm mb-1">Cubic Spline Smoothing → Motor Commands</p>
+                    <p class="text-sm text-slate-400">The discrete joint angle series is fit with a piecewise cubic spline in joint space. The spline provides continuous position, velocity, and acceleration at the 1kHz control rate. The smoothed trajectory is then streamed to the controller as absolute joint angle commands at 1ms intervals.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interpolation Methods -->
+    <section class="grid md:grid-cols-2 gap-8">
+        <div class="glass p-8 rounded-[2rem] border-t-4 border-blue-500">
+            <h3 class="text-blue-400 font-bold text-xs uppercase tracking-widest mb-5">Cartesian Linear Interpolation (LSPB)</h3>
+            <p class="text-sm text-slate-400 leading-relaxed mb-4">The TCP moves in a <strong class="text-white">straight line</strong> in Cartesian space from waypoint A to B. Orientation is spherically interpolated (SLERP on the rotation matrix). At each time step, IK is called to convert the Cartesian pose to joint angles.</p>
+            <div class="space-y-2 text-sm">
+                <div class="flex gap-2"><i class="fas fa-check text-emerald-400 flex-shrink-0 mt-0.5"></i><p class="text-slate-400">Exact straight-line TCP path — ideal for perimeter walls</p></div>
+                <div class="flex gap-2"><i class="fas fa-check text-emerald-400 flex-shrink-0 mt-0.5"></i><p class="text-slate-400">Orientation continuously controlled — nozzle stays normal to surface</p></div>
+                <div class="flex gap-2"><i class="fas fa-times text-red-400 flex-shrink-0 mt-0.5"></i><p class="text-slate-400">IK called at every timestep — computationally heavier</p></div>
+            </div>
+        </div>
+        <div class="glass p-8 rounded-[2rem] border-t-4 border-slate-600">
+            <h3 class="text-slate-400 font-bold text-xs uppercase tracking-widest mb-5">Joint-Space Interpolation (JTRAJ)</h3>
+            <p class="text-sm text-slate-400 leading-relaxed mb-4">Joint angles are interpolated directly from the start configuration to the end configuration as smooth cubic polynomials. No IK calls during motion — fast and simple.</p>
+            <div class="space-y-2 text-sm">
+                <div class="flex gap-2"><i class="fas fa-check text-emerald-400 flex-shrink-0 mt-0.5"></i><p class="text-slate-400">Low compute — perfect for travel moves between prints</p></div>
+                <div class="flex gap-2"><i class="fas fa-times text-red-400 flex-shrink-0 mt-0.5"></i><p class="text-slate-400">TCP traces a curved, unpredictable arc — never used for printing moves</p></div>
+                <div class="flex gap-2"><i class="fas fa-times text-red-400 flex-shrink-0 mt-0.5"></i><p class="text-slate-400">Nozzle speed is not constant — would create uneven extrusion</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Velocity Profile -->
+    <section class="glass p-10 rounded-[2.5rem] border-t-4 border-orange-500">
+        <div class="flex items-center gap-4 mb-8">
+            <i class="fas fa-tachometer-alt text-orange-400 text-2xl"></i>
+            <h2 class="text-2xl font-black uppercase tracking-tight">Trapezoidal Velocity Profile</h2>
+        </div>
+        <div class="grid md:grid-cols-2 gap-10">
+            <div class="space-y-4 text-sm text-slate-400 leading-relaxed">
+                <p>For each print segment, a trapezoidal velocity profile (also called LSPB — Linear Segments with Parabolic Blends) is applied. The nozzle accelerates from rest, cruises at the target feedrate, then decelerates to rest. This avoids sudden velocity discontinuities that cause vibration-induced print artifacts.</p>
+                <p><strong class="text-white">Acceleration Phase:</strong> TCP speed ramps up at a constant rate (max acceleration = 500 mm/s²) until target feedrate is reached. Joint accelerations are held below their individual torque-limited maxima during this phase.</p>
+                <p><strong class="text-white">Cruise Phase:</strong> Constant TCP speed. Joint velocities vary smoothly as the arm changes configuration, all within their mechanical limits.</p>
+                <p><strong class="text-white">Deceleration Phase:</strong> Symmetric to acceleration. Extrusion rate is commanded to ramp down proportionally so the extruder decelerates at the same ratio as the TCP — preventing blobs at path endpoints.</p>
+            </div>
+            <div>
+                <div class="mono-box mb-4">
+                    -- Trapezoidal profile parameters --<br>
+                    max_tcp_vel  = 80 mm/s (print)<br>
+                    max_tcp_vel  = 200 mm/s (travel)<br>
+                    max_accel    = 500 mm/s²<br>
+                    jerk_limit   = 2000 mm/s³<br><br>
+                    -- Joint limits (after gearbox) --<br>
+                    J1_max_vel   = 120 °/s<br>
+                    J2_max_vel   = 100 °/s<br>
+                    J3_max_vel   = 120 °/s<br>
+                    J4-6_max_vel = 150 °/s
+                </div>
+                <div class="bg-orange-500/5 border border-orange-500/20 p-5 rounded-2xl">
+                    <p class="text-[10px] font-bold text-orange-400 uppercase tracking-widest mb-2">Extrusion Synchronization</p>
+                    <p class="text-sm text-slate-400">Extruder E-steps are commanded proportionally to TCP speed so that volumetric flow rate stays constant: <strong class="text-white font-mono">E_rate = F_tcp × (π·r²·layer_h) / (π·r_fil²)</strong>. Any feedrate reduction due to joint limits automatically reduces E_rate by the same factor.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="mt-32 py-12 text-center bg-black/40 border-t border-slate-900">
+    <p class="text-slate-600 text-[10px] font-bold tracking-[0.3em] uppercase mb-2">Manipal University Jaipur</p>
+    <p class="text-slate-500 text-[9px] font-medium tracking-[0.2em] uppercase opacity-50">Department of Computer Science &amp; Engineering • 2026</p>
+</footer>
+</body>
+</html>
