@@ -48,7 +48,9 @@ class MockController:
 
         # Mock state
         self._current_angles: np.ndarray = np.zeros(6, dtype=np.float32)
+        self._current_e: float = 0.0     # Extrusion position in mm
         self._temperature: float = 25.0  # Celsius
+        self._fan_speed: int = 0         # 0-255
         self._error_flags: int = 0
         self._move_count: int = 0
 
@@ -122,26 +124,34 @@ class MockController:
         logger.debug(f"Processing command: 0x{command:02x}")
 
         if command == SerialProtocol.CMD_MOVE:
-            if len(payload) < 12 + 4:  # 6 int16 + 1 float32
+            if len(payload) < 12 + 4 + 4:  # 6 int16 + 1 int32 + 1 float32 = 20
                 logger.error("MOVE command: insufficient data")
                 return self._encode_nack(0x01)  # Invalid data length
 
-            # Extract angles and feedrate
+            # Extract angles, E position and feedrate
             angles = np.array([
                 SerialProtocol._decode_int16(payload, i*2) / SerialProtocol.ANGLE_SCALE
                 for i in range(6)
             ], dtype=np.float32)
 
-            feedrate = SerialProtocol._decode_float32(payload, 12)
+            e_int = int.from_bytes(payload[12:16], byteorder='little', signed=True)
+            e_pos = e_int / SerialProtocol.EXTRUDER_SCALE
+
+            feedrate = SerialProtocol._decode_float32(payload, 16)
 
             self._current_angles = angles
+            self._current_e = e_pos
             self._move_count += 1
-            self._temperature += np.random.normal(0, 0.5)  # Slight temp variation
+            
+            # Slight temp variation, simulating cooling
+            if self._temperature > 25.0:
+                 self._temperature -= (self._fan_speed / 255.0) * 0.1
 
-            logger.info(f"MOVE command: angles={angles}, feedrate={feedrate}%")
+            logger.info(f"MOVE command: axes={angles}, e={e_pos}, feedrate={feedrate}%")
 
         elif command == SerialProtocol.CMD_HOME:
             self._current_angles = np.zeros(6, dtype=np.float32)
+            self._current_e = 0.0
             logger.info("HOME command: all axes zeroed")
 
         elif command == SerialProtocol.CMD_SET_SPEED:
@@ -150,6 +160,19 @@ class MockController:
                 return self._encode_nack(0x02)
             speed = SerialProtocol._decode_float32(payload, 0)
             logger.info(f"SET_SPEED command: speed={speed}%")
+
+        elif command == SerialProtocol.CMD_SET_TEMP:
+            if len(payload) < 4:
+                return self._encode_nack(0x03)
+            target_temp = SerialProtocol._decode_float32(payload, 0)
+            self._temperature = target_temp  # Instant heat for mock
+            logger.info(f"SET_TEMP command: temp={target_temp}C")
+
+        elif command == SerialProtocol.CMD_SET_FAN:
+            if len(payload) < 1:
+                return self._encode_nack(0x04)
+            self._fan_speed = payload[0]
+            logger.info(f"SET_FAN command: speed={self._fan_speed}")
 
         elif command == SerialProtocol.CMD_ENABLE:
             self._enabled = True
@@ -280,7 +303,9 @@ class MockController:
             'connected': self._connected,
             'enabled': self._enabled,
             'current_angles': self._current_angles.copy(),
+            'current_e': self._current_e,
             'temperature': round(self._temperature, 2),
+            'fan_speed': self._fan_speed,
             'error_flags': self._error_flags,
             'move_count': self._move_count,
         }
@@ -296,18 +321,21 @@ class MockController:
         Sends each row of the trajectory with timing between moves.
 
         Args:
-            trajectory: Shape (N, 6) array where each row is joint angles in degrees.
+            trajectory: Shape (N, 7) array where each row is joint angles + E in degrees/mm.
             dt: Time interval (in seconds) between waypoint sends (default 0.05s).
 
         Returns:
             True if all moves succeeded, False if any failed.
 
         Raises:
-            ValueError: If trajectory does not have 6 columns.
+            ValueError: If trajectory does not have 7 columns.
         """
-        if trajectory.shape[1] != 6:
+        if trajectory.ndim < 2 or len(trajectory) == 0:
+            logger.warning("execute_trajectory: empty trajectory, nothing to send.")
+            return True
+        if trajectory.shape[1] != 7:
             logger.error(f"execute_trajectory: invalid trajectory shape {trajectory.shape}")
-            raise ValueError(f"Trajectory must have 6 columns, got {trajectory.shape[1]}")
+            raise ValueError(f"Trajectory must have 7 columns, got {trajectory.shape[1]}")
 
         logger.info(f"execute_trajectory: {len(trajectory)} waypoints, dt={dt}s")
 
@@ -362,6 +390,13 @@ class MockController:
         for angle in self._current_angles:
             angle_int = int(angle * SerialProtocol.ANGLE_SCALE)
             payload += SerialProtocol._encode_int16(angle_int)
+
+        # Add E pos as int32
+        e_int = int(self._current_e * SerialProtocol.EXTRUDER_SCALE)
+        payload += e_int.to_bytes(4, byteorder='little', signed=True)
+
+        # Add temperature as float32
+        payload += SerialProtocol._encode_float32(self._temperature)
 
         # Add 2 bytes of error flags
         payload += self._error_flags.to_bytes(2, byteorder='little')

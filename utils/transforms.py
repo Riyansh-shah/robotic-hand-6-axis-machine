@@ -113,3 +113,45 @@ def rot_to_euler(R: np.ndarray) -> tuple[float, float, float]:
         pitch = np.arctan2(-R[2, 0], sy)
         yaw   = 0.0
     return roll, pitch, yaw
+
+
+def vector_to_rotation_matrix(vec: np.ndarray) -> np.ndarray:
+    """
+    Convert a 3D direction vector into a 3x3 rotation matrix.
+    Assumes the vector represents the local Z-axis (tool pointing direction).
+    Constructs an orthonormal basis using an arbitrary but consistent up-vector.
+    
+    Parameters
+    ----------
+    vec : np.ndarray
+        Shape (3,), direction vector [i, j, k].
+        
+    Returns
+    -------
+    np.ndarray
+        Shape (3, 3) rotation matrix.
+    """
+    z_axis = np.asarray(vec).astype(float)
+    norm = np.linalg.norm(z_axis)
+    if norm < 1e-6:
+        # Default Z-down if vector is degenerate
+        return rot_x(np.pi)
+    
+    z_axis = z_axis / norm
+    
+    # Choose an arbitrary up vector to orthogonalize against
+    # If z_axis is almost vertical, use a different arbitrary vector
+    if abs(z_axis[0]) > 0.9:
+        ref_vec = np.array([0.0, 1.0, 0.0])
+    else:
+        ref_vec = np.array([1.0, 0.0, 0.0])
+        
+    y_axis = np.cross(z_axis, ref_vec)
+    y_axis /= np.linalg.norm(y_axis)
+    
+    x_axis = np.cross(y_axis, z_axis)
+    
+    # Create the rotation matrix
+    # Columns are X, Y, Z axes
+    R = np.column_stack((x_axis, y_axis, z_axis))
+    return R

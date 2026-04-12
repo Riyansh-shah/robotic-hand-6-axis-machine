@@ -12,6 +12,7 @@ class Waypoint:
 
     Attributes:
         x, y, z: Cartesian coordinates in metres.
+        i, j, k: Orientation tooling vector for 5-axis/non-planar printing.
         e: Extrusion amount in millimetres.
         feedrate: Feed rate in mm/min.
         move_type: Type of move ('rapid', 'linear', or 'home').
@@ -19,6 +20,9 @@ class Waypoint:
     x: float
     y: float
     z: float
+    i: Optional[float] = None
+    j: Optional[float] = None
+    k: Optional[float] = None
     e: float = 0.0
     feedrate: float = 0.0
     move_type: str = "linear"
@@ -46,6 +50,9 @@ class GCodeParser:
         self._current_x: float = 0.0
         self._current_y: float = 0.0
         self._current_z: float = 0.0
+        self._current_i: Optional[float] = None
+        self._current_j: Optional[float] = None
+        self._current_k: Optional[float] = None
         self._current_e: float = 0.0
         self._current_feedrate: float = 0.0
 
@@ -179,6 +186,12 @@ class GCodeParser:
             x = float(params['X']) if 'X' in params else self._current_x
             y = float(params['Y']) if 'Y' in params else self._current_y
             z = float(params['Z']) if 'Z' in params else self._current_z
+            
+            # Extract orientation vectors (I, J, K) for 5-axis G-Code
+            i_val = float(params['I']) if 'I' in params else self._current_i
+            j_val = float(params['J']) if 'J' in params else self._current_j
+            k_val = float(params['K']) if 'K' in params else self._current_k
+
             feedrate = float(params['F']) if 'F' in params else self._current_feedrate
 
             # Extract extrusion
@@ -194,14 +207,20 @@ class GCodeParser:
             self._current_x = x
             self._current_y = y
             self._current_z = z
+            self._current_i = i_val
+            self._current_j = j_val
+            self._current_k = k_val
             self._current_e = e
             self._current_feedrate = feedrate
 
-            # Only emit waypoint if coordinates actually changed
+            # Emit waypoint
             waypoint = Waypoint(
                 x=x * self.scale_factor,
                 y=y * self.scale_factor,
                 z=z * self.scale_factor,
+                i=i_val,
+                j=j_val,
+                k=k_val,
                 e=e,
                 feedrate=feedrate,
                 move_type=move_type
@@ -232,6 +251,9 @@ class GCodeParser:
         self._current_x = 0.0
         self._current_y = 0.0
         self._current_z = 0.0
+        self._current_i = None
+        self._current_j = None
+        self._current_k = None
         self._current_e = 0.0
         self._current_feedrate = 0.0
         self._relative_extrusion = False

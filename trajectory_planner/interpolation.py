@@ -54,8 +54,9 @@ def trapezoidal_velocity_profile(
     q_start = np.asarray(q_start).ravel()
     q_end = np.asarray(q_end).ravel()
 
-    assert q_start.shape == (6,), f"q_start must have 6 elements, got {q_start.shape}"
-    assert q_end.shape == (6,), f"q_end must have 6 elements, got {q_end.shape}"
+    num_axes = len(q_start)
+    assert len(q_end) == num_axes, "q_start and q_end must have the same length"
+    assert num_axes in (6, 7), f"Expected 6 or 7 axes, got {num_axes}"
 
     # Compute total distance (normalized to [0, 1])
     dq = q_end - q_start
@@ -108,7 +109,60 @@ def trapezoidal_velocity_profile(
     s_trajectory = np.clip(s_trajectory, 0.0, 1.0)
 
     # Interpolate joint angles along the path
-    trajectory = np.zeros((n_samples, 6))
+    trajectory = np.zeros((n_samples, num_axes))
+    for i, s in enumerate(s_trajectory):
+        trajectory[i] = q_start + s * dq
+
+    return trajectory
+
+
+def quintic_velocity_profile(
+    q_start: np.ndarray,
+    q_end: np.ndarray,
+    v_max: float = 1.0,
+    a_max: float = 2.0,
+    dt: float = 0.01,
+) -> np.ndarray:
+    """
+    Generate a smooth trajectory between two joint configurations using a quintic polynomial.
+    This provides an S-curve velocity profile with continuous acceleration starting and ending exactly at zero, completely avoiding infinite jerk (motor recoil).
+    
+    Formula: s(t) = 10*(t/T)^3 - 15*(t/T)^4 + 6*(t/T)^5
+    """
+    q_start = np.asarray(q_start).ravel()
+    q_end = np.asarray(q_end).ravel()
+
+    num_axes = len(q_start)
+    assert len(q_end) == num_axes, "q_start and q_end must have the same length"
+    assert num_axes in (6, 7), f"Expected 6 or 7 axes, got {num_axes}"
+
+    # Use normalized path parameter
+    # For a quintic polynomial bounded in [0, 1] over time T:
+    # Max velocity is 15/(8*T)
+    # Max acceleration is sqrt(3)*10 / (3*T^2) ~= 5.7735 / T^2
+    # To respect limits:
+    t_v = 1.875 / v_max
+    t_a = np.sqrt(5.77350269 / a_max)
+    t_total = max(t_v, t_a)
+    
+    # If starting and ending positions are effectively the same:
+    if np.max(np.abs(q_end - q_start)) < 1e-6:
+        return np.array([q_start, q_end])
+
+    # Generate time samples
+    n_samples = max(2, int(np.ceil(t_total / dt)) + 1)
+    times = np.linspace(0, t_total, n_samples)
+    
+    # Quintic evaluation
+    tau = times / t_total
+    s_trajectory = 10 * tau**3 - 15 * tau**4 + 6 * tau**5
+    
+    # Clamp safety
+    s_trajectory = np.clip(s_trajectory, 0.0, 1.0)
+    
+    # Interpolate joint angles
+    dq = q_end - q_start
+    trajectory = np.zeros((n_samples, num_axes))
     for i, s in enumerate(s_trajectory):
         trajectory[i] = q_start + s * dq
 
@@ -139,7 +193,7 @@ def interpolate_trajectory(
 
     Returns
     -------
-    full_trajectory : np.ndarray, shape (N, 6)
+    full_trajectory : np.ndarray, shape (N, 6) or (N, 7)
         Complete trajectory connecting all waypoints.
 
     Notes
@@ -156,8 +210,8 @@ def interpolate_trajectory(
         q_start = np.asarray(joint_waypoints[i]).ravel()
         q_end = np.asarray(joint_waypoints[i + 1]).ravel()
 
-        # Generate segment trajectory
-        segment = trapezoidal_velocity_profile(q_start, q_end, v_max, a_max, dt)
+        # Generate segment trajectory using smart acceleration (Quintic S-Curve)
+        segment = quintic_velocity_profile(q_start, q_end, v_max, a_max, dt)
 
         if full_trajectory is None:
             full_trajectory = segment
@@ -195,15 +249,16 @@ def linear_interpolation(
     q_start = np.asarray(q_start).ravel()
     q_end = np.asarray(q_end).ravel()
 
-    assert q_start.shape == (6,), f"q_start must have 6 elements, got {q_start.shape}"
-    assert q_end.shape == (6,), f"q_end must have 6 elements, got {q_end.shape}"
+    num_axes = len(q_start)
+    assert len(q_end) == num_axes, "q_start and q_end must have the same length"
+    assert num_axes in (6, 7), f"Expected 6 or 7 axes, got {num_axes}"
     assert n_steps >= 2, "n_steps must be at least 2"
 
     # Generate parameter alpha in [0, 1]
     alpha = np.linspace(0, 1, n_steps)
 
     # Linear interpolation
-    trajectory = np.zeros((n_steps, 6))
+    trajectory = np.zeros((n_steps, num_axes))
     for i, a in enumerate(alpha):
         trajectory[i] = (1.0 - a) * q_start + a * q_end
 

@@ -8,6 +8,14 @@ from typing import List, Optional, Union
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+import os
+
+try:
+    from stl import mesh
+    from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+    HAS_STL = True
+except ImportError:
+    HAS_STL = False
 import sys
 from pathlib import Path
 
@@ -26,6 +34,8 @@ def plot_arm(
     show_frames: bool = True,
     frame_scale: float = 0.03,
     link_linewidth: float = 2.5,
+    plot_cad: bool = True,
+    cad_dir: str = "CAD/STL",
 ) -> tuple:
     """
     Plot the arm linkage in 3D with joint coordinate frames.
@@ -47,6 +57,10 @@ def plot_arm(
         Length of frame arrows in metres. Default: 0.03 m.
     link_linewidth : float, optional
         Line width for the arm linkage. Default: 2.5.
+    plot_cad : bool, optional
+        Whether to attempt loading and plotting STL files. Default: True.
+    cad_dir : str, optional
+        Directory to look for link0.stl, link1.stl, etc. Default: "CAD/STL".
 
     Returns
     -------
@@ -85,6 +99,35 @@ def plot_arm(
                 label = f"Frame {i}"
             plot_frame(ax, T, scale=frame_scale, label=label)
 
+    # Plot CAD models if requested and available
+    if plot_cad and HAS_STL:
+        # Resolve path
+        proj_root = Path(__file__).parent.parent
+        cad_path = proj_root / cad_dir
+        
+        for i, T in enumerate(transforms):
+            stl_file = cad_path / f"link{i}.stl"
+            if stl_file.exists():
+                try:
+                    stl_mesh = mesh.Mesh.from_file(str(stl_file))
+                    # Transform vertices
+                    verts = stl_mesh.vectors.reshape(-1, 3)
+                    verts_h = np.hstack((verts, np.ones((verts.shape[0], 1))))
+                    transformed_verts_h = (T @ verts_h.T).T
+                    transformed_vectors = transformed_verts_h[:, :3].reshape(-1, 3, 3)
+                    
+                    # Create 3D collection and add to plot
+                    collection = Poly3DCollection(
+                        transformed_vectors, 
+                        facecolors='#94a3b8', 
+                        linewidths=0.1, 
+                        edgecolors='#334155', 
+                        alpha=0.6
+                    )
+                    ax.add_collection3d(collection)
+                except Exception as e:
+                    print(f"Warning: Failed to load or plot CAD file {stl_file}: {e}")
+
     # Set axis properties
     ax.set_xlabel("X (m)", color="#94a3b8")
     ax.set_ylabel("Y (m)", color="#94a3b8")
@@ -116,6 +159,8 @@ def animate_arm(
     show_ee_path: bool = True,
     frame_scale: float = 0.02,
     figsize: tuple = (10, 8),
+    plot_cad: bool = True,
+    cad_dir: str = "CAD/STL",
 ) -> FuncAnimation:
     """
     Animate the arm moving through a trajectory of joint configurations.
@@ -181,8 +226,27 @@ def animate_arm(
     ax.set_ylim([centers[1] - max_range, centers[1] + max_range])
     ax.set_zlim([centers[2] - max_range, centers[2] + max_range])
 
-    # Quiver collections for coordinate frames (stored in a list)
+    # Pre-load CAD models into memory if available
+    cad_models = []
+    if plot_cad and HAS_STL:
+        proj_root = Path(__file__).parent.parent
+        cad_path = proj_root / cad_dir
+        for i in range(len(all_transforms[0])):
+            stl_file = cad_path / f"link{i}.stl"
+            if stl_file.exists():
+                try:
+                    cad_models.append(mesh.Mesh.from_file(str(stl_file)))
+                except Exception as e:
+                    print(f"Warning: Failed to load {stl_file}: {e}")
+                    cad_models.append(None)
+            else:
+                cad_models.append(None)
+    else:
+        cad_models = [None] * len(all_transforms[0])
+
+    # Quiver collections for coordinate frames and collections for CAD models
     frame_artists = []
+    cad_artists = []
 
     def update(frame_idx: int):
         """Update function for animation."""
@@ -205,9 +269,15 @@ def animate_arm(
         for artist in frame_artists:
             artist.remove()
         frame_artists.clear()
+        
+        # Clear old CAD overlays
+        for artist in cad_artists:
+            artist.remove()
+        cad_artists.clear()
 
-        # Draw new frames
+        # Draw new frames and CAD models
         for i, T in enumerate(transforms):
+            # Draw frames
             origin = T[:3, 3]
             x_axis = T[:3, 0] * frame_scale
             y_axis = T[:3, 1] * frame_scale
@@ -217,12 +287,30 @@ def animate_arm(
                 q = ax.quiver(*origin, *vec, color=color, linewidth=1.5,
                               arrow_length_ratio=0.3, alpha=0.7)
                 frame_artists.append(q)
+                
+            # Render CAD models
+            if i < len(cad_models) and cad_models[i] is not None:
+                stl_mesh = cad_models[i]
+                verts = stl_mesh.vectors.reshape(-1, 3)
+                verts_h = np.hstack((verts, np.ones((verts.shape[0], 1))))
+                transformed_verts_h = (T @ verts_h.T).T
+                transformed_vectors = transformed_verts_h[:, :3].reshape(-1, 3, 3)
+                
+                collection = Poly3DCollection(
+                    transformed_vectors, 
+                    facecolors='#94a3b8', 
+                    linewidths=0.1, 
+                    edgecolors='#334155', 
+                    alpha=0.6
+                )
+                ax.add_collection3d(collection)
+                cad_artists.append(collection)
 
         # Update text info
         q_str = ", ".join([f"{q:.2f}" for q in trajectory[frame_idx][:3]])
         text_info.set_text(f"Frame {frame_idx + 1}/{len(trajectory)}\nq1-3: [{q_str}] rad")
 
-        return line, path_scatter, text_info, *frame_artists
+        return line, path_scatter, text_info, *frame_artists, *cad_artists
 
     anim = FuncAnimation(
         fig, update, frames=len(trajectory), interval=interval,

@@ -18,7 +18,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from gcode_parser import Waypoint
 from kinematics.inverse_kinematics import ik_numerical, IKError
 from kinematics.dh_params import DH6R, get_dh_table
-from utils.transforms import rot_z, rot_y, rot_x, homogeneous
+from utils.transforms import rot_z, rot_y, rot_x, homogeneous, vector_to_rotation_matrix
 
 
 logger = logging.getLogger(__name__)
@@ -97,7 +97,8 @@ def waypoints_to_joint_trajectory(
     Returns
     -------
     joint_waypoints : List[np.ndarray]
-        List of joint angle arrays (each shape (6,)), one per Cartesian waypoint.
+        List of joint angle arrays with extrusion appended (each shape (7,)), one per Cartesian waypoint.
+        First 6 elements are joint angles, 7th is extruder position `e`.
         Waypoints that fail IK are skipped with a warning logged.
 
     Notes
@@ -111,32 +112,63 @@ def waypoints_to_joint_trajectory(
         dh_table = get_dh_table()
 
     if q_init is None:
-        q_current = np.zeros(6)
+        q_current = np.zeros(7)
     else:
         q_current = np.asarray(q_init).ravel()
+        if len(q_current) == 6:
+            q_current = np.append(q_current, 0.0)
 
     joint_waypoints = []
+    rng = np.random.default_rng(42)
 
     for i, wp in enumerate(waypoints):
-        # Build target pose with Z-down orientation
-        T_target = build_target_pose(wp.x, wp.y, wp.z)
+        # Determine orientation from waypoint I, J, K coordinates
+        if wp.i is not None and wp.j is not None and wp.k is not None:
+            ee_orientation = vector_to_rotation_matrix(np.array([wp.i, wp.j, wp.k]))
+        else:
+            # Fallback to Z-down
+            ee_orientation = rot_x(np.pi)
 
-        try:
-            # Solve IK with warm-start from previous solution
-            q_solution = ik_numerical(
-                target_pose=T_target,
-                dh_table=dh_table,
-                q_init=q_current,
-                tol=1e-6,
-                max_iter=200,
-            )
+        # Build target pose with dynamic orientation
+        T_target = build_target_pose(wp.x, wp.y, wp.z, ee_orientation)
 
-            joint_waypoints.append(q_solution)
-            q_current = q_solution  # Warm-start next iteration
+        # Build a list of initial guesses to try: warm-start first, then smart
+        # guess based on target azimuth, then random restarts.
+        angle_limit = np.deg2rad(160.0)
+        q_smart = np.array([
+            np.arctan2(wp.y, wp.x),  # joint 1: point base toward target
+            -np.pi / 4,              # joint 2: shoulder slightly down
+            np.pi / 2,              # joint 3: elbow up
+            -np.pi / 4,             # joint 4: wrist level
+            0.0, 0.0,
+        ])
+        initial_guesses = [
+            q_current[:6],
+            q_smart,
+        ] + [rng.uniform(-angle_limit, angle_limit, 6) for _ in range(8)]
 
-        except IKError as e:
+        q_solution = None
+        last_err = None
+        for guess in initial_guesses:
+            try:
+                q_solution = ik_numerical(
+                    target_pose=T_target,
+                    dh_table=dh_table,
+                    q_init=guess,
+                    tol=1e-3,
+                    max_iter=500,
+                )
+                break  # Found a solution
+            except IKError as e:
+                last_err = e
+
+        if q_solution is not None:
+            q_solution_with_e = np.append(q_solution, wp.e)
+            joint_waypoints.append(q_solution_with_e)
+            q_current = q_solution_with_e  # Warm-start next iteration
+        else:
             logger.warning(
-                f"IK failed for waypoint {i} at ({wp.x:.4f}, {wp.y:.4f}, {wp.z:.4f}): {e}"
+                f"IK failed for waypoint {i} at ({wp.x:.4f}, {wp.y:.4f}, {wp.z:.4f}): {last_err}"
             )
             # Skip this waypoint but continue with the rest
 

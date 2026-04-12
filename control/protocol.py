@@ -31,6 +31,8 @@ class SerialProtocol:
     CMD_ENABLE: int = 0x04
     CMD_DISABLE: int = 0x05
     CMD_QUERY: int = 0x06
+    CMD_SET_TEMP: int = 0x07
+    CMD_SET_FAN: int = 0x08
     CMD_EMERGENCY_STOP: int = 0xFF
 
     # Response codes
@@ -39,8 +41,9 @@ class SerialProtocol:
     RESP_DATA: int = 0x66
 
     # Constants
-    NUM_JOINTS: int = 6
+    NUM_AXES: int = 7  # 6 joints + 1 extruder
     ANGLE_SCALE: float = 100.0  # 0.01° per unit
+    EXTRUDER_SCALE: float = 1000.0 # 0.001 mm per unit
 
     @staticmethod
     def checksum(data: bytes) -> int:
@@ -81,30 +84,34 @@ class SerialProtocol:
     @classmethod
     def encode_move(
         cls,
-        joint_angles: np.ndarray,
+        axes: np.ndarray,
         feedrate: float = 100.0
     ) -> bytes:
         """
-        Encode a move command with 6 joint angles and feedrate.
+        Encode a move command with 6 joint angles, 1 extruder position, and feedrate.
 
         Args:
-            joint_angles: Array of 6 angles in degrees.
+            axes: Array of 7 values (6 angles in degrees, 1 extruder pos in mm).
             feedrate: Feedrate percentage (default 100.0 for full speed).
 
         Returns:
             Binary frame ready to send to controller.
 
         Raises:
-            ValueError: If joint_angles does not have exactly 6 elements.
+            ValueError: If axes does not have exactly 7 elements.
         """
-        if len(joint_angles) != cls.NUM_JOINTS:
-            raise ValueError(f"Expected {cls.NUM_JOINTS} joint angles, got {len(joint_angles)}")
+        if len(axes) != cls.NUM_AXES:
+            raise ValueError(f"Expected {cls.NUM_AXES} axes, got {len(axes)}")
 
         # Encode joint angles as int16 (0.01° units)
         data = b''
-        for angle in joint_angles:
-            angle_int = int(angle * cls.ANGLE_SCALE)
+        for i in range(6):
+            angle_int = int(axes[i] * cls.ANGLE_SCALE)
             data += cls._encode_int16(angle_int)
+        
+        # Encode extruder pos as int32 (0.001 mm units) - 4 bytes
+        e_int = int(axes[6] * cls.EXTRUDER_SCALE)
+        data += e_int.to_bytes(4, byteorder='little', signed=True)
 
         # Encode feedrate as float32
         data += cls._encode_float32(feedrate)
@@ -138,6 +145,28 @@ class SerialProtocol:
         """
         frame = bytes([cls.SYNC_BYTE_1, cls.SYNC_BYTE_2, cls.CMD_EMERGENCY_STOP, 0])
         frame += bytes([cls.checksum(b'')])
+        return frame
+
+    @classmethod
+    def encode_set_temp(cls, temperature: float) -> bytes:
+        """
+        Encode a set hotend temperature command.
+        """
+        data = cls._encode_float32(temperature)
+        frame = bytes([cls.SYNC_BYTE_1, cls.SYNC_BYTE_2, cls.CMD_SET_TEMP, len(data)])
+        frame += data
+        frame += bytes([cls.checksum(data)])
+        return frame
+
+    @classmethod
+    def encode_set_fan(cls, fan_speed: int) -> bytes:
+        """
+        Encode a set cooling fan speed command (0-255).
+        """
+        data = bytes([fan_speed & 0xFF])
+        frame = bytes([cls.SYNC_BYTE_1, cls.SYNC_BYTE_2, cls.CMD_SET_FAN, len(data)])
+        frame += data
+        frame += bytes([cls.checksum(data)])
         return frame
 
     @classmethod
@@ -241,15 +270,19 @@ class SerialProtocol:
             result['status'] = 'NACK'
             if len(payload) > 0:
                 result['error_code'] = payload[0]
-        elif response_code == cls.RESP_DATA and len(payload) >= 14:
-            # Data response: 6 int16 angles (12 bytes) + temperature float32 (4 bytes) - but we pack 14 bytes
-            # Actually: 6*int16 = 12, plus 2 bytes error flags = 14
+        elif response_code == cls.RESP_DATA and len(payload) >= 22:
+            # Data response: 6 int16 angles (12 bytes) + 1 int32 E pos (4 bytes) + temperature float32 (4 bytes) + 2 bytes error flags = 22 bytes
             result['status'] = 'DATA'
             result['angles'] = np.array([
                 cls._decode_int16(payload, i*2) / cls.ANGLE_SCALE
                 for i in range(6)
             ])
-            # Last 2 bytes are error flags
-            result['error_flags'] = int.from_bytes(payload[12:14], byteorder='little')
+            # Decode E position (bytes 12-15)
+            e_int = int.from_bytes(payload[12:16], byteorder='little', signed=True)
+            result['e_pos'] = e_int / cls.EXTRUDER_SCALE
+            # Decode Temperature (bytes 16-19)
+            result['temperature'] = cls._decode_float32(payload, 16)
+            # Decode error flags (bytes 20-21)
+            result['error_flags'] = int.from_bytes(payload[20:22], byteorder='little')
 
         return result

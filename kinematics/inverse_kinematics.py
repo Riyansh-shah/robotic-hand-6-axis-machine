@@ -113,7 +113,8 @@ def ik_numerical(
             rot_error = np.array([E[2, 1], E[0, 2], E[1, 0]]) * 0.5
 
         # Combined error vector (6D: 3D position + 3D rotation)
-        error = np.concatenate([pos_error, rot_error * 0.5])  # Weight rotation less
+        # Weight rotation at 0.0 → position-only IK; arm orientation settles naturally.
+        error = np.concatenate([pos_error, rot_error * 0.0])
         error_norm = np.linalg.norm(error)
 
         # Compute Jacobian via finite differences (analytical would be better)

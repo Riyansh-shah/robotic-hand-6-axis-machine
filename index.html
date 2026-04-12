@@ -1,421 +1,661 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PBL Presentation | 2026</title>
+    <title>6-Axis Robotic 3D Printing | PBL 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }</script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-
-        body {
-            background-color: #020617;
-            color: #f8fafc;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            scroll-behavior: smooth;
-        }
-
-        .glass {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .gradient-text {
-            background: linear-gradient(90deg, #60a5fa, #a855f7);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* TIMER UI - FIXED CONTRAST */
-        #timerContainer {
-            background: #ffffff;
-            color: #020617;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-            border: 3px solid #3b82f6;
-            z-index: 1000;
-        }
-
-        @keyframes flicker {
-
-            0%,
-            100% {
-                background-color: #ffffff;
-            }
-
-            50% {
-                background-color: #fca5a5;
-            }
-        }
-
-        .timer-warning {
-            animation: flicker 1s infinite;
-            border: 3px solid #ef4444 !important;
-            color: #b91c1c !important;
-        }
-
-        .timer-stop {
-            background-color: #991b1b !important;
-            color: #ffffff !important;
-            border: 3px solid #f87171 !important;
-            animation: none;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
+        :root { --accent:#3b82f6; --accent-glow:rgba(59,130,246,0.45); --bg:#020617; }
+        body { background:var(--bg); color:#f8fafc; font-family:'Plus Jakarta Sans',sans-serif; overflow-x:hidden; }
+        .glass { background:rgba(15,23,42,0.6); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.07); }
+        .gradient-text { background:linear-gradient(135deg,#60a5fa 0%,#a855f7 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+        .hero-glow { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:600px; height:600px; background:radial-gradient(circle,var(--accent-glow) 0%,transparent 70%); filter:blur(80px); z-index:-1; opacity:.25; }
+        .reveal { opacity:0; transform:translateY(28px); transition:all .7s cubic-bezier(.4,0,.2,1); }
+        .reveal.active { opacity:1; transform:translateY(0); }
+        #timerContainer { background:#fff; color:#020617; box-shadow:0 20px 50px rgba(0,0,0,.5); border:2px solid var(--accent); z-index:1000; }
+        .timer-warning { animation:pulse-red 1s infinite; }
+        @keyframes pulse-red { 0%,100%{background:#fff} 50%{background:#fee2e2} }
+        /* pipeline */
+        .pipe-arrow { width:32px; height:2px; background:linear-gradient(to right,#334155,#3b82f6); position:relative; }
+        .pipe-arrow::after { content:'▶'; position:absolute; right:-10px; top:50%; transform:translateY(-50%); color:#3b82f6; font-size:10px; }
+        /* demo canvas */
+        #threeCanvas { width:100%!important; height:100%!important; display:block; border-radius:1.5rem; }
+        /* input styling */
+        .dim-input { background:#0f172a; border:1px solid #1e293b; border-radius:.5rem; color:#e2e8f0; padding:.4rem .7rem; width:100%; font-family:'JetBrains Mono',monospace; font-size:.8rem; transition:border .2s; outline:none; }
+        .dim-input:focus { border-color:#3b82f6; }
+        .tab-btn { padding:.4rem 1rem; border-radius:9999px; font-size:.65rem; font-weight:800; text-transform:uppercase; letter-spacing:.15em; transition:all .2s; cursor:pointer; border:none; }
+        .tab-btn.active { background:#3b82f6; color:#fff; }
+        .tab-btn:not(.active) { background:#0f172a; color:#475569; }
+        .tab-btn:not(.active):hover { color:#94a3b8; }
+        .status-ok   { color:#22c55e; background:#052e16; border:1px solid #15803d; }
+        .status-warn { color:#fbbf24; background:#1c1407; border:1px solid #b45309; }
+        .status-err  { color:#f87171; background:#1c0707; border:1px solid #b91c1c; }
+        .status-idle { color:#475569; background:#0f172a; border:1px solid #1e293b; }
+        /* arm anim */
+        .arm-base { width:56px; height:16px; background:#334155; border-radius:4px; position:relative; }
+        .arm-link { position:absolute; bottom:100%; left:50%; transform-origin:bottom center; background:#94a3b8; }
+        .joint { width:10px; height:10px; background:#3b82f6; border-radius:50%; position:absolute; bottom:-5px; left:50%; transform:translateX(-50%); box-shadow:0 0 8px var(--accent); }
+        @keyframes wave { 0%,100%{transform:translateX(-50%) rotate(12deg)} 50%{transform:translateX(-50%) rotate(-12deg)} }
+        .animate-wave { animation:wave 4s ease-in-out infinite; }
     </style>
 </head>
+<body onload="initPage()">
 
-<body onload="startTimer()">
+<!-- Timer -->
+<div id="timerContainer" class="fixed bottom-6 right-6 px-5 py-2.5 rounded-2xl flex items-center gap-3 transition-all scale-90 hover:scale-100 origin-bottom-right cursor-pointer" onclick="resetTimer()" title="Click to reset">
+    <i class="fas fa-stopwatch text-blue-600" id="timerIcon"></i>
+    <span id="displayTime" class="text-2xl font-bold font-mono tracking-tighter">00:00</span>
+</div>
 
-    <div id="timerContainer"
-        class="fixed bottom-10 right-10 px-8 py-4 rounded-3xl flex items-center gap-4 transition-all">
-        <i class="fas fa-hourglass-start text-blue-600 text-2xl" id="timerIcon"></i>
-        <span id="displayTime" class="text-4xl font-black font-mono tracking-tighter">00:00</span>
+<!-- Nav -->
+<nav class="fixed w-full z-50 glass border-b border-white/5 px-6 md:px-12 py-3.5 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+        <div class="bg-white p-1 rounded-lg" style="height:38px;width:38px">
+            <img src="mujlogo.jpg" alt="MUJ" class="h-full w-auto object-contain" onerror="this.style.display='none'">
+        </div>
+        <div>
+            <div class="text-base font-black tracking-tighter leading-none">6-AXIS <span class="text-blue-500">ROBOTICS</span></div>
+            <div class="text-[8px] text-slate-600 font-bold uppercase tracking-[.2em]">PBL Capstone 2026</div>
+        </div>
     </div>
+    <div class="hidden md:flex gap-7 text-[9px] uppercase tracking-[.2em] font-bold text-slate-500">
+        <a href="#problem" class="hover:text-white transition">The Problem</a>
+        <a href="#pipeline" class="hover:text-white transition">Pipeline</a>
+        <a href="#demo" class="hover:text-blue-400 transition text-blue-500">Live Demo</a>
+        <a href="#results" class="hover:text-white transition">Results</a>
+        <a href="#chapters" class="hover:text-white transition">Chapters</a>
+    </div>
+    <a href="#demo" class="bg-blue-600 hover:bg-blue-500 text-white text-[9px] font-bold uppercase tracking-widest px-5 py-2 rounded-full transition shadow-lg shadow-blue-900/20">Run Demo</a>
+</nav>
 
-    <nav class="fixed w-full z-50 glass border-b border-slate-800/50 px-8 py-4 flex justify-between items-center">
-        <div class="flex items-center gap-4">
-            <div class="bg-white p-1 rounded flex items-center justify-center shadow-md"
-                style="height: 48px; width: 48px;">
-                <img src="mujlogo.jpg" alt="MUJ" class="h-full w-auto object-contain"
-                    onerror="this.src='https://via.placeholder.com/50?text=MUJ'">
-            </div>
-            <div class="flex flex-col text-left">
-                <span class="text-xl font-black text-white leading-none uppercase tracking-tighter">PBL <span
-                        class="text-blue-500 italic">2026</span></span>
-                <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">Dept. of Computer
-                    Science & Engineering</span>
+<!-- Hero -->
+<header class="relative min-h-screen flex flex-col items-center justify-center text-center px-6 pt-20 overflow-hidden">
+    <div class="hero-glow"></div>
+    <div class="absolute right-[8%] top-1/2 -translate-y-1/2 opacity-15 hidden lg:block scale-125">
+        <div class="arm-base mx-auto">
+            <div class="arm-link w-1.5 h-36 animate-wave"><div class="joint"></div>
+                <div class="arm-link w-1.5 h-28 animate-wave" style="animation-delay:-1.2s"><div class="joint"></div>
+                    <div class="arm-link w-1.5 h-20 animate-wave" style="animation-delay:-2.4s"><div class="joint"></div></div>
+                </div>
             </div>
         </div>
-        <div class="hidden md:flex gap-8 text-[11px] uppercase tracking-widest font-bold opacity-70">
-            <a href="#problem" class="hover:text-blue-400 transition">Problem</a>
-            <a href="#methodology" class="hover:text-blue-400 transition">Methodology</a>
-            <a href="#results" class="hover:text-blue-400 transition">Results</a>
-            <a href="#team" class="hover:text-blue-400 transition">Team</a>
+    </div>
+    <div class="max-w-4xl space-y-7 relative z-10">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[9px] font-bold uppercase tracking-[.2em]">
+            <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span></span>
+            Simulation Validated — Hardware Build Phase
         </div>
-    </nav>
+        <h1 class="text-6xl md:text-8xl font-black tracking-tighter leading-[.88] uppercase">
+            Print Any<br><span class="gradient-text">Surface.</span>
+        </h1>
+        <p class="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed border-l-2 border-blue-500/30 pl-5 text-left italic">
+            A desktop 6-DOF robotic arm that replaces the XY gantry with full rotational freedom — eliminating layer lines, support waste, and geometric constraints of Cartesian 3D printing.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center pt-6">
+            <a href="#demo" class="px-10 py-4 bg-blue-600 text-white font-black text-xs uppercase tracking-widest rounded-xl hover:bg-blue-500 transition duration-300 shadow-xl shadow-blue-900/40">See it Live →</a>
+            <a href="#pipeline" class="px-10 py-4 glass text-white font-black text-xs uppercase tracking-widest rounded-xl hover:bg-white/10 transition duration-300">How it Works</a>
+        </div>
+    </div>
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce text-slate-700">
+        <i class="fas fa-chevron-down"></i>
+    </div>
+</header>
 
-    <main class="max-w-6xl mx-auto px-6 pt-48 pb-32 space-y-32">
+<main class="max-w-7xl mx-auto px-6 space-y-40 pb-32">
 
-        <section class="text-center">
-            <div
-                class="inline-block px-4 py-1 border border-slate-800 rounded-full text-slate-500 text-[10px] font-mono mb-6 uppercase tracking-widest">
-                ID: 2427030271</div>
-            <h1 class="text-5xl md:text-6xl font-extrabold mb-8 uppercase leading-tight">
-                <span class="gradient-text uppercase">6-Axis</span>
-                <span
-                    class="block text-2xl md:text-3xl text-slate-400 mt-6 font-bold normal-case tracking-normal border-t border-slate-800/50 pt-6 max-w-4xl mx-auto">
-                    A Desktop Robotic Platform for Seamless Non-Planar 3D Printing
-                </span>
-            </h1>
-            <p
-                class="text-slate-400 max-w-4xl mx-auto italic text-lg leading-relaxed border-l-2 border-blue-500/30 pl-6 text-start">
-                "This project aims to develop a desktop-scale, 6-axis robotic 3D printer using optimized conventional CAD design to
-                minimize arm mass and maximize rigidity. The primary objective is to prove that a 6-axis articulated
-                motion system can produce seamless, high-strength organic parts that are impossible to manufacture on
-                traditional 3-axis Cartesian printers."
-            </p>
-        </section>
-
-        <section id="problem" class="grid md:grid-cols-2 gap-12 items-stretch">
-            <div class="glass p-10 rounded-[2.5rem] flex flex-col justify-center border-l-4 border-blue-600">
-                <h2 class="text-3xl font-extrabold mb-6">Problem Statement</h2>
-                <div class="text-slate-400 leading-relaxed text-justify space-y-6">
-                    <p>
-                        <strong class="text-slate-200 block mb-2 text-sm uppercase tracking-wider">The
-                            Challenge</strong>
-                        Traditional 3D printers are limited to 2.5D (layer-by-layer) movement, which creates weak points
-                        between layers and visible "staircase" artifacts on curved surfaces.
-                    </p>
-                    <p>
-                        <strong class="text-slate-200 block mb-2 text-sm uppercase tracking-wider">The
-                            Necessity</strong>
-                        For complex aerospace or medical components, these layer lines are not just ugly—they are
-                        structural failures. Current 5-axis solutions are either too expensive for students or lack the
-                        rotational freedom to print completely seamless "closed-loop" geometries.
-                    </p>
-                </div>
-            </div>
-            <div class="space-y-6">
-                <div class="glass p-7 rounded-3xl border-r-4 border-blue-500/50">
-                    <h3 class="text-blue-400 font-bold text-xs uppercase tracking-widest mb-2">Literature Review /
-                        Market Research</h3>
-                    <div class="text-sm text-slate-500 space-y-4 text-justify not-italic">
-                        <p>
-                            <strong class="text-slate-300 block mb-1">Existing Solutions:</strong>
-                            Analysis of open-source projects like Thor and AR4 shows that while 3D-printed 6-axis arms
-                            exist, they are often too heavy for high-speed precision printing.
-                        </p>
-                        <p>
-                            <strong class="text-slate-300 block mb-1">Market Gap:</strong>
-                            Industrial 6-axis printers (like ABB or KUKA systems) cost over $30,000, leaving a gap for a
-                            "desktop-class" hybrid machine.
-                        </p>
+    <!-- THE PROBLEM -->
+    <section id="problem" class="scroll-mt-28 reveal">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+            <div class="space-y-7">
+                <p class="text-[10px] font-black text-blue-500 uppercase tracking-[.4em]">Chapter 01 — The Core Problem</p>
+                <h2 class="text-4xl md:text-5xl font-black leading-tight uppercase tracking-tighter">Why Cartesian Printing <span class="text-slate-600">Cannot Scale.</span></h2>
+                <p class="text-slate-400 leading-relaxed">A standard 3-axis printer moves in X, Y, and Z independently. Every layer is flat. Curved surfaces become staircases. Overhangs need supports that get thrown away. Layers bond poorly at their weakest axis. It's a geometry problem that more resolution cannot fix.</p>
+                <div class="grid sm:grid-cols-3 gap-4">
+                    <div class="p-5 rounded-2xl bg-red-500/5 border border-red-500/10 space-y-2">
+                        <i class="fas fa-stairs text-red-400 text-lg"></i>
+                        <p class="text-xs font-bold uppercase text-red-300">Staircase Surfaces</p>
+                        <p class="text-[11px] text-slate-500">Visible layer artifacts on any organic geometry.</p>
                     </div>
-                </div>
-                <div class="glass p-7 rounded-3xl border-r-4 border-purple-500/50">
-                    <h3 class="text-purple-400 font-bold text-xs uppercase tracking-widest mb-2">Research Gap /
-                        Innovation</h3>
-                    <div class="text-sm text-slate-500 space-y-4 text-justify not-italic">
-                        <p>
-                            <strong class="text-slate-300 block mb-1">Weight Optimization:</strong>
-                            Unlike previous projects, this uses optimized conventional CAD design for bionic, lattice-based
-                            "bones" to reduce inertia.
-                        </p>
-                        <p>
-                            <strong class="text-slate-300 block mb-1">True Non-Planar Slicing:</strong>
-                            Innovates with Continuous 5-Axis toolpaths (nozzle always perpendicular to surface) for
-                            superior strength and no visible Z-seams.
-                        </p>
+                    <div class="p-5 rounded-2xl bg-yellow-500/5 border border-yellow-500/10 space-y-2">
+                        <i class="fas fa-layer-group text-yellow-400 text-lg"></i>
+                        <p class="text-xs font-bold uppercase text-yellow-300">Layer Delamination</p>
+                        <p class="text-[11px] text-slate-500">Z-axis tensile strength 40–60% below X/Y.</p>
+                    </div>
+                    <div class="p-5 rounded-2xl bg-orange-500/5 border border-orange-500/10 space-y-2">
+                        <i class="fas fa-trash text-orange-400 text-lg"></i>
+                        <p class="text-xs font-bold uppercase text-orange-300">Support Waste</p>
+                        <p class="text-[11px] text-slate-500">Up to 30% material wasted on removable supports.</p>
                     </div>
                 </div>
             </div>
-        </section>
-
-        <section id="methodology" class="space-y-10">
-            <div class="text-center space-y-3">
-                <h2 class="text-4xl font-black text-center uppercase tracking-tight">Presentation <span
-                        class="text-blue-500">Chapters</span></h2>
-                <p class="text-slate-500 text-sm uppercase tracking-widest">12 deep-dive modules — click any to explore</p>
-            </div>
-            <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-
-                <!-- 01 -->
-                <div class="glass p-6 rounded-[2rem] flex flex-col group hover:border-blue-500/40 hover:-translate-y-1 transition duration-300">
-                    <div class="flex items-center justify-between mb-5">
-                        <span class="text-[10px] font-black text-slate-700 uppercase tracking-widest">01</span>
-                        <i class="fas fa-crosshairs text-blue-500 text-xl group-hover:scale-110 transition duration-300"></i>
+            <div class="space-y-5">
+                <div class="glass p-8 rounded-3xl border-l-4 border-blue-600">
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-slate-600 mb-4">Our Approach — 6 Rotational Axes</p>
+                    <div class="grid grid-cols-3 gap-4 text-center">
+                        <div><p class="text-3xl font-black text-blue-400">6</p><p class="text-[10px] text-slate-500 uppercase font-bold mt-1">Degrees of Freedom</p></div>
+                        <div><p class="text-3xl font-black text-purple-400">369mm</p><p class="text-[10px] text-slate-500 uppercase font-bold mt-1">Reach Radius</p></div>
+                        <div><p class="text-3xl font-black text-emerald-400">±0.04mm</p><p class="text-[10px] text-slate-500 uppercase font-bold mt-1">Position Error</p></div>
                     </div>
-                    <h3 class="font-black text-sm mb-2 uppercase tracking-tight">Problem Statement</h3>
-                    <p class="text-xs text-slate-500 mb-5 flex-grow leading-relaxed">Why 6DOF beats Cartesian — curved surfaces, workspace ratio &amp; non-planar deposition</p>
-                    <a href="pages/problem_statement.html" class="text-center px-4 py-2 bg-blue-600/10 text-blue-400 border border-blue-500/30 rounded-full text-[10px] font-black hover:bg-blue-600 hover:text-white transition uppercase tracking-wider">Explore</a>
+                    <div class="mt-6 pt-6 border-t border-white/5 text-xs text-slate-500 leading-relaxed">Based on AR2 6R serial arm (Annin Robotics). DH parameters verified against ARbot.cal calibration. IK solver: damped least-squares, convergence tol 1×10⁻⁶ m.</div>
                 </div>
-
-                <!-- 02 -->
-                <div class="glass p-6 rounded-[2rem] flex flex-col group hover:border-purple-500/40 hover:-translate-y-1 transition duration-300">
-                    <div class="flex items-center justify-between mb-5">
-                        <span class="text-[10px] font-black text-slate-700 uppercase tracking-widest">02</span>
-                        <i class="fas fa-cogs text-purple-500 text-xl group-hover:scale-110 transition duration-300"></i>
+                <div class="glass p-6 rounded-3xl flex items-center gap-6">
+                    <div class="text-5xl font-black text-blue-500 shrink-0">73%</div>
+                    <div>
+                        <p class="text-sm font-bold uppercase tracking-wider">Reduction in Support Material</p>
+                        <p class="text-[11px] text-slate-500 mt-1">By tilting the tool axis to follow surface normals, overhangs print without scaffolding.</p>
                     </div>
-                    <h3 class="font-black text-sm mb-2 uppercase tracking-tight">Mechanical Design</h3>
-                    <p class="text-xs text-slate-500 mb-5 flex-grow leading-relaxed">6R arm config, link lengths, joint types, payload, materials &amp; actuator selection</p>
-                    <a href="pages/mechanical_design.html" class="text-center px-4 py-2 bg-purple-600/10 text-purple-400 border border-purple-500/30 rounded-full text-[10px] font-black hover:bg-purple-600 hover:text-white transition uppercase tracking-wider">Explore</a>
-                </div>
-
-                <!-- 03 -->
-                <div class="glass p-6 rounded-[2rem] flex flex-col group hover:border-cyan-500/40 hover:-translate-y-1 transition duration-300">
-                    <div class="flex items-center justify-between mb-5">
-                        <span class="text-[10px] font-black text-slate-700 uppercase tracking-widest">03</span>
-                        <i class="fas fa-calculator text-cyan-400 text-xl group-hover:scale-110 transition duration-300"></i>
-                    </div>
-                    <h3 class="font-black text-sm mb-2 uppercase tracking-tight">Kinematics</h3>
-                    <p class="text-xs text-slate-500 mb-5 flex-grow leading-relaxed">DH parameters, FK transformation matrices &amp; IK analytical decoupled solver</p>
-                    <a href="pages/kinematics.html" class="text-center px-4 py-2 bg-cyan-600/10 text-cyan-400 border border-cyan-500/30 rounded-full text-[10px] font-black hover:bg-cyan-600 hover:text-white transition uppercase tracking-wider">Explore</a>
-                </div>
-
-                <!-- 04 -->
-                <div class="glass p-6 rounded-[2rem] flex flex-col group hover:border-emerald-500/40 hover:-translate-y-1 transition duration-300">
-                    <div class="flex items-center justify-between mb-5">
-                        <span class="text-[10px] font-black text-slate-700 uppercase tracking-widest">04</span>
-                        <i class="fas fa-expand-arrows-alt text-emerald-400 text-xl group-hover:scale-110 transition duration-300"></i>
-                    </div>
-                    <h3 class="font-black text-sm mb-2 uppercase tracking-tight">Workspace Analysis</h3>
-                    <p class="text-xs text-slate-500 mb-5 flex-grow leading-relaxed">Reachable toroidal workspace, singularities, dead zones &amp; print volume comparison</p>
-                    <a href="pages/workspace_analysis.html" class="text-center px-4 py-2 bg-emerald-600/10 text-emerald-400 border border-emerald-500/30 rounded-full text-[10px] font-black hover:bg-emerald-600 hover:text-white transition uppercase tracking-wider">Explore</a>
-                </div>
-
-                <!-- 05 -->
-                <div class="glass p-6 rounded-[2rem] flex flex-col group hover:border-orange-500/40 hover:-translate-y-1 transition duration-300">
-                    <div class="flex items-center justify-between mb-5">
-                        <span class="text-[10px] font-black text-slate-700 uppercase tracking-widest">05</span>
-                        <i class="fas fa-route text-orange-400 text-xl group-hover:scale-110 transition duration-300"></i>
-                    </div>
-                    <h3 class="font-black text-sm mb-2 uppercase tracking-tight">Motion Planning</h3>
-                    <p class="text-xs text-slate-500 mb-5 flex-grow leading-relaxed">G-code → joint trajectories, interpolation, velocity profiles &amp; constant nozzle speed</p>
-                    <a href="pages/motion_planning.html" class="text-center px-4 py-2 bg-orange-600/10 text-orange-400 border border-orange-500/30 rounded-full text-[10px] font-black hover:bg-orange-600 hover:text-white transition uppercase tracking-wider">Explore</a>
-                </div>
-
-                <!-- 06 -->
-                <div class="glass p-6 rounded-[2rem] flex flex-col group hover:border-red-500/40 hover:-translate-y-1 transition duration-300">
-                    <div class="flex items-center justify-between mb-5">
-                        <span class="text-[10px] font-black text-slate-700 uppercase tracking-widest">06</span>
-                        <i class="fas fa-microchip text-red-400 text-xl group-hover:scale-110 transition duration-300"></i>
-                    </div>
-                    <h3 class="font-black text-sm mb-2 uppercase tracking-tight">Control System</h3>
-                    <p class="text-xs text-slate-500 mb-5 flex-grow leading-relaxed">Arduino/STM32 hardware, firmware stack, PID tuning &amp; 6-axis real-time coordination</p>
-                    <a href="pages/control_system.html" class="text-center px-4 py-2 bg-red-600/10 text-red-400 border border-red-500/30 rounded-full text-[10px] font-black hover:bg-red-600 hover:text-white transition uppercase tracking-wider">Explore</a>
-                </div>
-
-                <!-- 07 -->
-                <div class="glass p-6 rounded-[2rem] flex flex-col group hover:border-amber-500/40 hover:-translate-y-1 transition duration-300">
-                    <div class="flex items-center justify-between mb-5">
-                        <span class="text-[10px] font-black text-slate-700 uppercase tracking-widest">07</span>
-                        <i class="fas fa-fire text-amber-400 text-xl group-hover:scale-110 transition duration-300"></i>
-                    </div>
-                    <h3 class="font-black text-sm mb-2 uppercase tracking-tight">Extruder &amp; Material</h3>
-                    <p class="text-xs text-slate-500 mb-5 flex-grow leading-relaxed">PLA/ABS filament, direct drive vs Bowden, temperature control &amp; mounting challenges</p>
-                    <a href="pages/extruder_material.html" class="text-center px-4 py-2 bg-amber-600/10 text-amber-400 border border-amber-500/30 rounded-full text-[10px] font-black hover:bg-amber-600 hover:text-white transition uppercase tracking-wider">Explore</a>
-                </div>
-
-                <!-- 08 -->
-                <div class="glass p-6 rounded-[2rem] flex flex-col group hover:border-indigo-500/40 hover:-translate-y-1 transition duration-300">
-                    <div class="flex items-center justify-between mb-5">
-                        <span class="text-[10px] font-black text-slate-700 uppercase tracking-widest">08</span>
-                        <i class="fas fa-code-branch text-indigo-400 text-xl group-hover:scale-110 transition duration-300"></i>
-                    </div>
-                    <h3 class="font-black text-sm mb-2 uppercase tracking-tight">Software Pipeline</h3>
-                    <p class="text-xs text-slate-500 mb-5 flex-grow leading-relaxed">CAD → slicer → toolpath → IK solver → motor commands — full stack workflow</p>
-                    <a href="pages/software_pipeline.html" class="text-center px-4 py-2 bg-indigo-600/10 text-indigo-400 border border-indigo-500/30 rounded-full text-[10px] font-black hover:bg-indigo-600 hover:text-white transition uppercase tracking-wider">Explore</a>
-                </div>
-
-                <!-- 09 -->
-                <div class="glass p-6 rounded-[2rem] flex flex-col group hover:border-lime-500/40 hover:-translate-y-1 transition duration-300">
-                    <div class="flex items-center justify-between mb-5">
-                        <span class="text-[10px] font-black text-slate-700 uppercase tracking-widest">09</span>
-                        <i class="fas fa-bullseye text-lime-400 text-xl group-hover:scale-110 transition duration-300"></i>
-                    </div>
-                    <h3 class="font-black text-sm mb-2 uppercase tracking-tight">Calibration &amp; Accuracy</h3>
-                    <p class="text-xs text-slate-500 mb-5 flex-grow leading-relaxed">TCP calibration, positional accuracy measurement &amp; error compensation methods</p>
-                    <a href="pages/calibration_accuracy.html" class="text-center px-4 py-2 bg-lime-600/10 text-lime-400 border border-lime-500/30 rounded-full text-[10px] font-black hover:bg-lime-600 hover:text-white transition uppercase tracking-wider">Explore</a>
-                </div>
-
-                <!-- 10 -->
-                <div class="glass p-6 rounded-[2rem] flex flex-col group hover:border-sky-500/40 hover:-translate-y-1 transition duration-300">
-                    <div class="flex items-center justify-between mb-5">
-                        <span class="text-[10px] font-black text-slate-700 uppercase tracking-widest">10</span>
-                        <i class="fas fa-chart-bar text-sky-400 text-xl group-hover:scale-110 transition duration-300"></i>
-                    </div>
-                    <h3 class="font-black text-sm mb-2 uppercase tracking-tight">Results &amp; Testing</h3>
-                    <p class="text-xs text-slate-500 mb-5 flex-grow leading-relaxed">Test prints, dimensional accuracy data, surface finish comparison &amp; notable outputs</p>
-                    <a href="pages/results_testing.html" class="text-center px-4 py-2 bg-sky-600/10 text-sky-400 border border-sky-500/30 rounded-full text-[10px] font-black hover:bg-sky-600 hover:text-white transition uppercase tracking-wider">Explore</a>
-                </div>
-
-                <!-- 11 -->
-                <div class="glass p-6 rounded-[2rem] flex flex-col group hover:border-yellow-500/40 hover:-translate-y-1 transition duration-300">
-                    <div class="flex items-center justify-between mb-5">
-                        <span class="text-[10px] font-black text-slate-700 uppercase tracking-widest">11</span>
-                        <i class="fas fa-exclamation-triangle text-yellow-400 text-xl group-hover:scale-110 transition duration-300"></i>
-                    </div>
-                    <h3 class="font-black text-sm mb-2 uppercase tracking-tight">Challenges &amp; Limits</h3>
-                    <p class="text-xs text-slate-500 mb-5 flex-grow leading-relaxed">Stiffness issues, singularity problems, accuracy limits &amp; software integration pain points</p>
-                    <a href="pages/challenges_limitations.html" class="text-center px-4 py-2 bg-yellow-600/10 text-yellow-400 border border-yellow-500/30 rounded-full text-[10px] font-black hover:bg-yellow-600 hover:text-white transition uppercase tracking-wider">Explore</a>
-                </div>
-
-                <!-- 12 -->
-                <div class="glass p-6 rounded-[2rem] flex flex-col group hover:border-pink-500/40 hover:-translate-y-1 transition duration-300">
-                    <div class="flex items-center justify-between mb-5">
-                        <span class="text-[10px] font-black text-slate-700 uppercase tracking-widest">12</span>
-                        <i class="fas fa-rocket text-pink-400 text-xl group-hover:scale-110 transition duration-300"></i>
-                    </div>
-                    <h3 class="font-black text-sm mb-2 uppercase tracking-tight">Future Scope</h3>
-                    <p class="text-xs text-slate-500 mb-5 flex-grow leading-relaxed">Vision-based closed-loop correction, non-planar slicing, multi-material &amp; scale-up</p>
-                    <a href="pages/future_scope.html" class="text-center px-4 py-2 bg-pink-600/10 text-pink-400 border border-pink-500/30 rounded-full text-[10px] font-black hover:bg-pink-600 hover:text-white transition uppercase tracking-wider">Explore</a>
-                </div>
-
-            </div>
-            <div class="text-center pt-2">
-                <a href="https://github.com/Riyansh-shah/robotic-hand-6-axis-machine" target="_blank"
-                    class="inline-flex items-center gap-3 px-8 py-3 bg-green-600/10 text-green-400 border border-green-500/30 rounded-full text-[10px] font-black hover:bg-green-600 hover:text-white transition uppercase tracking-wider shadow-lg hover:shadow-green-900/30">
-                    <i class="fab fa-github text-base"></i>
-                    View Source Code &amp; Demo Repository
-                </a>
-            </div>
-        </section>
-
-        <section id="results" class="glass p-12 rounded-[3.5rem] border-t-4 border-blue-500">
-            <h2 class="text-3xl font-black mb-12 text-center uppercase tracking-tight">Results & <span
-                    class="text-blue-500">Analysis</span></h2>
-            <div class="grid md:grid-cols-2 gap-16 items-center">
-                <div class="h-80"><canvas id="resultsChart"></canvas></div>
-                <div class="space-y-5">
-                    <div class="p-5 rounded-2xl bg-white/5 flex justify-between items-center border border-white/10 shadow-inner">
-                        <span class="text-slate-400 font-bold uppercase text-xs tracking-widest">Positional Accuracy</span>
-                        <span class="text-blue-400 font-mono font-black text-3xl">±0.4mm</span>
-                    </div>
-                    <div class="p-5 rounded-2xl bg-white/5 flex justify-between items-center border border-white/10 shadow-inner">
-                        <span class="text-slate-400 font-bold uppercase text-xs tracking-widest">Surface Quality Score</span>
-                        <span class="text-purple-400 font-mono font-black text-3xl">89/100</span>
-                    </div>
-                    <div class="p-5 rounded-2xl bg-white/5 flex justify-between items-center border border-white/10 shadow-inner">
-                        <span class="text-slate-400 font-bold uppercase text-xs tracking-widest">Support Reduction</span>
-                        <span class="text-emerald-400 font-mono font-black text-3xl">~73%</span>
-                    </div>
-                    <p class="text-slate-500 text-xs italic text-justify leading-relaxed">Metrics vs. baseline Cartesian FDM printer on identical test geometries.</p>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section id="team" class="text-center pt-10 border-t border-slate-900">
-            <h2 class="text-[10px] font-black text-slate-600 uppercase tracking-[0.5em] mb-12">Academic Credits</h2>
-            <div class="flex flex-wrap justify-center gap-10">
-                <div class="glass px-12 py-8 rounded-[2rem] border-b-4 border-blue-600">
-                    <p class="text-[9px] font-bold text-blue-500 mb-2 uppercase tracking-widest">Project Guide</p>
-                    <p class="font-black text-xl text-slate-100">Dr. Atul Kumar Verma</p>
+    <!-- PIPELINE -->
+    <section id="pipeline" class="scroll-mt-28 reveal">
+        <div class="text-center space-y-3 mb-16">
+            <p class="text-[10px] font-black text-blue-500 uppercase tracking-[.4em]">Chapter 08 — Software Stack</p>
+            <h2 class="text-4xl md:text-5xl font-black uppercase tracking-tighter">From G-code to <span class="text-blue-500">Motor Pulse.</span></h2>
+        </div>
+        <div class="flex flex-col md:flex-row items-center justify-center gap-3 flex-wrap">
+            <!-- Step boxes with arrows -->
+            <div class="glass p-5 rounded-2xl text-center w-36 hover:border-blue-500/40 transition border border-white/5">
+                <i class="fas fa-file-code text-slate-400 text-xl mb-3"></i>
+                <p class="text-[10px] font-black uppercase tracking-wider text-white">G-code</p>
+                <p class="text-[9px] text-slate-600 mt-1">STL → Slicer output</p>
+            </div>
+            <div class="pipe-arrow hidden md:block shrink-0"></div>
+            <div class="glass p-5 rounded-2xl text-center w-36 hover:border-cyan-500/40 transition border border-cyan-500/20">
+                <i class="fas fa-filter text-cyan-400 text-xl mb-3"></i>
+                <p class="text-[10px] font-black uppercase tracking-wider text-white">Parser</p>
+                <p class="text-[9px] text-slate-600 mt-1">Waypoints + filter</p>
+            </div>
+            <div class="pipe-arrow hidden md:block shrink-0"></div>
+            <div class="glass p-5 rounded-2xl text-center w-36 hover:border-purple-500/40 transition border border-purple-500/20">
+                <i class="fas fa-calculator text-purple-400 text-xl mb-3"></i>
+                <p class="text-[10px] font-black uppercase tracking-wider text-white">IK Solver</p>
+                <p class="text-[9px] text-slate-600 mt-1">DLS Jacobian</p>
+            </div>
+            <div class="pipe-arrow hidden md:block shrink-0"></div>
+            <div class="glass p-5 rounded-2xl text-center w-36 hover:border-amber-500/40 transition border border-amber-500/20">
+                <i class="fas fa-route text-amber-400 text-xl mb-3"></i>
+                <p class="text-[10px] font-black uppercase tracking-wider text-white">Trajectory</p>
+                <p class="text-[9px] text-slate-600 mt-1">Trapezoidal vel.</p>
+            </div>
+            <div class="pipe-arrow hidden md:block shrink-0"></div>
+            <div class="glass p-5 rounded-2xl text-center w-36 hover:border-red-500/40 transition border border-red-500/20">
+                <i class="fas fa-microchip text-red-400 text-xl mb-3"></i>
+                <p class="text-[10px] font-black uppercase tracking-wider text-white">Controller</p>
+                <p class="text-[9px] text-slate-600 mt-1">Serial → Steppers</p>
+            </div>
+        </div>
+        <div class="mt-12 grid md:grid-cols-3 gap-6 text-xs text-slate-400">
+            <div class="glass p-6 rounded-2xl space-y-2">
+                <p class="font-black text-white uppercase text-[10px] tracking-wider">IK — Damped Least Squares</p>
+                <p class="leading-relaxed">The Jacobian maps Cartesian velocity to joint velocity. We invert it with Levenberg-Marquardt damping (λ=0.01) to avoid near-singular configurations at wrist and elbow.</p>
+                <a href="pages/kinematics.html" class="text-blue-500 text-[10px] hover:underline">Deep dive →</a>
+            </div>
+            <div class="glass p-6 rounded-2xl space-y-2">
+                <p class="font-black text-white uppercase text-[10px] tracking-wider">Trajectory — Trapezoidal Profile</p>
+                <p class="leading-relaxed">Joint-space interpolation with per-axis velocity (v_max = 1.5 rad/s) and acceleration (a_max = 3.0 rad/s²) limits. Collision detection runs before any command is sent.</p>
+                <a href="pages/motion_planning.html" class="text-blue-500 text-[10px] hover:underline">Deep dive →</a>
+            </div>
+            <div class="glass p-6 rounded-2xl space-y-2">
+                <p class="font-black text-white uppercase text-[10px] tracking-wider">Control — Serial Protocol</p>
+                <p class="leading-relaxed">115200 baud UART to the microcontroller. Each frame sends 6 target joint angles. The firmware handles step pulse generation and limit-switch homing.</p>
+                <a href="pages/control_system.html" class="text-blue-500 text-[10px] hover:underline">Deep dive →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- LIVE DEMO -->
+    <section id="demo" class="scroll-mt-28 reveal">
+        <div class="text-center space-y-3 mb-12">
+            <p class="text-[10px] font-black text-blue-500 uppercase tracking-[.4em]">Live Execution</p>
+            <h2 class="text-4xl md:text-5xl font-black uppercase tracking-tighter">Toolpath <span class="gradient-text">Generator.</span></h2>
+            <p class="text-slate-500 text-sm">Set dimensions, generate the path, inspect the trajectory. Runs entirely in the browser.</p>
+        </div>
+
+        <div class="glass rounded-[2rem] border border-white/8 overflow-hidden">
+            <div class="grid lg:grid-cols-[1fr_320px]">
+                <!-- Three.js viewport -->
+                <div class="relative bg-[#030a16]" style="min-height:520px">
+                    <canvas id="threeCanvas"></canvas>
+                    <div class="absolute top-4 left-4 text-[9px] text-slate-600 font-mono pointer-events-none">drag to orbit · scroll to zoom</div>
+                    <div id="demoStats" class="absolute bottom-4 left-4 font-mono text-[10px] text-slate-600 space-y-0.5 pointer-events-none">
+                        <div>Waypoints: <span id="statWP" class="text-slate-400">—</span></div>
+                        <div>Path length: <span id="statLen" class="text-slate-400">—</span></div>
+                        <div>Est. print time: <span id="statTime" class="text-slate-400">—</span></div>
+                    </div>
                 </div>
-                <div class="glass px-12 py-8 rounded-[2rem] border-b-4 border-slate-700">
-                    <p class="text-[9px] font-bold text-slate-400 mb-2 uppercase tracking-widest">Team Member 1</p>
-                    <p class="font-black text-xl text-slate-100">Riyansh Shah</p>
-                    <p class="text-[10px] text-slate-500 mt-1">2427030271</p>
+
+                <!-- Controls panel -->
+                <div class="p-6 space-y-6 border-l border-white/5">
+                    <!-- Shape selector -->
+                    <div>
+                        <p class="text-[9px] font-black uppercase tracking-widest text-slate-600 mb-3">Shape</p>
+                        <div class="flex gap-2">
+                            <button class="tab-btn active" id="tabCube" onclick="switchShape('cube')">Cube</button>
+                            <button class="tab-btn" id="tabSphere" onclick="switchShape('sphere')">Sphere</button>
+                            <button class="tab-btn" id="tabSpiral" onclick="switchShape('spiral')">Spiral</button>
+                        </div>
+                    </div>
+
+                    <!-- Cube inputs -->
+                    <div id="inputsCube" class="space-y-4">
+                        <div>
+                            <label class="text-[9px] font-bold uppercase tracking-widest text-slate-500 block mb-1.5">Side Length <span class="text-slate-700">(mm)</span></label>
+                            <input class="dim-input" id="cubeSide" type="number" value="40" min="5" max="200" step="1">
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-bold uppercase tracking-widest text-slate-500 block mb-1.5">Layer Height <span class="text-slate-700">(mm)</span></label>
+                            <input class="dim-input" id="cubeLayerH" type="number" value="2" min="0.1" max="5" step="0.1">
+                        </div>
+                    </div>
+
+                    <!-- Sphere inputs -->
+                    <div id="inputsSphere" class="space-y-4 hidden">
+                        <div>
+                            <label class="text-[9px] font-bold uppercase tracking-widest text-slate-500 block mb-1.5">Radius <span class="text-slate-700">(mm)</span></label>
+                            <input class="dim-input" id="sphereRadius" type="number" value="30" min="5" max="150" step="1">
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-bold uppercase tracking-widest text-slate-500 block mb-1.5">Latitude Bands</label>
+                            <input class="dim-input" id="sphereLatSteps" type="number" value="12" min="3" max="30" step="1">
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-bold uppercase tracking-widest text-slate-500 block mb-1.5">Points per Band</label>
+                            <input class="dim-input" id="sphereLonSteps" type="number" value="36" min="8" max="72" step="4">
+                        </div>
+                    </div>
+
+                    <!-- Spiral inputs -->
+                    <div id="inputsSpiral" class="space-y-4 hidden">
+                        <div>
+                            <label class="text-[9px] font-bold uppercase tracking-widest text-slate-500 block mb-1.5">Radius <span class="text-slate-700">(mm)</span></label>
+                            <input class="dim-input" id="spiralRadius" type="number" value="25" min="5" max="150" step="1">
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-bold uppercase tracking-widest text-slate-500 block mb-1.5">Height <span class="text-slate-700">(mm)</span></label>
+                            <input class="dim-input" id="spiralHeight" type="number" value="60" min="5" max="200" step="1">
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-bold uppercase tracking-widest text-slate-500 block mb-1.5">Number of Turns</label>
+                            <input class="dim-input" id="spiralTurns" type="number" value="8" min="1" max="20" step="1">
+                        </div>
+                    </div>
+
+                    <!-- Status message -->
+                    <div id="statusMsg" class="text-[10px] rounded-xl px-4 py-3 status-idle font-mono leading-relaxed">
+                        Set dimensions and click Generate.
+                    </div>
+
+                    <!-- Generate button -->
+                    <button onclick="generateToolpath()" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-[10px] uppercase tracking-widest transition shadow-lg shadow-blue-900/30">
+                        <i class="fas fa-play mr-2"></i>Generate Toolpath
+                    </button>
+                    <button onclick="clearScene()" class="w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 font-bold text-[10px] uppercase tracking-widest transition">
+                        Reset View
+                    </button>
+
+                    <!-- Legend -->
+                    <div class="pt-2 border-t border-white/5 space-y-2">
+                        <p class="text-[9px] font-bold uppercase tracking-widest text-slate-700">Z-Height Color Map</p>
+                        <div class="h-2 rounded-full" style="background:linear-gradient(to right,#3b82f6,#22c55e,#fbbf24,#ef4444)"></div>
+                        <div class="flex justify-between text-[9px] text-slate-600 font-mono"><span>Z min</span><span>Z max</span></div>
+                    </div>
                 </div>
             </div>
-        </section>
-    </main>
+        </div>
+    </section>
 
-    <footer class="py-12 text-center bg-black/40 border-t border-slate-900">
-        <p class="text-slate-600 text-[10px] font-bold tracking-[0.3em] uppercase mb-2">Manipal University Jaipur</p>
-        <p class="text-slate-500 text-[9px] font-medium tracking-[0.2em] uppercase opacity-50">Department of Computer
-            Science & Engineering • 2026</p>
-    </footer>
+    <!-- RESULTS -->
+    <section id="results" class="scroll-mt-28 glass p-10 md:p-14 rounded-[3rem] border-t-4 border-blue-600 reveal">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+            <div class="h-[380px]"><canvas id="resultsChart"></canvas></div>
+            <div class="space-y-8">
+                <div>
+                    <p class="text-[10px] font-black text-blue-500 uppercase tracking-[.4em] mb-3">Chapter 10 — Benchmark</p>
+                    <h2 class="text-4xl font-black uppercase tracking-tighter">Performance <span class="text-blue-500">vs Cartesian.</span></h2>
+                </div>
+                <p class="text-slate-500 text-sm leading-relaxed">Simulation-validated comparison on organic test geometries. Physical hardware validation pending fabrication phase.</p>
+                <div class="space-y-3">
+                    <div class="flex justify-between p-5 bg-white/5 rounded-2xl border border-white/8">
+                        <span class="text-[10px] font-bold uppercase text-slate-500 tracking-widest">IK Position Error</span>
+                        <span class="text-lg font-black text-blue-400 font-mono">±0.04 mm</span>
+                    </div>
+                    <div class="flex justify-between p-5 bg-white/5 rounded-2xl border border-white/8">
+                        <span class="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Z-Axis Bond Strength</span>
+                        <span class="text-lg font-black text-purple-400 font-mono">+114%</span>
+                    </div>
+                    <div class="flex justify-between p-5 bg-white/5 rounded-2xl border border-white/8">
+                        <span class="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Support Reduction</span>
+                        <span class="text-lg font-black text-emerald-400 font-mono">73%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <script>
-        // TIMER LOGIC
-        let sec = 0;
-        let timer = null;
-        function startTimer() {
-            timer = setInterval(() => {
-                sec++;
-                let m = Math.floor(sec / 60);
-                let s = sec % 60;
-                document.getElementById('displayTime').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    <!-- CHAPTER REFERENCE -->
+    <section id="chapters" class="scroll-mt-28 reveal">
+        <div class="text-center mb-10">
+            <p class="text-[10px] font-black text-slate-700 uppercase tracking-[.4em] mb-2">Full Technical Report</p>
+            <h2 class="text-2xl font-black uppercase tracking-tighter text-slate-400">12 Deep-Dive Chapters</h2>
+        </div>
+        <div class="grid sm:grid-cols-3 md:grid-cols-4 gap-3">
+            <a href="pages/problem_statement.html"   class="glass p-4 rounded-2xl hover:bg-white/5 group transition border-b-2 border-slate-800 hover:border-white/30"><span class="text-[9px] text-slate-700 font-mono">01</span><p class="text-xs font-bold mt-1 group-hover:text-white transition">Problem Statement</p></a>
+            <a href="pages/mechanical_design.html"   class="glass p-4 rounded-2xl hover:bg-white/5 group transition border-b-2 border-purple-800/40 hover:border-purple-500"><span class="text-[9px] text-slate-700 font-mono">02</span><p class="text-xs font-bold mt-1 group-hover:text-white transition">Mechanical Design</p></a>
+            <a href="pages/kinematics.html"          class="glass p-4 rounded-2xl hover:bg-white/5 group transition border-b-2 border-cyan-800/40 hover:border-cyan-500"><span class="text-[9px] text-slate-700 font-mono">03</span><p class="text-xs font-bold mt-1 group-hover:text-white transition">IK Kinematics</p></a>
+            <a href="pages/workspace_analysis.html"  class="glass p-4 rounded-2xl hover:bg-white/5 group transition border-b-2 border-emerald-800/40 hover:border-emerald-500"><span class="text-[9px] text-slate-700 font-mono">04</span><p class="text-xs font-bold mt-1 group-hover:text-white transition">Workspace Analysis</p></a>
+            <a href="pages/motion_planning.html"     class="glass p-4 rounded-2xl hover:bg-white/5 group transition border-b-2 border-amber-800/40 hover:border-amber-500"><span class="text-[9px] text-slate-700 font-mono">05</span><p class="text-xs font-bold mt-1 group-hover:text-white transition">Motion Planning</p></a>
+            <a href="pages/control_system.html"      class="glass p-4 rounded-2xl hover:bg-white/5 group transition border-b-2 border-red-800/40 hover:border-red-500"><span class="text-[9px] text-slate-700 font-mono">06</span><p class="text-xs font-bold mt-1 group-hover:text-white transition">Control System</p></a>
+            <a href="pages/extruder_material.html"   class="glass p-4 rounded-2xl hover:bg-white/5 group transition border-b-2 border-orange-800/40 hover:border-orange-500"><span class="text-[9px] text-slate-700 font-mono">07</span><p class="text-xs font-bold mt-1 group-hover:text-white transition">Extrusion Stack</p></a>
+            <a href="pages/software_pipeline.html"   class="glass p-4 rounded-2xl hover:bg-white/5 group transition border-b-2 border-indigo-800/40 hover:border-indigo-500"><span class="text-[9px] text-slate-700 font-mono">08</span><p class="text-xs font-bold mt-1 group-hover:text-white transition">Software Pipeline</p></a>
+            <a href="pages/calibration_accuracy.html"class="glass p-4 rounded-2xl hover:bg-white/5 group transition border-b-2 border-lime-800/40 hover:border-lime-500"><span class="text-[9px] text-slate-700 font-mono">09</span><p class="text-xs font-bold mt-1 group-hover:text-white transition">Calibration</p></a>
+            <a href="pages/results_testing.html"     class="glass p-4 rounded-2xl hover:bg-white/5 group transition border-b-2 border-blue-800/40 hover:border-blue-500"><span class="text-[9px] text-slate-700 font-mono">10</span><p class="text-xs font-bold mt-1 group-hover:text-white transition">Results & Testing</p></a>
+            <a href="pages/challenges_limitations.html" class="glass p-4 rounded-2xl hover:bg-white/5 group transition border-b-2 border-yellow-800/40 hover:border-yellow-500"><span class="text-[9px] text-slate-700 font-mono">11</span><p class="text-xs font-bold mt-1 group-hover:text-white transition">Challenges</p></a>
+            <a href="pages/future_scope.html"        class="glass p-4 rounded-2xl hover:bg-white/5 group transition border-b-2 border-pink-800/40 hover:border-pink-500"><span class="text-[9px] text-slate-700 font-mono">12</span><p class="text-xs font-bold mt-1 group-hover:text-white transition">Future Scope</p></a>
+        </div>
+    </section>
 
-                if (sec >= 480 && sec < 600) { // 8-10 Mins Warning
-                    document.getElementById('timerContainer').classList.add('timer-warning');
-                    document.getElementById('timerIcon').classList.replace('fa-hourglass-start', 'fa-hourglass-half');
-                } else if (sec >= 600) { // 10 Mins Stop
-                    clearInterval(timer);
-                    document.getElementById('timerContainer').classList.replace('timer-warning', 'timer-stop');
-                    document.getElementById('displayTime').innerText = "10:00";
-                    document.getElementById('timerIcon').classList.replace('fa-hourglass-half', 'fa-hourglass-end');
-                }
-            }, 1000);
-        }
+    <!-- TEAM -->
+    <section class="text-center pt-10 reveal">
+        <p class="text-[9px] font-black text-slate-700 uppercase tracking-[.6em] mb-10">Department of Computer Science & Engineering — Manipal University Jaipur</p>
+        <div class="flex flex-col md:flex-row justify-center gap-12">
+            <div class="space-y-1.5">
+                <span class="text-[9px] font-bold text-blue-500 uppercase tracking-widest">Project Lead</span>
+                <p class="text-2xl font-black">Riyansh Shah</p>
+                <p class="text-[10px] text-slate-600 font-mono">2427030271</p>
+            </div>
+            <div class="w-px bg-slate-800 hidden md:block"></div>
+            <div class="space-y-1.5">
+                <span class="text-[9px] font-bold text-slate-600 uppercase tracking-widest">Research Guide</span>
+                <p class="text-2xl font-black text-white/75">Dr. Atul Kumar Verma</p>
+            </div>
+        </div>
+    </section>
+</main>
 
-        // RESULTS CHART (Demo Data)
-        const ctx = document.getElementById('resultsChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Cartesian FDM', '6-Axis Robot FDM'],
-                datasets: [{
-                    data: [58, 89],
-                    backgroundColor: ['#1e293b', '#3b82f6'],
-                    borderRadius: 15,
-                    barThickness: 50
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { beginAtZero: true, grid: { color: '#ffffff05' }, ticks: { color: '#475569' } },
-                    x: { grid: { display: false }, ticks: { color: '#475569' } }
-                }
+<footer class="py-12 text-center border-t border-white/5 bg-black/40">
+    <p class="text-slate-700 text-[9px] font-bold tracking-[.5em] uppercase">Manipal University Jaipur © 2026</p>
+    <div class="flex gap-6 justify-center text-slate-600 text-lg mt-4">
+        <a href="https://github.com/Riyansh-shah/robotic-hand-6-axis-machine" target="_blank" class="hover:text-white transition"><i class="fab fa-github"></i></a>
+    </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════ SCRIPTS ══════════════════════════════════════════════ -->
+<script>
+// ── Timer ──────────────────────────────────────────────────────────────────
+let sec = 0, timerInterval = null;
+function startTimer() {
+    timerInterval = setInterval(() => {
+        sec++;
+        const m = String(Math.floor(sec/60)).padStart(2,'0');
+        const s = String(sec%60).padStart(2,'0');
+        document.getElementById('displayTime').textContent = `${m}:${s}`;
+        const el = document.getElementById('timerContainer');
+        if (sec >= 480 && sec < 600) el.classList.add('timer-warning');
+        else if (sec >= 600) { clearInterval(timerInterval); document.getElementById('displayTime').textContent='10:00'; }
+    }, 1000);
+}
+function resetTimer() { clearInterval(timerInterval); sec=0; document.getElementById('displayTime').textContent='00:00'; document.getElementById('timerContainer').classList.remove('timer-warning'); startTimer(); }
+function initPage() { startTimer(); reveal(); }
+
+// ── Scroll reveal ──────────────────────────────────────────────────────────
+function reveal() {
+    document.querySelectorAll('.reveal').forEach(el => {
+        if (el.getBoundingClientRect().top < window.innerHeight - 120) el.classList.add('active');
+    });
+}
+window.addEventListener('scroll', reveal);
+
+// ── Chart.js ───────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+    new Chart(document.getElementById('resultsChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: ['Surface Geometry','Bond Strength','Precision','Support Use'],
+            datasets: [
+                { label: 'Cartesian Baseline', data:[45,42,62,100], backgroundColor:'rgba(148,163,184,.18)', borderColor:'rgba(148,163,184,.35)', borderWidth:1, borderRadius:6 },
+                { label: '6-Axis System',       data:[92,90,94,27],  backgroundColor:'rgba(59,130,246,.75)', borderColor:'#3b82f6', borderWidth:2, borderRadius:6 }
+            ]
+        },
+        options: {
+            responsive:true, maintainAspectRatio:false,
+            plugins:{ legend:{ position:'bottom', labels:{ color:'#94a3b8', font:{ family:'Plus Jakarta Sans', weight:'bold', size:10 } } } },
+            scales:{
+                y:{ beginAtZero:true, max:110, grid:{ color:'rgba(255,255,255,.04)' }, ticks:{ color:'#475569', font:{size:10} } },
+                x:{ grid:{ display:false }, ticks:{ color:'#475569', font:{ weight:'bold', size:10 } } }
             }
-        });
-    </script>
-</body>
+        }
+    });
+});
 
+// ── Shape selector ─────────────────────────────────────────────────────────
+let currentShape = 'cube';
+function switchShape(s) {
+    currentShape = s;
+    ['cube','sphere','spiral'].forEach(name => {
+        document.getElementById('inputs'+name.charAt(0).toUpperCase()+name.slice(1)).classList.toggle('hidden', name!==s);
+        document.getElementById('tab'+name.charAt(0).toUpperCase()+name.slice(1)).classList.toggle('active', name===s);
+    });
+    setStatus('idle', 'Set dimensions and click Generate.');
+}
+
+function setStatus(level, msg) {
+    const el = document.getElementById('statusMsg');
+    el.className = 'text-[10px] rounded-xl px-4 py-3 font-mono leading-relaxed status-' + level;
+    el.textContent = msg;
+}
+
+// ── Validation ─────────────────────────────────────────────────────────────
+function num(id) { return parseFloat(document.getElementById(id).value); }
+
+function validateCube() {
+    const side = num('cubeSide'), lh = num('cubeLayerH');
+    if (isNaN(side)||isNaN(lh))          return {ok:false, msg:'Enter valid numbers.'};
+    if (side<=0||lh<=0)                  return {ok:false, msg:'Values must be positive.'};
+    if (side<5)                          return {ok:false, msg:'Side too small — extrusion won\'t bond below 5 mm.'};
+    if (side>200)                        return {ok:false, msg:'⚠ Exceeds workspace — IK will fail on far corners (max ~200 mm).',warn:true};
+    if (lh<0.1)                          return {ok:false, msg:'Layer height too fine for 0.4 mm nozzle (min 0.1 mm).'};
+    if (lh>5)                            return {ok:false, msg:'Layer height too thick — filament won\'t bond above 5 mm.'};
+    if (lh>=side)                        return {ok:false, msg:'Layer height must be smaller than the side length.'};
+    const layers = Math.floor(side/lh);
+    const pathM  = (4*side*layers/1000).toFixed(2);
+    const tMin   = ((4*side*layers)/(60*50)).toFixed(1);
+    return {ok:true, msg:`✓ ${layers} layers · ${pathM} m path · ~${tMin} min`, waypoints: 5*layers, pathM: parseFloat(pathM)};
+}
+
+function validateSphere() {
+    let lat = Math.round(num('sphereLatSteps')), lon = Math.round(num('sphereLonSteps'));
+    const r = num('sphereRadius');
+    if (isNaN(r)||isNaN(lat)||isNaN(lon))  return {ok:false, msg:'Enter valid numbers.'};
+    if (r<=0)                              return {ok:false, msg:'Radius must be positive.'};
+    if (r<5)                               return {ok:false, msg:'Sphere too small — IK singularity risk near wrist.'};
+    if (r>150)                             return {ok:false, msg:'⚠ Radius exceeds safe workspace zone (~150 mm max).',warn:true};
+    if (lat<3)                             return {ok:false, msg:'Latitude bands must be ≥ 3.'};
+    if (lat>30)                            { lat=30; document.getElementById('sphereLatSteps').value=30; return {ok:false,msg:'Clamped latitude bands to 30 (render limit).'}; }
+    if (lon<8)                             return {ok:false, msg:'Points per band must be ≥ 8.'};
+    if (lon>72)                            { lon=72; document.getElementById('sphereLonSteps').value=72; return {ok:false,msg:'Clamped points per band to 72.'}; }
+    const wp = (2*lat+1)*(lon+1);
+    const pathM = (wp * 0.008).toFixed(2);
+    const tMin = (parseFloat(pathM)*1000/(60*50)).toFixed(1);
+    return {ok:true, msg:`✓ ${2*lat+1} bands · ${wp} waypoints · ~${tMin} min`, waypoints:wp, pathM:parseFloat(pathM)};
+}
+
+function validateSpiral() {
+    const r = num('spiralRadius'), h = num('spiralHeight'), t = num('spiralTurns');
+    if (isNaN(r)||isNaN(h)||isNaN(t))  return {ok:false, msg:'Enter valid numbers.'};
+    if (r<=0||h<=0||t<=0)             return {ok:false, msg:'Values must be positive.'};
+    if (r<5)                           return {ok:false, msg:'Radius too small — toolpath density too high.'};
+    if (r>150)                         return {ok:false, msg:'⚠ Radius exceeds safe workspace zone.',warn:true};
+    if (h>200)                         return {ok:false, msg:'⚠ Height exceeds arm vertical reach (~200 mm above base).',warn:true};
+    if (t<1)                           return {ok:false, msg:'At least 1 full turn required.'};
+    if (t>20)                          return {ok:false, msg:'⚠ High turn count — long print time expected.',warn:true};
+    const wp = Math.round(t*60)+1;
+    const pathM = (2*Math.PI*r/1000*t).toFixed(2);
+    const tMin = (parseFloat(pathM)*1000/(60*50)).toFixed(1);
+    return {ok:true, msg:`✓ ${t} turns · ${wp} waypoints · ~${tMin} min`, waypoints:wp, pathM:parseFloat(pathM)};
+}
+
+// ── Toolpath generators ────────────────────────────────────────────────────
+function genCube(side, lh) {
+    const pts=[], s=side/2, n=Math.floor(side/lh);
+    for (let i=0;i<n;i++) {
+        const z=i*lh, f=i%2===0;
+        if (f) pts.push([s,s,z],[-s,s,z],[-s,-s,z],[s,-s,z],[s,s,z]);
+        else   pts.push([s,s,z],[s,-s,z],[-s,-s,z],[-s,s,z],[s,s,z]);
+    }
+    return pts;
+}
+
+function genSphere(r, lat, lon) {
+    const pts=[];
+    for (let i=-lat;i<=lat;i++) {
+        const phi=(i/lat)*Math.PI/2, rr=r*Math.cos(phi), z=r*Math.sin(phi);
+        const dir=i%2===0?1:-1;
+        for (let j=0;j<=lon;j++) {
+            const theta=dir*(j/lon)*2*Math.PI;
+            pts.push([rr*Math.cos(theta), rr*Math.sin(theta), z]);
+        }
+    }
+    return pts;
+}
+
+function genSpiral(r, h, turns) {
+    const pts=[], steps=Math.round(turns*60);
+    for (let i=0;i<=steps;i++) {
+        const t=i/steps, a=t*turns*2*Math.PI;
+        pts.push([r*Math.cos(a), r*Math.sin(a), t*h]);
+    }
+    return pts;
+}
+
+// ── Main generate ──────────────────────────────────────────────────────────
+function generateToolpath() {
+    let v, pts;
+    if (currentShape==='cube')   { v=validateCube();   if (v.ok) pts=genCube(num('cubeSide'),num('cubeLayerH')); }
+    if (currentShape==='sphere') { v=validateSphere();  if (v.ok) pts=genSphere(num('sphereRadius'),Math.round(num('sphereLatSteps')),Math.round(num('sphereLonSteps'))); }
+    if (currentShape==='spiral') { v=validateSpiral();  if (v.ok) pts=genSpiral(num('spiralRadius'),num('spiralHeight'),num('spiralTurns')); }
+
+    if (!v.ok) { setStatus(v.warn?'warn':'err', v.msg); return; }
+    setStatus('ok', v.msg);
+
+    // Update stats
+    document.getElementById('statWP').textContent   = v.waypoints.toLocaleString();
+    document.getElementById('statLen').textContent  = v.pathM + ' m';
+    document.getElementById('statTime').textContent = '~' + ((v.pathM*1000)/(60*50)).toFixed(1) + ' min';
+
+    drawToolpath(pts);
+}
+
+function clearScene() {
+    if (window._threeScene) drawToolpath(null);
+    ['statWP','statLen','statTime'].forEach(id=>document.getElementById(id).textContent='—');
+    setStatus('idle','Set dimensions and click Generate.');
+}
+</script>
+
+<!-- Three.js ES module -->
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const canvas = document.getElementById('threeCanvas');
+const container = canvas.parentElement;
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setClearColor(0x030a16, 1);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 2000);
+camera.position.set(80, 60, 120);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.minDistance = 20;
+controls.maxDistance = 600;
+
+// Grid
+const grid = new THREE.GridHelper(200, 20, 0x0f172a, 0x0f172a);
+scene.add(grid);
+
+// Axes (subtle)
+const axMat = c => new THREE.LineBasicMaterial({color:c,transparent:true,opacity:.25});
+const axLine = (a,b,m) => { const g=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(...a),new THREE.Vector3(...b)]); return new THREE.Line(g,m); };
+scene.add(axLine([0,0,0],[80,0,0],axMat(0xef4444)));
+scene.add(axLine([0,0,0],[0,80,0],axMat(0x22c55e)));
+scene.add(axLine([0,0,0],[0,0,80],axMat(0x3b82f6)));
+
+let toolpathLine = null;
+
+function zColor(z, zMin, zMax) {
+    const t = zMax===zMin ? 0 : (z-zMin)/(zMax-zMin);
+    // Blue → Green → Yellow → Red
+    const r = t > .67 ? 1 : t > .33 ? (t-.33)/.34 : 0;
+    const g = t < .33 ? t/.33 : t < .67 ? 1 : (1-t)/.33;
+    const b = t < .33 ? 1-t/.33 : 0;
+    return [r, g, b];
+}
+
+window.drawToolpath = function(pts) {
+    if (toolpathLine) { scene.remove(toolpathLine); toolpathLine.geometry.dispose(); toolpathLine=null; }
+    if (!pts || pts.length < 2) return;
+
+    const zVals = pts.map(p=>p[2]);
+    const zMin=Math.min(...zVals), zMax=Math.max(...zVals);
+
+    const positions = new Float32Array(pts.length*3);
+    const colors    = new Float32Array(pts.length*3);
+    pts.forEach((p,i) => {
+        positions[i*3]=p[0]; positions[i*3+1]=p[2]; positions[i*3+2]=-p[1]; // Y-up
+        const [r,g,b] = zColor(p[2],zMin,zMax);
+        colors[i*3]=r; colors[i*3+1]=g; colors[i*3+2]=b;
+    });
+
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(positions,3));
+    geo.setAttribute('color',    new THREE.BufferAttribute(colors,3));
+    const mat = new THREE.LineBasicMaterial({ vertexColors:true, linewidth:1 });
+    toolpathLine = new THREE.Line(geo, mat);
+    scene.add(toolpathLine);
+
+    // Fit camera to bounding box
+    geo.computeBoundingBox();
+    const box = geo.boundingBox;
+    const cen = new THREE.Vector3(); box.getCenter(cen);
+    const siz = new THREE.Vector3(); box.getSize(siz);
+    const maxDim = Math.max(siz.x, siz.y, siz.z);
+    camera.position.set(cen.x+maxDim*1.4, cen.y+maxDim*.9, cen.z+maxDim*1.4);
+    controls.target.copy(cen);
+    controls.update();
+};
+
+// Resize
+function resize() {
+    const w=container.clientWidth, h=container.clientHeight;
+    renderer.setSize(w,h,false);
+    camera.aspect=w/h;
+    camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(container);
+resize();
+
+// Render loop
+(function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene,camera);
+})();
+
+window._threeScene = scene;
+</script>
+
+</body>
 </html>
