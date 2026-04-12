@@ -221,26 +221,26 @@
 
         <div class="glass rounded-[2rem] border border-white/8 overflow-hidden">
             <div class="grid lg:grid-cols-[1fr_320px]">
-                <!-- Three.js viewport -->
-                <div class="relative bg-[#030a16] flex flex-col" style="min-height:520px">
-                    <canvas id="threeCanvas" style="flex:1 1 auto"></canvas>
+                <!-- Three.js viewport — fixed height so slider can't affect it -->
+                <div class="relative bg-[#030a16]" style="height:480px">
+                    <canvas id="threeCanvas"></canvas>
                     <div class="absolute top-4 left-4 text-[9px] text-slate-600 font-mono pointer-events-none">drag to orbit · scroll to zoom</div>
                     <div id="demoStats" class="absolute top-4 right-4 font-mono text-[10px] text-slate-600 space-y-0.5 pointer-events-none text-right">
                         <div>Waypoints: <span id="statWP" class="text-slate-400">—</span></div>
                         <div>Path length: <span id="statLen" class="text-slate-400">—</span></div>
                         <div>Est. print time: <span id="statTime" class="text-slate-400">—</span></div>
                     </div>
-                    <!-- Slider bar -->
-                    <div id="sliderBar" class="hidden px-4 pb-3 pt-2 bg-[#020c1a] border-t border-white/5">
-                        <div class="flex items-center gap-3">
-                            <button id="playBtn" onclick="togglePlay()" class="shrink-0 w-7 h-7 rounded-full bg-blue-600 hover:bg-blue-500 flex items-center justify-center transition" title="Play / Pause">
-                                <i id="playIcon" class="fas fa-play text-white" style="font-size:9px;padding-left:1px"></i>
-                            </button>
-                            <input id="frameSlider" type="range" min="0" max="100" value="100"
-                                class="flex-1 h-1.5 accent-blue-500 cursor-pointer"
-                                oninput="onSliderInput(this.value)">
-                            <span id="frameLabel" class="shrink-0 font-mono text-[9px] text-slate-500 w-16 text-right">100 / 100</span>
-                        </div>
+                </div>
+                <!-- Slider bar — outside the canvas div so it never triggers ResizeObserver -->
+                <div id="sliderBar" class="hidden px-4 py-2.5 bg-[#020c1a] border-t border-white/5">
+                    <div class="flex items-center gap-3">
+                        <button onclick="togglePlay()" class="shrink-0 w-7 h-7 rounded-full bg-blue-600 hover:bg-blue-500 flex items-center justify-center transition" title="Play / Pause">
+                            <i id="playIcon" class="fas fa-play text-white" style="font-size:9px;padding-left:1px"></i>
+                        </button>
+                        <input id="frameSlider" type="range" min="2" max="100" value="100"
+                            class="flex-1 h-1.5 accent-blue-500 cursor-pointer"
+                            oninput="onSliderInput(this.value)">
+                        <span id="frameLabel" class="shrink-0 font-mono text-[9px] text-slate-500 w-16 text-right">— / —</span>
                     </div>
                 </div>
 
@@ -549,6 +549,7 @@ function genSpiral(r, h, turns) {
 
 // ── Main generate ──────────────────────────────────────────────────────────
 function generateToolpath() {
+    stopPlay();
     let v, pts;
     if (currentShape==='cube')   { v=validateCube();   if (v.ok) pts=genCube(num('cubeSide'),num('cubeLayerH')); }
     if (currentShape==='sphere') { v=validateSphere();  if (v.ok) pts=genSphere(num('sphereRadius'),Math.round(num('sphereLatSteps')),Math.round(num('sphereLonSteps'))); }
