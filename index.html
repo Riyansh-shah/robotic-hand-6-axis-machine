@@ -222,13 +222,25 @@
         <div class="glass rounded-[2rem] border border-white/8 overflow-hidden">
             <div class="grid lg:grid-cols-[1fr_320px]">
                 <!-- Three.js viewport -->
-                <div class="relative bg-[#030a16]" style="min-height:520px">
-                    <canvas id="threeCanvas"></canvas>
+                <div class="relative bg-[#030a16] flex flex-col" style="min-height:520px">
+                    <canvas id="threeCanvas" style="flex:1 1 auto"></canvas>
                     <div class="absolute top-4 left-4 text-[9px] text-slate-600 font-mono pointer-events-none">drag to orbit · scroll to zoom</div>
-                    <div id="demoStats" class="absolute bottom-4 left-4 font-mono text-[10px] text-slate-600 space-y-0.5 pointer-events-none">
+                    <div id="demoStats" class="absolute top-4 right-4 font-mono text-[10px] text-slate-600 space-y-0.5 pointer-events-none text-right">
                         <div>Waypoints: <span id="statWP" class="text-slate-400">—</span></div>
                         <div>Path length: <span id="statLen" class="text-slate-400">—</span></div>
                         <div>Est. print time: <span id="statTime" class="text-slate-400">—</span></div>
+                    </div>
+                    <!-- Slider bar -->
+                    <div id="sliderBar" class="hidden px-4 pb-3 pt-2 bg-[#020c1a] border-t border-white/5">
+                        <div class="flex items-center gap-3">
+                            <button id="playBtn" onclick="togglePlay()" class="shrink-0 w-7 h-7 rounded-full bg-blue-600 hover:bg-blue-500 flex items-center justify-center transition" title="Play / Pause">
+                                <i id="playIcon" class="fas fa-play text-white" style="font-size:9px;padding-left:1px"></i>
+                            </button>
+                            <input id="frameSlider" type="range" min="0" max="100" value="100"
+                                class="flex-1 h-1.5 accent-blue-500 cursor-pointer"
+                                oninput="onSliderInput(this.value)">
+                            <span id="frameLabel" class="shrink-0 font-mono text-[9px] text-slate-500 w-16 text-right">100 / 100</span>
+                        </div>
                     </div>
                 </div>
 
@@ -557,6 +569,30 @@ function clearScene() {
     if (window._threeScene) drawToolpath(null);
     ['statWP','statLen','statTime'].forEach(id=>document.getElementById(id).textContent='—');
     setStatus('idle','Set dimensions and click Generate.');
+    document.getElementById('sliderBar').classList.add('hidden');
+    stopPlay();
+}
+
+// ── Slider / playback ──────────────────────────────────────────────────────
+let _playTimer = null;
+function stopPlay() {
+    if (_playTimer) { clearInterval(_playTimer); _playTimer=null; }
+    const icon = document.getElementById('playIcon');
+    if (icon) { icon.className='fas fa-play text-white'; icon.style.paddingLeft='1px'; }
+}
+function togglePlay() {
+    if (_playTimer) { stopPlay(); return; }
+    const sl = document.getElementById('frameSlider');
+    // If at end, reset to 0 first
+    if (parseInt(sl.value) >= parseInt(sl.max)) sl.value = 0;
+    document.getElementById('playIcon').className='fas fa-pause text-white';
+    document.getElementById('playIcon').style.paddingLeft='0';
+    _playTimer = setInterval(() => {
+        const cur = parseInt(sl.value), max = parseInt(sl.max);
+        if (cur >= max) { stopPlay(); sl.value=max; window.onSliderInput && onSliderInput(max); return; }
+        sl.value = cur+1;
+        window.onSliderInput && onSliderInput(cur+1);
+    }, 30);
 }
 </script>
 
@@ -594,6 +630,9 @@ scene.add(axLine([0,0,0],[0,80,0],axMat(0x22c55e)));
 scene.add(axLine([0,0,0],[0,0,80],axMat(0x3b82f6)));
 
 let toolpathLine = null;
+let _allPts = null;       // full point array
+let _positions = null;    // full flat Float32Array in Three.js coords
+let _colors = null;       // full flat colour Float32Array
 
 function zColor(z, zMin, zMax) {
     const t = zMax===zMin ? 0 : (z-zMin)/(zMax-zMin);
@@ -604,29 +643,47 @@ function zColor(z, zMin, zMax) {
     return [r, g, b];
 }
 
+function rebuildLine(n) {
+    if (toolpathLine) { scene.remove(toolpathLine); toolpathLine.geometry.dispose(); toolpathLine=null; }
+    if (!_positions || n < 2) return;
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(_positions.slice(0,n*3),3));
+    geo.setAttribute('color',    new THREE.BufferAttribute(_colors.slice(0,n*3),3));
+    const mat = new THREE.LineBasicMaterial({ vertexColors:true, linewidth:1 });
+    toolpathLine = new THREE.Line(geo, mat);
+    scene.add(toolpathLine);
+}
+
+// Called by slider input
+window.onSliderInput = function(val) {
+    if (!_allPts) return;
+    const n = Math.max(2, parseInt(val));
+    rebuildLine(n);
+    document.getElementById('frameLabel').textContent = n + ' / ' + _allPts.length;
+};
+
 window.drawToolpath = function(pts) {
     if (toolpathLine) { scene.remove(toolpathLine); toolpathLine.geometry.dispose(); toolpathLine=null; }
+    _allPts=null; _positions=null; _colors=null;
     if (!pts || pts.length < 2) return;
+    _allPts = pts;
 
     const zVals = pts.map(p=>p[2]);
     const zMin=Math.min(...zVals), zMax=Math.max(...zVals);
 
-    const positions = new Float32Array(pts.length*3);
-    const colors    = new Float32Array(pts.length*3);
+    _positions = new Float32Array(pts.length*3);
+    _colors    = new Float32Array(pts.length*3);
     pts.forEach((p,i) => {
-        positions[i*3]=p[0]; positions[i*3+1]=p[2]; positions[i*3+2]=-p[1]; // Y-up
+        _positions[i*3]=p[0]; _positions[i*3+1]=p[2]; _positions[i*3+2]=-p[1]; // Y-up
         const [r,g,b] = zColor(p[2],zMin,zMax);
-        colors[i*3]=r; colors[i*3+1]=g; colors[i*3+2]=b;
+        _colors[i*3]=r; _colors[i*3+1]=g; _colors[i*3+2]=b;
     });
 
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(positions,3));
-    geo.setAttribute('color',    new THREE.BufferAttribute(colors,3));
-    const mat = new THREE.LineBasicMaterial({ vertexColors:true, linewidth:1 });
-    toolpathLine = new THREE.Line(geo, mat);
-    scene.add(toolpathLine);
+    // Show full path initially
+    rebuildLine(pts.length);
 
-    // Fit camera to bounding box
+    // Fit camera
+    const geo = toolpathLine.geometry;
     geo.computeBoundingBox();
     const box = geo.boundingBox;
     const cen = new THREE.Vector3(); box.getCenter(cen);
@@ -635,6 +692,12 @@ window.drawToolpath = function(pts) {
     camera.position.set(cen.x+maxDim*1.4, cen.y+maxDim*.9, cen.z+maxDim*1.4);
     controls.target.copy(cen);
     controls.update();
+
+    // Set up slider
+    const sl = document.getElementById('frameSlider');
+    sl.min = 2; sl.max = pts.length; sl.value = pts.length;
+    document.getElementById('frameLabel').textContent = pts.length + ' / ' + pts.length;
+    document.getElementById('sliderBar').classList.remove('hidden');
 };
 
 // Resize
