@@ -806,7 +806,7 @@ function positionCylinder(mesh, p1, p2) {
     if (len < 0.5) { mesh.visible=false; return; }
     mesh.visible = true;
     mesh.scale.set(1, len, 1);
-    mesh.position.copy(p1).add(p2).multiplyScalar(0.5);
+    mesh.position.copy(p1).lerp(p2, 0.5);
     mesh.quaternion.setFromUnitVectors(_yAxis, dir.normalize());
 }
 
@@ -815,11 +815,12 @@ function updateArm(fkPts) {
     for (let i=0;i<7;i++) jntMeshes[i].position.copy(a2t(...fkPts[i]));
     for (let i=0;i<6;i++) positionCylinder(lnkMeshes[i], a2t(...fkPts[i]), a2t(...fkPts[i+1]));
 
-    // Nozzle: hang 14mm below EE along world-down (simplified — always vertical for demo)
+    // fkPts[6] IS the IK target = toolpath waypoint in Three.js space.
+    // The nozzle TIP is at that point; the nozzle body extends 28mm upward toward the arm.
     const eePos = a2t(...fkPts[6]);
-    nozzleMesh.position.copy(eePos).add(new THREE.Vector3(0,-14,0));
+    eeTip.position.copy(eePos);                                        // green dot ON the waypoint
+    nozzleMesh.position.copy(eePos).add(new THREE.Vector3(0, 14, 0)); // body centre 14mm above tip
     nozzleMesh.quaternion.identity();
-    eeTip.position.copy(eePos).add(new THREE.Vector3(0,-28,0));
 }
 
 armGroup.visible = false;
